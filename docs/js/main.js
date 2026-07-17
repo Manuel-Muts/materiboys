@@ -18,7 +18,7 @@ function isStandaloneMode() {
 }
 
 function canShowInstallBanner() {
-  return !isStandaloneMode() && window.isSecureContext;
+  return !isStandaloneMode() && window.isSecureContext && window.location.protocol === 'https:';
 }
 
 function dismissInstallBanner() {
@@ -54,20 +54,25 @@ function showInstallBanner() {
 
   installButton.addEventListener('click', async () => {
     if (!deferredPrompt) {
-      installButton.textContent = 'Use browser install option';
+      installButton.textContent = 'Install unavailable yet';
       installButton.classList.add('pwa-install-banner__button--fallback');
       window.setTimeout(() => {
         if (installBanner) {
           dismissInstallBanner();
         }
-      }, 2200);
+      }, 2600);
       return;
     }
 
-    deferredPrompt.prompt();
-    const choice = await deferredPrompt.userChoice;
-    if (choice.outcome === 'accepted') {
-      dismissInstallBanner();
+    try {
+      deferredPrompt.prompt();
+      const choice = await deferredPrompt.userChoice;
+      if (choice.outcome === 'accepted') {
+        dismissInstallBanner();
+      }
+    } catch (error) {
+      console.warn('Install prompt failed', error);
+      installButton.textContent = 'Try again in Chrome';
     }
     deferredPrompt = null;
   });
@@ -96,13 +101,17 @@ function registerInstallExperience() {
   window.addEventListener('load', () => {
     if ('serviceWorker' in navigator) {
       const swUrl = new URL('../sw.js', window.location.href);
-      navigator.serviceWorker.register(swUrl.href, { scope: './' }).catch((error) => {
+      navigator.serviceWorker.register(swUrl.href, { scope: './' }).then(() => {
+        if (!installBannerTimer) {
+          installBannerTimer = window.setTimeout(showInstallBanner, 4000);
+        }
+      }).catch((error) => {
         console.warn('Service worker registration failed', error);
       });
     }
 
     if (!installBannerTimer) {
-      installBannerTimer = window.setTimeout(showInstallBanner, 6000);
+      installBannerTimer = window.setTimeout(showInstallBanner, 8000);
     }
   });
 }
