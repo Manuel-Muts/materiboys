@@ -746,6 +746,11 @@
   color: #0d3b66;
 }
 
+.pwa-install-banner__button--fallback {
+  background: #f8d77f;
+  color: #0d3b66;
+}
+
 @media (max-width: 640px) {
   .pwa-install-banner {
     top: 0.5rem;

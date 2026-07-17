@@ -18,7 +18,7 @@ function isStandaloneMode() {
 }
 
 function canShowInstallBanner() {
-  return !isStandaloneMode() && 'BeforeInstallPromptEvent' in window;
+  return !isStandaloneMode() && window.isSecureContext;
 }
 
 function dismissInstallBanner() {
@@ -54,12 +54,13 @@ function showInstallBanner() {
 
   installButton.addEventListener('click', async () => {
     if (!deferredPrompt) {
-      installButton.textContent = 'Install unavailable';
+      installButton.textContent = 'Use browser install option';
+      installButton.classList.add('pwa-install-banner__button--fallback');
       window.setTimeout(() => {
         if (installBanner) {
           dismissInstallBanner();
         }
-      }, 1800);
+      }, 2200);
       return;
     }
 
@@ -94,13 +95,14 @@ function registerInstallExperience() {
 
   window.addEventListener('load', () => {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('../sw.js').catch((error) => {
+      const swUrl = new URL('../sw.js', window.location.href);
+      navigator.serviceWorker.register(swUrl.href, { scope: './' }).catch((error) => {
         console.warn('Service worker registration failed', error);
       });
     }
 
     if (!installBannerTimer) {
-      installBannerTimer = window.setTimeout(showInstallBanner, 8000);
+      installBannerTimer = window.setTimeout(showInstallBanner, 6000);
     }
   });
 }
