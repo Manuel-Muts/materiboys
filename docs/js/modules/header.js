@@ -33,71 +33,59 @@ export function renderHeader() {
   const dropdowns = header.querySelectorAll('.dropdown');
 
   dropdowns.forEach((dropdown) => {
-    const menu = dropdown.querySelector('.dropdown-menu');
     const summary = dropdown.querySelector('summary');
-    if (!menu || !summary) {
+    const menu = dropdown.querySelector('.dropdown-menu');
+    if (!summary || !menu) {
       return;
     }
 
-    let closeTimeout = null;
+    let closeTimer = null;
+
+    const clearCloseTimer = () => {
+      if (closeTimer) {
+        window.clearTimeout(closeTimer);
+        closeTimer = null;
+      }
+    };
 
     const openDropdown = () => {
-      if (closeTimeout) {
-        window.clearTimeout(closeTimeout);
-        closeTimeout = null;
-      }
+      clearCloseTimer();
       dropdown.setAttribute('open', '');
     };
 
     const closeDropdown = () => {
-      if (closeTimeout) {
-        window.clearTimeout(closeTimeout);
-      }
-      closeTimeout = window.setTimeout(() => {
+      clearCloseTimer();
+      closeTimer = window.setTimeout(() => {
         dropdown.removeAttribute('open');
-      }, 180);
+      }, 260);
     };
 
-    const toggleDropdown = (event) => {
-      if (event.target !== summary && !dropdown.contains(event.target)) {
-        return;
-      }
+    summary.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
 
-      if (event.type === 'click') {
-        event.preventDefault();
-        event.stopPropagation();
-
-        if (dropdown.hasAttribute('open')) {
-          closeDropdown();
-        } else {
-          openDropdown();
+      const isOpen = dropdown.hasAttribute('open');
+      dropdowns.forEach((other) => {
+        if (other !== dropdown) {
+          other.removeAttribute('open');
         }
+      });
+
+      if (isOpen) {
+        closeDropdown();
+      } else {
+        openDropdown();
       }
-    };
+    });
 
     dropdown.addEventListener('mouseenter', openDropdown);
-    dropdown.addEventListener('focusin', openDropdown);
-    dropdown.addEventListener('click', toggleDropdown);
-
-    dropdown.addEventListener('mouseleave', () => {
-      closeDropdown();
-    });
-
+    dropdown.addEventListener('mouseleave', closeDropdown);
     menu.addEventListener('mouseenter', openDropdown);
-    menu.addEventListener('mouseleave', () => {
-      closeDropdown();
-    });
+    menu.addEventListener('mouseleave', closeDropdown);
+  });
 
-    menu.addEventListener('focusin', openDropdown);
-    menu.addEventListener('focusout', (event) => {
-      const nextFocus = event.relatedTarget;
-      if (nextFocus && dropdown.contains(nextFocus)) {
-        return;
-      }
-      closeDropdown();
-    });
-
-    document.addEventListener('click', (event) => {
+  document.addEventListener('click', (event) => {
+    dropdowns.forEach((dropdown) => {
       if (!dropdown.contains(event.target)) {
         dropdown.removeAttribute('open');
       }
