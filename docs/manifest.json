@@ -1,6 +1,8 @@
 {
   "name": "Materi Boys' Senior School",
   "short_name": "Materi Boys",
+  "id": "./",
+  "scope": "./",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",

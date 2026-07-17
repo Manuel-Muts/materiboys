@@ -688,22 +688,70 @@
   gap: 0.35rem;
 }
 
-.date-input-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.date-input-wrap input[type="date"] {
+.form-field--date input[type="date"] {
   width: 100%;
-  padding-right: 2.6rem;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
 }
 
-.date-input-icon {
-  position: absolute;
-  right: 0.8rem;
-  pointer-events: none;
-  font-size: 1rem;
+.form-field--date input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.9;
+  filter: invert(0.25) saturate(1.2);
+}
+
+.pwa-install-banner {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: min(22rem, calc(100vw - 2rem));
+  padding: 1rem 1rem 0.9rem;
+  border-radius: 1rem;
+  background: rgba(13, 59, 102, 0.96);
+  color: #fff;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+}
+
+.pwa-install-banner__content p {
+  margin: 0.25rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.pwa-install-banner__actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.pwa-install-banner__button {
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: transparent;
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.pwa-install-banner__button--primary {
+  background: #fff;
+  color: #0d3b66;
+}
+
+@media (max-width: 640px) {
+  .pwa-install-banner {
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    max-width: none;
+  }
 }
 
 .form-field {

@@ -8,6 +8,97 @@ import { initImageSlider } from './slider.js';
 import { initRouter } from './router.js';
 
 const app = document.getElementById('app');
+let deferredPrompt = null;
+let installBanner = null;
+let installBannerTimer = null;
+let installBannerDismissedUntil = Number(window.localStorage.getItem('materi-install-dismiss-until') || 0);
+
+function isStandaloneMode() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+function canShowInstallBanner() {
+  return !isStandaloneMode() && 'BeforeInstallPromptEvent' in window;
+}
+
+function dismissInstallBanner() {
+  if (!installBanner) {
+    return;
+  }
+
+  installBanner.remove();
+  installBanner = null;
+  window.localStorage.setItem('materi-install-dismiss-until', String(Date.now() + 1000 * 60 * 60 * 24 * 3));
+}
+
+function showInstallBanner() {
+  if (!canShowInstallBanner() || installBanner || Date.now() < installBannerDismissedUntil) {
+    return;
+  }
+
+  installBanner = document.createElement('div');
+  installBanner.className = 'pwa-install-banner';
+  installBanner.innerHTML = `
+    <div class="pwa-install-banner__content">
+      <strong>Install Materi Boys</strong>
+      <p>Keep quick access to admissions, contact details, and school updates.</p>
+    </div>
+    <div class="pwa-install-banner__actions">
+      <button class="pwa-install-banner__button pwa-install-banner__button--primary" type="button">Install</button>
+      <button class="pwa-install-banner__button" type="button">Not now</button>
+    </div>
+  `;
+
+  const installButton = installBanner.querySelector('.pwa-install-banner__button--primary');
+  const dismissButton = installBanner.querySelector('.pwa-install-banner__button:not(.pwa-install-banner__button--primary)');
+
+  installButton.addEventListener('click', async () => {
+    if (!deferredPrompt) {
+      dismissInstallBanner();
+      return;
+    }
+
+    deferredPrompt.prompt();
+    const choice = await deferredPrompt.userChoice;
+    if (choice.outcome === 'accepted') {
+      dismissInstallBanner();
+    }
+    deferredPrompt = null;
+  });
+
+  dismissButton.addEventListener('click', dismissInstallBanner);
+  document.body.appendChild(installBanner);
+}
+
+function registerInstallExperience() {
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredPrompt = event;
+    showInstallBanner();
+  });
+
+  window.addEventListener('appinstalled', () => {
+    dismissInstallBanner();
+  });
+
+  window.addEventListener('pointerdown', () => {
+    if (!installBannerTimer) {
+      installBannerTimer = window.setTimeout(showInstallBanner, 1400);
+    }
+  }, { once: true });
+
+  window.addEventListener('load', () => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('../sw.js').catch((error) => {
+        console.warn('Service worker registration failed', error);
+      });
+    }
+
+    if (!installBannerTimer) {
+      installBannerTimer = window.setTimeout(showInstallBanner, 8000);
+    }
+  });
+}
 
 export function renderHomePage() {
   if (!app) {
@@ -37,5 +128,6 @@ if (app) {
   initRouter();
 }
 
+registerInstallExperience();
 window.addEventListener('load', resetPagePosition);
 requestAnimationFrame(resetPagePosition);
