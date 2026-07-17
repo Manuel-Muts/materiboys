@@ -683,6 +683,29 @@
   font-size: 0.95rem;
 }
 
+.form-field--date {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.date-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.date-input-wrap input[type="date"] {
+  width: 100%;
+  padding-right: 2.6rem;
+}
+
+.date-input-icon {
+  position: absolute;
+  right: 0.8rem;
+  pointer-events: none;
+  font-size: 1rem;
+}
+
 .form-field {
   display: grid;
   gap: 0.5rem;

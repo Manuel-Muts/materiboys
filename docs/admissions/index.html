@@ -65,9 +65,12 @@
                   <option value="Arts & Sport Science">Arts & Sport Science</option>
                 </select>
               </label>
-              <label class="form-field">
+              <label class="form-field form-field--date">
                 <span>Date of Birth</span>
-                <input type="text" name="dateOfBirth" required inputmode="numeric" placeholder="dd/mm/yy" pattern="\d{2}/\d{2}/\d{2}" title="Enter date in dd/mm/yy format" />
+                <div class="date-input-wrap">
+                  <input type="date" name="dateOfBirth" required title="Choose or enter your date of birth" />
+                  <span class="date-input-icon" aria-hidden="true">📅</span>
+                </div>
               </label>
               <label class="form-field">
                 <span>Parent / Guardian Phone</span>

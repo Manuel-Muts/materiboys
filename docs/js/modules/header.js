@@ -40,18 +40,12 @@ export function renderHeader() {
       return;
     }
 
-    let closeTimer;
-
     const openDropdown = () => {
-      clearTimeout(closeTimer);
       dropdown.setAttribute('open', '');
     };
 
     const closeDropdown = () => {
-      clearTimeout(closeTimer);
-      closeTimer = window.setTimeout(() => {
-        dropdown.removeAttribute('open');
-      }, 220);
+      dropdown.removeAttribute('open');
     };
 
     const toggleDropdown = (event) => {
