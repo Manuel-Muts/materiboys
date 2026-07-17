@@ -1,10 +1,14 @@
 {
   "name": "Materi Boys' Senior School",
   "short_name": "Materi Boys",
+  "description": "Materi Boys Senior School website for admissions, academics, and school information.",
+  "lang": "en",
   "id": "./",
   "scope": "./",
   "start_url": "./index.html",
   "display": "standalone",
+  "orientation": "portrait",
+  "categories": ["education"],
   "background_color": "#ffffff",
   "theme_color": "#0d3b66",
   "icons": [
