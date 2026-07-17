@@ -47,7 +47,7 @@
 .contact-details {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.45rem;
+  gap: 1.1rem;
 }
 
 .contact-section--wide {
@@ -55,8 +55,8 @@
 }
 
 .contact-section {
-  padding: 1.55rem 1.75rem;
-  border-radius: 22px;
+  padding: 1.2rem 1.25rem;
+  border-radius: 18px;
   background: var(--contact-panel);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -65,7 +65,7 @@
 .contact-section--hours {
   background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
   border-left: 4px solid rgba(125, 240, 190, 0.45);
-  padding: 1.75rem 1.85rem;
+  padding: 1.3rem 1.4rem;
 }
 
 .visit-hours {
@@ -130,15 +130,40 @@
 
 @media (max-width: 680px) {
   .contact-page-shell {
-    padding: 3rem 0 3.5rem;
+    padding: 2.4rem 0 3rem;
   }
 
   .contact-card {
-    padding: 1.65rem;
-    border-radius: 24px;
+    padding: 1.25rem;
+    border-radius: 20px;
+  }
+
+  .contact-card h1 {
+    font-size: clamp(1.8rem, 5.2vw, 2.4rem);
+  }
+
+  .contact-intro {
+    margin-bottom: 1.2rem;
+    font-size: 0.95rem;
+    line-height: 1.7;
   }
 
   .contact-details {
-    gap: 1rem;
+    gap: 0.8rem;
+  }
+
+  .contact-section {
+    padding: 1rem 1rem;
+  }
+
+  .contact-section h2 {
+    font-size: 1.08rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .contact-section p,
+  .visit-hours__time,
+  .visit-hours__note {
+    font-size: 0.92rem;
   }
 }
