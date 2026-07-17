@@ -8,7 +8,7 @@ export function renderHeader() {
           <summary>About</summary>
           <div class="dropdown-menu">
             <a href="#/about">About Us</a>
-            <a href="/history">History</a>
+            <a href="../history/">History</a>
             <a href="#/mission">Mission &amp; Vision</a>
             <a href="#/facilities">Facilities</a>
           </div>
@@ -16,18 +16,18 @@ export function renderHeader() {
         <details class="dropdown">
           <summary>Downloads</summary>
           <div class="dropdown-menu">
-            <a href="/docs/downloads/application-form.pdf" target="_blank">Application Form</a>
-            <a href="/docs/downloads/interview-requirements.pdf" target="_blank">Interview Requirements</a>
-            <a href="/docs/downloads/fee-schedule.pdf" target="_blank">Fee Schedule</a>
-            <a href="/docs/downloads/prospectus.pdf" target="_blank">School Prospectus</a>
+            <a href="../downloads/application-form.pdf" target="_blank">Application Form</a>
+            <a href="../downloads/interview-requirements.pdf" target="_blank">Interview Requirements</a>
+            <a href="../downloads/fee-schedule.pdf" target="_blank">Fee Schedule</a>
+            <a href="../downloads/prospectus.pdf" target="_blank">School Prospectus</a>
           </div>
         </details>
-        <a href="/docs/academics" target="_self">Academics</a>
-        <a href="/contact" target="_self">Contact</a>
-        <a href="/docs/staff" target="_self">Staff</a>
-        <a href="/admissions" target="_self">Admissions</a>
+        <a href="../academics/" target="_self">Academics</a>
+        <a href="../contact/" target="_self">Contact</a>
+        <a href="../staff/" target="_self">Staff</a>
+        <a href="../admissions/" target="_self">Admissions</a>
       </nav>
-      <a class="button button--primary" href="/admissions" target="_self">Enroll Now</a>
+      <a class="button button--primary" href="../admissions/" target="_self">Enroll Now</a>
     </div>
   `;
 
