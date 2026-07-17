@@ -1,0 +1,119 @@
+.site-header {
+  padding: 0.8rem 0 0;
+  position: relative;
+  z-index: 25;
+}
+
+.header-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: linear-gradient(135deg, rgba(59, 140, 255, 0.18), rgba(125, 240, 190, 0.12));
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  padding: 0.6rem 0.95rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  overflow: visible;
+  isolation: isolate;
+}
+
+.header-inner::before {
+  content: "";
+  position: absolute;
+  inset: -1.2px;
+  border-radius: inherit;
+  padding: 1.2px;
+  background: linear-gradient(90deg, rgba(125, 240, 190, 0.18), rgba(59, 140, 255, 0.8), rgba(125, 240, 190, 0.3));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.75;
+  z-index: -1;
+  filter: blur(0.2px);
+  animation: headerGlow 2.6s ease-in-out infinite;
+}
+
+.nav-links {
+  display: flex;
+  gap: 0.95rem;
+  color: var(--color-muted);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.nav-links a,
+.dropdown summary {
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: color 180ms ease, text-shadow 180ms ease;
+}
+
+.nav-links a:hover,
+.dropdown summary:hover {
+  text-shadow: 0 0 16px rgba(125, 240, 190, 0.25);
+}
+
+.nav-links a:hover,
+.dropdown summary:hover {
+  color: var(--color-text);
+}
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown summary {
+  list-style: none;
+}
+
+.dropdown summary::-webkit-details-marker {
+  display: none;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  min-width: 180px;
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: rgba(6, 17, 31, 0.96);
+  box-shadow: var(--shadow-soft);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(6px);
+  transition: all 180ms ease;
+  z-index: 20;
+}
+
+.dropdown:hover .dropdown-menu,
+.dropdown:focus-within .dropdown-menu,
+.dropdown[open] .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.dropdown-menu a {
+  padding: 0.35rem 0;
+  color: var(--color-text);
+}
+
+@keyframes headerGlow {
+  0%, 100% {
+    opacity: 0.45;
+    transform: scaleX(0.97);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scaleX(1.01);
+  }
+}
+

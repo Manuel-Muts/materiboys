@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Academics | Materi Boys' Senior School</title>
+    <meta name="description" content="Explore academics at Materi Boys' Senior School." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Great+Vibes&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/docs/styles/shared.css" />
+    <link rel="stylesheet" href="/docs/styles/components.css" />
+    <link rel="stylesheet" href="/docs/styles/header.css" />
+    <link rel="stylesheet" href="/docs/styles/layout.css" />
+    <link rel="stylesheet" href="/docs/styles/academics.css" />
+    <link rel="stylesheet" href="/docs/styles/mobile.css" />
+    <link rel="icon" href="/docs/logo/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="/docs/logo/favicon.ico" type="image/x-icon" />
+  </head>
+  <body>
+    <section class="legal-page-shell">
+      <div class="container academics-card">
+        <div class="standalone-topbar">
+          <a href="/home" class="button button--secondary standalone-back" target="_self">Back</a>
+        </div>
+        <p class="eyebrow">Academics</p>
+        <h1 class="academics-headline">Academic Pathways at Materi Boys' Senior School</h1>
+        <p class="academics-intro">Materi Boys is a CBE-centered senior school with a strong focus on STEM, Social Sciences, Arts, and Sport Science. Explore the pathways designed to build skills, confidence, and future-ready learners.</p>
+        <div class="pathway-grid">
+          <article class="pathway-card">
+            <span class="pathway-badge">1</span>
+            <h2>Pathways</h2>
+            <p>A skills-based approach to learning that prepares students for further education, careers, and leadership.</p>
+          </article>
+          <article class="pathway-card">
+            <span class="pathway-badge">2</span>
+            <img src="/docs/images/IMG_3567.JPG" alt="Students learning STEM subjects" class="pathway-card__image" />
+            <h2>STEM</h2>
+            <p>Pure Science and Applied Science with IT. Click or hover to view subject groups.</p>
+            <button type="button" class="pathway-card__toggle" aria-expanded="false">View subjects</button>
+            <div class="pathway-card__extra">
+              <div>
+                <h3>Pure Science</h3>
+                <p>Maths, Physics, Chemistry, Biology.</p>
+              </div>
+              <div>
+                <h3>Applied Science</h3>
+                <p>Computer, Business, Agriculture, Building &amp; Construction, Woodwork.</p>
+              </div>
+            </div>
+          </article>
+          <article class="pathway-card">
+            <span class="pathway-badge">3</span>
+            <img src="/docs/images/IMG_3636.JPG" alt="Students collaborating in social studies" class="pathway-card__image" />
+            <h2>Social Sciences</h2>
+            <p>Humanities and social studies with a focus on history, citizenship, literature, and cultural understanding.</p>
+            <button type="button" class="pathway-card__toggle" aria-expanded="false">View subjects</button>
+            <div class="pathway-card__extra">
+              <p>Geography, History &amp; Citizenship, Literature and English, Religion, Fasihi ya Kiswahili.</p>
+            </div>
+          </article>
+          <article class="pathway-card">
+            <span class="pathway-badge">4</span>
+            <img src="/docs/images/IMG_4275.JPG" alt="Arts and sport science activities" class="pathway-card__image" />
+            <h2>Arts & Sport Science</h2>
+            <p>Creative arts, performance, and sport science activities that support physical fitness, expression, and teamwork.</p>
+            <button type="button" class="pathway-card__toggle" aria-expanded="false">View subjects</button>
+            <div class="pathway-card__extra">
+              <p>Drama, Music &amp; Dance, Theater &amp; Film, Soccer, Volleyball, Rugby, Basketball, Tennis.</p>
+            </div>
+          </article>
+        </div>
+        <section class="academics-slider-section">
+          <div class="teacher-slider-heading">
+            <div>
+              <h2>Academics in Action</h2>
+              <p>Actual photos of learning, collaboration, and activity will slide through here. Update these images later with your own academic pathway highlights.</p>
+            </div>
+          </div>
+         
+        </section>
+        <section class="teacher-slider-section">
+          <div class="teacher-slider-heading">
+            <div>
+              <h2>Teacher Pathway Spotlights</h2>
+              <p>Profiles for teachers who support each academic pathway. Replace these images and names later with actual staff details.</p>
+            </div>
+          </div>
+          <div class="teacher-slider">
+            <article class="teacher-card">
+              <div class="teacher-card__image">Teacher | STEM</div>
+              <div class="teacher-card__body">
+                <h3 class="teacher-card__title">STEM Teacher</h3>
+                <p class="teacher-card__role">Science and technology pathway instructor.</p>
+              </div>
+            </article>
+            <article class="teacher-card">
+              <div class="teacher-card__image">Teacher | Social</div>
+              <div class="teacher-card__body">
+                <h3 class="teacher-card__title">Social Sciences Teacher</h3>
+                <p class="teacher-card__role">Social studies and humanities pathway instructor.</p>
+              </div>
+            </article>
+            <article class="teacher-card">
+              <div class="teacher-card__image">Teacher | Arts</div>
+              <div class="teacher-card__body">
+                <h3 class="teacher-card__title">Arts & Sport Science</h3>
+                <p class="teacher-card__role">Arts, music, and sport science pathway mentor.</p>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
+    </section>
+    <script type="module">
+      import { initImageSlider } from '/docs/js/slider.js';
+      initImageSlider();
+
+      const pathwayButtons = document.querySelectorAll('.pathway-card__toggle');
+      pathwayButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const card = button.closest('.pathway-card');
+          if (!card) return;
+
+          const isOpen = card.classList.toggle('is-open');
+          button.setAttribute('aria-expanded', isOpen);
+          button.textContent = isOpen ? 'Hide subjects' : 'View subjects';
+        });
+      });
+    </script>
+  </body>
+</html>

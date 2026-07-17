@@ -1,0 +1,92 @@
+.school-intro {
+  padding: 2.2rem 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  position: relative;
+}
+
+.school-intro__content {
+  flex: 1;
+}
+
+.school-intro h1 {
+  margin: 0.25rem 0 0.4rem;
+  font-size: clamp(2.2rem, 3.6vw, 3.2rem);
+  line-height: 1.08;
+  letter-spacing: 0.02em;
+  font-family: "Playfair Display", Georgia, serif;
+  font-weight: 700;
+  text-shadow: 0 0 24px rgba(59, 140, 255, 0.2);
+  background: linear-gradient(90deg, #ffffff 0%, var(--color-accent) 45%, #ffffff 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 4s linear infinite;
+  background-size: 200% 100%;
+}
+
+.school-motto {
+  margin: 0.4rem 0 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #fff7d9;
+  text-shadow: 0 0 14px rgba(125, 240, 190, 0.35);
+}
+
+.school-motto span {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(59, 140, 255, 0.22), rgba(125, 240, 190, 0.16));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--color-accent);
+  font-family: "Playfair Display", Georgia, serif;
+  font-weight: 800;
+  letter-spacing: 0.28em;
+}
+
+.school-intro__logo {
+  width: 160px;
+  height: 160px;
+  border-radius: 24px;
+  border: 1px solid var(--color-border);
+  background: linear-gradient(135deg, rgba(59, 140, 255, 0.25), rgba(125, 240, 190, 0.16));
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 16px 40px rgba(59, 140, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.school-intro__logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.container {
+  width: min(var(--container-width), calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.section {
+  padding: 5rem 0;
+}
+
+.section--light {
+  position: relative;
+  background:
+    linear-gradient(135deg, rgba(13, 31, 56, 0.98), rgba(23, 49, 86, 0.95)),
+    radial-gradient(circle at top left, rgba(59, 140, 255, 0.24), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(125, 240, 190, 0.2), transparent 30%);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+

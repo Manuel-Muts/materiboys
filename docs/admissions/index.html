@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admissions | Materi Boys' Senior School</title>
+    <meta name="description" content="Apply for enrollment at Materi Boys' Senior School." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Great+Vibes&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/docs/styles/shared.css" />
+    <link rel="stylesheet" href="/docs/styles/components.css" />
+    <link rel="stylesheet" href="/docs/styles/header.css" />
+    <link rel="stylesheet" href="/docs/styles/layout.css" />
+    <link rel="stylesheet" href="/docs/styles/mobile.css" />
+    <link rel="icon" href="/docs/logo/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="/docs/logo/favicon.ico" type="image/x-icon" />
+  </head>
+  <body>
+    <section class="contact-page-shell">
+      <div class="container contact-card">
+        <div class="standalone-topbar">
+          <a href="/home" class="button button--secondary standalone-back" target="_self">Back</a>
+        </div>
+        <div class="admissions-split">
+          <div class="admissions-copy">
+            <p class="eyebrow">Admissions</p>
+            <h1>Apply to Materi Boys' Senior School</h1>
+            <p class="legal-intro">Complete the application form below and submit it to the school admissions team. All fields are required to start the registration process.</p>
+
+            <div class="location-card" aria-label="School location card">
+              <div class="location-card__icon" aria-hidden="true">📍</div>
+              <div class="location-card__content">
+                <h2>Located here</h2>
+                <p>Near St. Orsola Hospital, Chiakariga Subcounty, Tharaka Nithi County, approximately 6 km from Kathwana County Headquarters.</p>
+              </div>
+            </div>
+
+            <div class="location-map" aria-label="School location map">
+              <iframe
+                title="School location map"
+                loading="lazy"
+                referrerpolicy="strict-origin-when-cross-origin"
+                src="https://www.google.com/maps?q=St.%20Orsola%20Hospital%20Chiakariga&z=14&output=embed"
+                allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+          <form class="enrollment-form" method="POST" action="https://forms.office.com/your-form-id" target="_blank">
+          <h2 class="form-section-heading">Applicant details</h2>
+          <fieldset class="enrollment-fieldset">
+            <legend>Applicant details</legend>
+            <div class="form-grid">
+              <label class="form-field">
+                <span>Full Name</span>
+                <input type="text" name="fullName" required autocomplete="name" placeholder="e.g. James Mwangi" />
+              </label>
+              <label class="form-field">
+                <span>Pathway</span>
+                <select name="pathway" required>
+                  <option value="" disabled selected>Select a pathway</option>
+                  <option value="STEM">STEM</option>
+                  <option value="Social Sciences">Social Sciences</option>
+                  <option value="Arts & Sport Science">Arts & Sport Science</option>
+                </select>
+              </label>
+              <label class="form-field">
+                <span>Date of Birth</span>
+                <input type="text" name="dateOfBirth" required inputmode="numeric" placeholder="dd/mm/yy" pattern="\d{2}/\d{2}/\d{2}" title="Enter date in dd/mm/yy format" />
+              </label>
+              <label class="form-field">
+                <span>Parent / Guardian Phone</span>
+                <input type="tel" name="guardianPhone" required autocomplete="tel" placeholder="e.g. +254 700 000 000" />
+              </label>
+              <label class="form-field">
+                <span>Enrollment Grade</span>
+                <select name="enrollmentGrade" required>
+                  <option value="" disabled selected>Select grade</option>
+                  <option value="Grade 10">Grade 10</option>
+                  <option value="Grade 11">Grade 11</option>
+                  <option value="Grade 12">Grade 12</option>
+                </select>
+              </label>
+            </div>
+          </fieldset>
+
+          <button type="submit" class="button button--primary">Submit Application</button>
+        </form>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>
