@@ -41,10 +41,10 @@ function showInstallBanner() {
   installBanner.innerHTML = `
     <div class="pwa-install-banner__content">
       <strong>Install Materi Boys</strong>
-      <p>Keep quick access to admissions, contact details, and school updates.</p>
+      <p>Get a quick app-style shortcut for admissions, contact details, and school updates.</p>
     </div>
     <div class="pwa-install-banner__actions">
-      <button class="pwa-install-banner__button pwa-install-banner__button--primary" type="button">Install</button>
+      <button class="pwa-install-banner__button pwa-install-banner__button--primary" type="button">Install now</button>
       <button class="pwa-install-banner__button" type="button">Not now</button>
     </div>
   `;
@@ -54,7 +54,12 @@ function showInstallBanner() {
 
   installButton.addEventListener('click', async () => {
     if (!deferredPrompt) {
-      dismissInstallBanner();
+      installButton.textContent = 'Install unavailable';
+      window.setTimeout(() => {
+        if (installBanner) {
+          dismissInstallBanner();
+        }
+      }, 1800);
       return;
     }
 
@@ -81,7 +86,7 @@ function registerInstallExperience() {
     dismissInstallBanner();
   });
 
-  window.addEventListener('pointerdown', () => {
+  window.addEventListener('click', () => {
     if (!installBannerTimer) {
       installBannerTimer = window.setTimeout(showInstallBanner, 1400);
     }
