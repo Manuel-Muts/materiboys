@@ -31,14 +31,17 @@
         <h1 class="academics-headline">Academic Pathways at Materi Boys' Senior School</h1>
         <p class="academics-intro">Materi Boys is a CBE-centered senior school with a strong focus on STEM, Social Sciences, Arts, and Sport Science. Explore the pathways designed to build skills, confidence, and future-ready learners.</p>
         <div class="pathway-grid">
+         
           <article class="pathway-card">
             <span class="pathway-badge">1</span>
-            <h2>Pathways</h2>
-            <p>A skills-based approach to learning that prepares students for further education, careers, and leadership.</p>
-          </article>
-          <article class="pathway-card">
-            <span class="pathway-badge">2</span>
-            <img src="../images/IMG_3567.JPG" alt="Students learning STEM subjects" class="pathway-card__image" />
+            <div class="pathway-card__slider" data-slides='[
+              {"src": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=500&q=80", "alt": "STEM - Coding and Programming"},
+              {"src": "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=500&q=80", "alt": "STEM - Chemistry Lab Experiments"},
+              {"src": "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=500&q=80", "alt": "STEM - Physics Experiment"},
+              {"src": "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=500&q=80", "alt": "STEM - Mathematics and Engineering"}
+            ]'>
+              <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=500&q=80" alt="STEM - Coding and Programming" class="pathway-card__image" />
+            </div>
             <h2>STEM</h2>
             <p>Pure Science and Applied Science with IT. Click or hover to view subject groups.</p>
             <button type="button" class="pathway-card__toggle" aria-expanded="false">View subjects</button>
@@ -54,8 +57,15 @@
             </div>
           </article>
           <article class="pathway-card">
-            <span class="pathway-badge">3</span>
-            <img src="../images/IMG_3636.JPG" alt="Students collaborating in social studies" class="pathway-card__image" />
+            <span class="pathway-badge">2</span>
+            <div class="pathway-card__slider" data-slides='[
+              {"src": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=500&q=80", "alt": "Social Sciences - Business and Economics"},
+              {"src": "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=500&q=80", "alt": "Social Sciences - History and Heritage"},
+              {"src": "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=500&q=80", "alt": "Social Sciences - Geography and Maps"},
+              {"src": "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=500&q=80", "alt": "Social Sciences - Literature and Reading"}
+            ]'>
+              <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=500&q=80" alt="Social Sciences - Business and Economics" class="pathway-card__image" />
+            </div>
             <h2>Social Sciences</h2>
             <p>Humanities and social studies with a focus on history, citizenship, literature, and cultural understanding.</p>
             <button type="button" class="pathway-card__toggle" aria-expanded="false">View subjects</button>
@@ -64,8 +74,15 @@
             </div>
           </article>
           <article class="pathway-card">
-            <span class="pathway-badge">4</span>
-            <img src="../images/IMG_4275.JPG" alt="Arts and sport science activities" class="pathway-card__image" />
+            <span class="pathway-badge">3</span>
+            <div class="pathway-card__slider" data-slides='[
+              {"src": "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=500&q=80", "alt": "Arts & Sport - Soccer and Football"},
+              {"src": "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=500&q=80", "alt": "Arts & Sport - Basketball"},
+              {"src": "https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=500&q=80", "alt": "Arts & Sport - Dance and Performance"},
+              {"src": "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?auto=format&fit=crop&w=500&q=80", "alt": "Arts & Sport - Music and Theater"}
+            ]'>
+              <img src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=500&q=80" alt="Arts & Sport - Soccer and Football" class="pathway-card__image" />
+            </div>
             <h2>Arts & Sport Science</h2>
             <p>Creative arts, performance, and sport science activities that support physical fitness, expression, and teamwork.</p>
             <button type="button" class="pathway-card__toggle" aria-expanded="false">View subjects</button>
@@ -74,20 +91,12 @@
             </div>
           </article>
         </div>
-        <section class="academics-slider-section">
-          <div class="teacher-slider-heading">
-            <div>
-              <h2>Academics in Action</h2>
-              <p>Actual photos of learning, collaboration, and activity will slide through here. Update these images later with your own academic pathway highlights.</p>
-            </div>
-          </div>
-         
-        </section>
+      
         <section class="teacher-slider-section">
           <div class="teacher-slider-heading">
             <div>
               <h2>Teacher Pathway Spotlights</h2>
-              <p>Profiles for teachers who support each academic pathway. Replace these images and names later with actual staff details.</p>
+              <p>Profiles for teachers who support each academic pathway.</p>
             </div>
           </div>
           <div class="teacher-slider">
@@ -99,10 +108,13 @@
               </div>
             </article>
             <article class="teacher-card">
-              <div class="teacher-card__image">Teacher | Social</div>
+              <div class="teacher-card__image">
+                <img src="../images/academics/Eng&Lit.jpeg" alt="Social Sciences Teacher" />
+              </div>
               <div class="teacher-card__body">
-                <h3 class="teacher-card__title">Social Sciences Teacher</h3>
-                <p class="teacher-card__role">Social studies and humanities pathway instructor.</p>
+                <h3 class="teacher-card__title">Madam Grace</h3>
+                <p class="teacher-card__role">English & Literature | Social Sciences</p>
+                <p class="teacher-card__description">languages and literature program with excellence in teaching communication skills and critical thinking through engaging literary study.</p>
               </div>
             </article>
             <article class="teacher-card">
@@ -119,6 +131,20 @@
     <script type="module">
       import { initImageSlider } from '../js/slider.js';
       initImageSlider();
+
+      // Pathway card image slider
+      const pathwaySliders = document.querySelectorAll('.pathway-card__slider');
+      pathwaySliders.forEach((slider) => {
+        const slidesData = JSON.parse(slider.getAttribute('data-slides'));
+        let currentIndex = 0;
+        const img = slider.querySelector('img');
+
+        setInterval(() => {
+          currentIndex = (currentIndex + 1) % slidesData.length;
+          img.src = slidesData[currentIndex].src;
+          img.alt = slidesData[currentIndex].alt;
+        }, 4000); // Change image every 4 seconds
+      });
 
       const pathwayButtons = document.querySelectorAll('.pathway-card__toggle');
       pathwayButtons.forEach((button) => {
