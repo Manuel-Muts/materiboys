@@ -327,12 +327,104 @@
  .staff-contact a:hover {
    text-decoration: underline;
  }
+
+/* Facilities Grid & Cards */
+.facilities-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2.5rem;
+  margin-top: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.facility-card {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 32px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.16);
+  transition: all 300ms ease;
+  display: flex;
+  flex-direction: column;
+  min-height: 580px;
+}
+
+.facility-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(125, 240, 190, 0.5);
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.28);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.facility-card__header {
+  padding: 2rem 2rem 1rem;
+  border-bottom: 1px solid rgba(125, 240, 190, 0.2);
+}
+
+.facility-card__title {
+  margin: 0 0 0.5rem;
+  color: #ffffff;
+  font-size: 1.7rem;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.facility-card__subtitle {
+  margin: 0;
+  color: rgba(125, 240, 190, 0.9);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.facility-card__image {
+  width: 100%;
+  height: 320px;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(59, 140, 255, 0.15), rgba(125, 240, 190, 0.1));
+  flex-shrink: 0;
+}
+
+.facility-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 400ms ease;
+}
+
+.facility-card:hover .facility-card__image img {
+  transform: scale(1.05);
+}
+
+.facility-card__footer {
+  padding: 1.8rem 2rem 2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.facility-card__description {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1rem;
+  line-height: 1.8;
+  font-family: 'Cormorant Garamond', serif;
+}
  
 @media (max-width: 1080px) {
   .pathway-grid,
   .teacher-slider,
   .staff-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  
+  .facilities-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
   }
 }
 
