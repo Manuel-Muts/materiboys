@@ -273,8 +273,17 @@
 }
 
 .staff-position {
-  margin: 0 0 1rem;
+  margin: 0 0 0.8rem;
   color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+}
+
+.staff-description {
+  margin: 0 0 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  font-family: 'Cormorant Garamond', serif;
 }
 
 .staff-quote-card {
