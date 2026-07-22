@@ -1,4 +1,4 @@
-const WHATSAPP_NUMBER = '254726677666';
+const WHATSAPP_NUMBER = '254721272094';
 
 const quickActions = [
   { label: 'Admissions', key: 'admissions' },
@@ -15,7 +15,7 @@ const responses = {
   fees: 'The latest fee schedule should be confirmed with the admissions office. Fees and payment details are shared with applicants on request so that families receive current information.',
   downloads: 'You can find the application form, fee schedule, interview requirements, and prospectus in the Downloads section. Some documents may be updated as they are prepared for publication.',
   location: 'Materi Boys\' Senior School is near St. Orsola Hospital in Chiakariga Subcounty, Tharaka Nithi County, approximately 6 km from Kathwana County Headquarters. Open directions in Google Maps: https://www.google.com/maps/search/?api=1&query=St.%20Orsola%20Hospital%20Chiakariga',
-  contact: 'For enquiries, call 072 667 7666 or email matirischool@gmail.com. You can also use matiriboys@gmail.com. Regular visiting hours are Monday to Friday, 8:00 AM to 5:00 PM.',
+  contact: 'For enquiries, call 072 667 7666 or WhatsApp 254721272094. You can also email matirischool@gmail.com or matiriboys@gmail.com. Regular visiting hours are Monday to Friday, 8:00 AM to 5:00 PM.',
   fallback: 'I can help with admissions, academic pathways, fees, downloads, and school contacts. For anything else, please send your question to the school on WhatsApp.'
 };
 
@@ -236,7 +236,7 @@ export function initChatAssistant() {
         </button>
       </form>
       <a class="chat-assistant__whatsapp" href="https://wa.me/${WHATSAPP_NUMBER}?text=Hello%20Materi%20Boys%2C%20I%20have%20a%20question." target="_blank" rel="noopener noreferrer">
-        <span class="chat-assistant__whatsapp-text">Talk to the school on WhatsApp</span>
+        <span class="chat-assistant__whatsapp-text">WhatsApp: 254721272094</span>
         <span class="chat-assistant__whatsapp-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" focusable="false">
             <path d="M12.04 2.5C6.68 2.5 2.5 6.65 2.5 12c0 1.98.57 3.85 1.56 5.43L2.5 21.5l4.18-1.08A9.46 9.46 0 0 0 12.04 21.5c5.36 0 9.71-4.15 9.71-9.5S17.4 2.5 12.04 2.5Zm0 17.3a7.76 7.76 0 0 1-3.95-1.08l-.28-.17-2.48.64.66-2.42-.18-.28A7.76 7.76 0 0 1 4.28 12c0-4.28 3.48-7.76 7.76-7.76 4.28 0 7.76 3.48 7.76 7.76 0 4.28-3.48 7.76-7.76 7.76Zm4.25-5.74c-.23-.12-1.37-.68-1.58-.76-.21-.08-.36-.12-.51.12-.15.24-.58.76-.71.92-.13.15-.26.17-.49.06-.23-.12-.97-.36-1.85-1.15-.68-.61-1.14-1.37-1.27-1.6-.13-.23-.01-.36.1-.48.1-.1.23-.26.34-.39.11-.13.15-.23.23-.38.08-.15.04-.29-.02-.41-.06-.12-.51-1.24-.7-1.7-.18-.45-.37-.39-.51-.39-.13 0-.28-.02-.42-.02-.14 0-.38.06-.58.28-.2.23-.76.74-.76 1.8 0 1.06.78 2.1 .89 2.24.11.15 1.53 2.33 3.71 3.26 2.18.93 2.18.62 2.57.58.39-.04 1.27-.52 1.44-1.02.17-.5.17-.93.12-1.02-.05-.08-.2-.12-.43-.24Z" />

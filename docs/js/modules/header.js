@@ -24,6 +24,7 @@ export function renderHeader() {
         <a href="../academics/" target="_self">Academics</a>
         <a href="../contact/" target="_self">Contact</a>
         <a href="../staff/" target="_self">Staff</a>
+        <a href="../alumni/" target="_self">Alumni</a>
         <a href="../admissions/" target="_self">Admissions</a>
       </nav>
       <a class="button button--primary" href="../admissions/" target="_self">Enroll Now</a>
