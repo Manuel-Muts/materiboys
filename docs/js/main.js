@@ -6,6 +6,7 @@ import { renderCTA } from './modules/cta.js';
 import { renderFooter } from './modules/footer.js';
 import { initImageSlider } from './slider.js';
 import { initRouter } from './router.js';
+import { initChatAssistant } from './chat-assistant.js';
 
 const app = document.getElementById('app');
 let deferredPrompt = null;
@@ -145,5 +146,13 @@ if (app) {
 }
 
 registerInstallExperience();
+initChatAssistant();
 window.addEventListener('load', resetPagePosition);
+window.addEventListener('pageshow', (event) => {
+  if (!event.persisted) {
+    return;
+  }
+
+  window.location.reload();
+});
 requestAnimationFrame(resetPagePosition);

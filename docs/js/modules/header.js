@@ -7,16 +7,16 @@ export function renderHeader() {
         <details class="dropdown">
           <summary>About</summary>
           <div class="dropdown-menu">
-            <a href="../about/" target="_self">About Us</a>
+            <a href="../home/#about-us" target="_self">About Us</a>
             <a href="../history/" target="_self">History</a>
-            <a href="../mission/" target="_self">Mission &amp; Vision</a>
+            <a href="../home/#mission" target="_self">Mission &amp; Vision</a>
             <a href="../facilities/" target="_self">Facilities</a>
           </div>
         </details>
         <details class="dropdown">
           <summary>Downloads</summary>
           <div class="dropdown-menu">
-            <a href="../downloads/application-form.pdf" target="_blank" rel="noopener noreferrer">Application Form</a>
+            <a href="../downloads/admission-form.pdf" target="_blank" rel="noopener noreferrer">Admission Form</a>
             <a href="../downloads/interview-requirements.pdf" target="_blank" rel="noopener noreferrer">Interview Requirements</a>
             <a href="../downloads/fee-schedule.pdf" target="_blank" rel="noopener noreferrer">Fee Schedule</a>
           </div>
@@ -27,6 +27,11 @@ export function renderHeader() {
         <a href="../admissions/" target="_self">Admissions</a>
       </nav>
       <a class="button button--primary" href="../admissions/" target="_self">Enroll Now</a>
+      <button class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
   `;
 
@@ -84,13 +89,37 @@ export function renderHeader() {
     menu.addEventListener('mouseleave', closeDropdown);
   });
 
-  document.addEventListener('click', (event) => {
-    dropdowns.forEach((dropdown) => {
-      if (!dropdown.contains(event.target)) {
-        dropdown.removeAttribute('open');
+  // Bind a single document-level click handler once to avoid duplicates
+  if (!document._headerDropdownClickBound) {
+    document._headerDropdownClickBound = true;
+    document.addEventListener('click', (event) => {
+      dropdowns.forEach((dropdown) => {
+        if (!dropdown.contains(event.target)) {
+          dropdown.removeAttribute('open');
+        }
+      });
+    });
+  }
+
+  const toggleButton = header.querySelector('.nav-toggle');
+  const navLinks = header.querySelector('.nav-links');
+
+  if (toggleButton && navLinks) {
+    toggleButton.addEventListener('click', () => {
+      const isOpen = navLinks.classList.toggle('open');
+      toggleButton.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    navLinks.addEventListener('click', (event) => {
+      const target = event.target;
+      if (target instanceof HTMLAnchorElement || target instanceof HTMLButtonElement) {
+        if (window.matchMedia('(max-width: 720px)').matches) {
+          navLinks.classList.remove('open');
+          toggleButton.setAttribute('aria-expanded', 'false');
+        }
       }
     });
-  });
+  }
 
   return header;
 }

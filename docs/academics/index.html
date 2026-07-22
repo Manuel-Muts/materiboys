@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="../styles/layout.css" />
     <link rel="stylesheet" href="../styles/academics.css" />
     <link rel="stylesheet" href="../styles/mobile.css" />
+    <link rel="stylesheet" href="../styles/chat-assistant.css" />
     <link rel="icon" href="../logo/favicon.ico" type="image/x-icon" />
     <link rel="shortcut icon" href="../logo/favicon.ico" type="image/x-icon" />
   </head>
@@ -35,12 +36,11 @@
           <article class="pathway-card">
             <span class="pathway-badge">1</span>
             <div class="pathway-card__slider" data-slides='[
-              {"src": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=500&q=80", "alt": "STEM - Coding and Programming"},
               {"src": "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=500&q=80", "alt": "STEM - Chemistry Lab Experiments"},
               {"src": "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=500&q=80", "alt": "STEM - Physics Experiment"},
               {"src": "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=500&q=80", "alt": "STEM - Mathematics and Engineering"}
             ]'>
-              <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=500&q=80" alt="STEM - Coding and Programming" class="pathway-card__image" />
+              <img src="../images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=500&q=80", alt="STEM - Chemistry Lab Experiments" class="pathway-card__image" />
             </div>
             <h2>STEM</h2>
             <p>Pure Science and Applied Science with IT. Click or hover to view subject groups.</p>
@@ -101,10 +101,13 @@
           </div>
           <div class="teacher-slider">
             <article class="teacher-card">
-              <div class="teacher-card__image">Teacher | STEM</div>
+              <div class="teacher-card__image">
+                <img src="../images/academics/maths.jpeg" alt="STEM Teacher" />
+              </div>
               <div class="teacher-card__body">
-                <h3 class="teacher-card__title">STEM Teacher</h3>
-                <p class="teacher-card__role">Science and technology pathway instructor.</p>
+                <h3 class="teacher-card__title">Mr. Mwangi</h3>
+                <p class="teacher-card__role">Physics | STEM</p>
+                <p class="teacher-card__description">A passionate Physics mentor who brings complex concepts to life through hands-on experiments, real-world problem solving, and a belief that every student can unlock the power of science.</p>
               </div>
             </article>
             <article class="teacher-card">
@@ -130,7 +133,9 @@
     </section>
     <script type="module">
       import { initImageSlider } from '../js/slider.js';
+      import { initChatAssistant } from '../js/chat-assistant.js';
       initImageSlider();
+      initChatAssistant();
 
       // Pathway card image slider
       const pathwaySliders = document.querySelectorAll('.pathway-card__slider');

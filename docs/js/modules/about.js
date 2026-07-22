@@ -14,11 +14,11 @@ export function renderAboutSection() {
           <p>We believe education goes beyond classroom lessons. It is about developing the whole child through academic rigor, moral guidance, mentorship, and consistent support from a dedicated team of educators.</p>
         </div>
         <div class="about-highlights">
-          <div class="about-highlight about-highlight--mission">
+          <div id="mission" class="about-highlight about-highlight--mission">
             <h3>Mission</h3>
             <p>To nurture boys into disciplined, caring, and capable individuals who excel in learning and serve with integrity.</p>
           </div>
-          <div class="about-highlight about-highlight--vision">
+          <div id="vision" class="about-highlight about-highlight--vision">
             <h3>Vision</h3>
             <p>To become a beacon of excellence where academic achievement and character development grow hand in hand.</p>
           </div>

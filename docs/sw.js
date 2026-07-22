@@ -1,4 +1,4 @@
-const CACHE_NAME = 'materi-boys-cache-v1';
+const CACHE_NAME = 'materi-boys-cache-v2';
 const APP_SHELL = [
   './',
   './index.html',
@@ -37,12 +37,13 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
+    fetch(event.request).then((response) => {
+      if (response.ok) {
+        const responseCopy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseCopy));
       }
 
-      return fetch(event.request).catch(() => caches.match('./index.html'));
-    })
+      return response;
+    }).catch(() => caches.match(event.request).then((cachedResponse) => cachedResponse || caches.match('./index.html')))
   );
 });

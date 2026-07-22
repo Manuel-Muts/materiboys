@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="../styles/header.css" />
     <link rel="stylesheet" href="../styles/layout.css" />
     <link rel="stylesheet" href="../styles/mobile.css" />
+    <link rel="stylesheet" href="../styles/chat-assistant.css" />
     <link rel="icon" href="../logo/favicon.ico" type="image/x-icon" />
     <link rel="shortcut icon" href="../logo/favicon.ico" type="image/x-icon" />
   </head>
@@ -27,5 +28,9 @@
         <p class="academics-intro">The school prospectus is being prepared for publication. Please contact the school for updated information and admissions guidance.</p>
       </div>
     </section>
+    <script type="module">
+      import { initChatAssistant } from '../js/chat-assistant.js';
+      initChatAssistant();
+    </script>
   </body>
 </html>

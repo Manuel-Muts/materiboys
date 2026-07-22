@@ -14,6 +14,61 @@
   .header-inner {
     border-radius: 24px;
     padding: 0.7rem 0.9rem;
+    padding-right: 4rem; /* reserve space for the absolute toggle */
+  }
+
+  .nav-toggle {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    background: var(--color-primary, #1e88ff) !important;
+    border-radius: 999px;
+    padding: 6px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.28);
+    opacity: 1 !important;
+    position: absolute !important;
+    right: 12px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 44px !important;
+    height: 44px !important;
+    border: none !important;
+  }
+
+  .nav-links {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .nav-links.open {
+    display: flex !important;
+  }
+
+  .nav-links a,
+  .dropdown summary {
+    width: 100%;
+    padding: 0.7rem 0;
+  }
+
+  .dropdown {
+    width: 100%;
+  }
+
+  .dropdown-menu {
+    position: static;
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    width: 100%;
+    padding-left: 1rem;
+    margin-top: 0.4rem;
   }
 
   .nav-links {
