@@ -7,9 +7,9 @@ export function renderHeader() {
         <details class="dropdown">
           <summary>About</summary>
           <div class="dropdown-menu">
-            <a href="../home/#about-us" target="_self">About Us</a>
+            <a href="#about-us" target="_self">About Us</a>
             <a href="../history/" target="_self">History</a>
-            <a href="../home/#mission" target="_self">Mission &amp; Vision</a>
+            <a href="#mission" target="_self">Mission &amp; Vision</a>
             <a href="../facilities/" target="_self">Facilities</a>
           </div>
         </details>

@@ -49,6 +49,16 @@ function getRoute(pathname) {
   return routes[normalizePath(pathname)] || routes['/'];
 }
 
+function getHashTargetId(hash = window.location.hash) {
+  const fragment = (hash || '').replace(/^#/, '').trim();
+
+  if (!fragment || fragment.startsWith('/')) {
+    return '';
+  }
+
+  return fragment;
+}
+
 function renderLegalRoute(type) {
   const app = document.getElementById('app');
   if (!app) return;
@@ -81,7 +91,9 @@ function scrollToTarget(targetId) {
     return;
   }
 
-  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const offset = 96;
+  const top = target.getBoundingClientRect().top + window.scrollY - offset;
+  window.scrollTo({ top, left: 0, behavior: 'smooth' });
 }
 
 export function navigate(path) {
@@ -124,6 +136,14 @@ export function initRouter() {
 
   document.addEventListener('click', handleLinkClick);
   window.addEventListener('hashchange', () => {
+    const hashTargetId = getHashTargetId(window.location.hash);
+
+    if (hashTargetId) {
+      renderHomeRoute();
+      window.requestAnimationFrame(() => scrollToTarget(hashTargetId));
+      return;
+    }
+
     const route = getRoute(window.location.hash);
     document.title = route.title;
 
@@ -140,6 +160,14 @@ export function initRouter() {
     renderHomeRoute();
     scrollToTarget(route.targetId);
   });
+
+  const hashTargetId = getHashTargetId(window.location.hash);
+
+  if (hashTargetId) {
+    renderHomeRoute();
+    window.requestAnimationFrame(() => scrollToTarget(hashTargetId));
+    return;
+  }
 
   const initialRoute = getRoute(window.location.hash);
   document.title = initialRoute.title;

@@ -134,7 +134,36 @@ export function renderHomePage() {
 
 window.renderHomePage = renderHomePage;
 
+function getHashTargetId() {
+  const hash = window.location.hash.replace(/^#/, '').trim();
+  if (!hash || hash.startsWith('/')) {
+    return '';
+  }
+  return hash;
+}
+
+function scrollToHashTarget(behavior = 'smooth') {
+  const targetId = getHashTargetId();
+  if (!targetId) {
+    return false;
+  }
+
+  const target = document.getElementById(targetId);
+  if (!target) {
+    return false;
+  }
+
+  const offset = 94;
+  const top = target.getBoundingClientRect().top + window.scrollY - offset;
+  window.scrollTo({ top, left: 0, behavior });
+  return true;
+}
+
 function resetPagePosition() {
+  if (scrollToHashTarget('auto')) {
+    return;
+  }
+
   window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   document.documentElement.scrollTop = 0;
   document.body.scrollTop = 0;
@@ -143,6 +172,9 @@ function resetPagePosition() {
 if (app) {
   renderHomePage();
   initRouter();
+  window.requestAnimationFrame(() => {
+    scrollToHashTarget('smooth');
+  });
 }
 
 registerInstallExperience();
