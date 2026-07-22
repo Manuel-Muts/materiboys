@@ -85,6 +85,25 @@
     height: 3px !important;
     width: 22px !important;
   }
+
+  .dropdown-menu {
+    position: static;
+    margin-top: 0.35rem;
+    min-width: 100%;
+    border-radius: 14px;
+    padding: 0.75rem;
+    transform: translateY(0);
+  }
+
+  .nav-links {
+    align-items: stretch;
+  }
+
+  .nav-links a,
+  .dropdown summary {
+    padding: 0.45rem 0;
+    display: block;
+  }
 }
 
 .nav-toggle[aria-expanded="true"] span:nth-child(1) {
@@ -148,7 +167,7 @@
   visibility: hidden;
   pointer-events: none;
   transform: translateY(6px);
-  transition: all 180ms ease;
+  transition: opacity 180ms ease, visibility 180ms ease, transform 180ms ease;
   z-index: 20;
 }
 

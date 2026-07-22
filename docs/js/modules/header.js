@@ -69,7 +69,7 @@ export function renderHeader() {
       clearCloseTimer();
       closeTimer = window.setTimeout(() => {
         dropdown.removeAttribute('open');
-      }, 220);
+      }, 180);
     };
 
     summary.addEventListener('click', (event) => {
@@ -94,6 +94,20 @@ export function renderHeader() {
 
       openDropdown();
     });
+
+    if (isTouchDevice) {
+      menu.addEventListener('click', (event) => {
+        const target = event.target;
+        if (target instanceof HTMLElement && target.closest('a')) {
+          clearCloseTimer();
+          dropdown.removeAttribute('open');
+        }
+      });
+
+      dropdown.addEventListener('touchstart', () => {
+        clearCloseTimer();
+      }, { passive: true });
+    }
 
     if (!isTouchDevice) {
       dropdown.addEventListener('mouseenter', openDropdown);
