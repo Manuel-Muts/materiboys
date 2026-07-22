@@ -45,6 +45,7 @@ export function renderHeader() {
     }
 
     let closeTimer = null;
+    const isTouchDevice = window.matchMedia('(hover: none), (pointer: coarse)').matches;
 
     const clearCloseTimer = () => {
       if (closeTimer) {
@@ -55,6 +56,11 @@ export function renderHeader() {
 
     const openDropdown = () => {
       clearCloseTimer();
+      dropdowns.forEach((other) => {
+        if (other !== dropdown) {
+          other.removeAttribute('open');
+        }
+      });
       dropdown.setAttribute('open', '');
     };
 
@@ -62,31 +68,38 @@ export function renderHeader() {
       clearCloseTimer();
       closeTimer = window.setTimeout(() => {
         dropdown.removeAttribute('open');
-      }, 260);
+      }, 220);
     };
 
     summary.addEventListener('click', (event) => {
       event.preventDefault();
       event.stopPropagation();
 
-      const isOpen = dropdown.hasAttribute('open');
-      dropdowns.forEach((other) => {
-        if (other !== dropdown) {
-          other.removeAttribute('open');
-        }
-      });
+      if (isTouchDevice) {
+        const isOpen = dropdown.hasAttribute('open');
+        dropdowns.forEach((other) => {
+          if (other !== dropdown) {
+            other.removeAttribute('open');
+          }
+        });
 
-      if (isOpen) {
-        closeDropdown();
-      } else {
-        openDropdown();
+        if (isOpen) {
+          closeDropdown();
+        } else {
+          openDropdown();
+        }
+        return;
       }
+
+      openDropdown();
     });
 
-    dropdown.addEventListener('mouseenter', openDropdown);
-    dropdown.addEventListener('mouseleave', closeDropdown);
-    menu.addEventListener('mouseenter', openDropdown);
-    menu.addEventListener('mouseleave', closeDropdown);
+    if (!isTouchDevice) {
+      dropdown.addEventListener('mouseenter', openDropdown);
+      dropdown.addEventListener('mouseleave', closeDropdown);
+      menu.addEventListener('mouseenter', openDropdown);
+      menu.addEventListener('mouseleave', closeDropdown);
+    }
   });
 
   // Bind a single document-level click handler once to avoid duplicates
