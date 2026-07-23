@@ -3,6 +3,7 @@ const WHATSAPP_NUMBER = '254721272094';
 const quickActions = [
   { label: 'Admissions', key: 'admissions' },
   { label: 'Academic pathways', key: 'academics' },
+  { label: 'Alumni', key: 'alumni' },
   { label: 'Fees', key: 'fees' },
   { label: 'Downloads', key: 'downloads' },
   { label: 'School location', key: 'location' },
@@ -12,6 +13,7 @@ const quickActions = [
 const responses = {
   admissions: 'Materi Boys offers Grade 10, Grade 11, and Grade 12 enrollment through the STEM, Social Sciences, and Arts & Sport Science pathways. You can begin on the admissions page and submit the application form to the school admissions team.',
   academics: 'The available pathways are STEM, Social Sciences, and Arts & Sport Science. STEM includes pure and applied science options; Social Sciences covers humanities and languages; Arts & Sport Science includes creative arts, performance, and sport activities.',
+  alumni: 'The alumni page highlights former students, community events, and opportunities to stay involved or give back. It includes alumni stories, a gallery, and a way to join the alumni community.',
   fees: 'The latest fee schedule should be confirmed with the admissions office. Fees and payment details are shared with applicants on request so that families receive current information.',
   downloads: 'You can find the application form, fee schedule, interview requirements, and prospectus in the Downloads section. Some documents may be updated as they are prepared for publication.',
   location: 'Materi Boys\' Senior School is near St. Orsola Hospital in Chiakariga Subcounty, Tharaka Nithi County, approximately 6 km from Kathwana County Headquarters. Open directions in Google Maps: https://www.google.com/maps/search/?api=1&query=St.%20Orsola%20Hospital%20Chiakariga',
@@ -143,6 +145,7 @@ function responseFor(message) {
 
   if (text.includes('admission') || text.includes('apply') || text.includes('enrol')) return responses.admissions;
   if (text.includes('academic') || text.includes('subject') || text.includes('pathway') || text.includes('stem')) return responses.academics;
+  if (text.includes('alumni') || text.includes('old boys') || text.includes('graduates')) return responses.alumni;
   if (text.includes('fee') || text.includes('cost') || text.includes('pay')) return responses.fees;
   if (text.includes('download') || text.includes('form') || text.includes('prospectus') || text.includes('interview')) return responses.downloads;
   if (text.includes('direction') || text.includes('where') || text.includes('location') || text.includes('address') || text.includes('map') || text.includes('route') || text.includes('landmark') || text.includes('get there')) return responses.location;
