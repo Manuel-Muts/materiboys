@@ -1,4 +1,4 @@
-export function renderAboutSection() {
+﻿export function renderAboutSection() {
   const section = document.createElement('section');
   section.className = 'section section--light';
   section.id = 'about-us';
@@ -10,7 +10,7 @@ export function renderAboutSection() {
       </div>
       <div class="about-grid">
         <div class="about-copy">
-          <p>Materi Boys' Senior School is a vibrant learning community where every learner is encouraged to grow in knowledge, discipline, and confidence. Our purpose is to create an environment where boys can discover their potential, build strong values, and prepare for meaningful leadership in society.</p>
+          <p>Matiri Boys' Senior School is a vibrant learning community where every learner is encouraged to grow in knowledge, discipline, and confidence. Our purpose is to create an environment where boys can discover their potential, build strong values, and prepare for meaningful leadership in society.</p>
           <p>We believe education goes beyond classroom lessons. It is about developing the whole child through academic rigor, moral guidance, mentorship, and consistent support from a dedicated team of educators.</p>
         </div>
         <div class="about-highlights">
@@ -28,3 +28,4 @@ export function renderAboutSection() {
   `;
   return section;
 }
+

@@ -1,4 +1,4 @@
-import { renderHeader } from './modules/header.js';
+﻿import { renderHeader } from './modules/header.js';
 import { renderHero } from './modules/hero.js';
 import { renderFeatures } from './modules/features.js';
 import { renderAboutSection } from './modules/about.js';
@@ -12,7 +12,7 @@ const app = document.getElementById('app');
 let deferredPrompt = null;
 let installBanner = null;
 let installBannerTimer = null;
-let installBannerDismissedUntil = Number(window.localStorage.getItem('materi-install-dismiss-until') || 0);
+let installBannerDismissedUntil = Number(window.localStorage.getItem('Matiri-install-dismiss-until') || 0);
 let cookieBanner = null;
 
 function isStandaloneMode() {
@@ -30,7 +30,7 @@ function dismissInstallBanner() {
 
   installBanner.remove();
   installBanner = null;
-  window.localStorage.setItem('materi-install-dismiss-until', String(Date.now() + 1000 * 60 * 60 * 24 * 3));
+  window.localStorage.setItem('Matiri-install-dismiss-until', String(Date.now() + 1000 * 60 * 60 * 24 * 3));
 }
 
 function showInstallBanner() {
@@ -42,7 +42,7 @@ function showInstallBanner() {
   installBanner.className = 'pwa-install-banner';
   installBanner.innerHTML = `
     <div class="pwa-install-banner__content">
-      <strong>Install Materi Boys</strong>
+      <strong>Install Matiri Boys</strong>
       <p>Get a quick app-style shortcut for admissions, contact details, and school updates.</p>
     </div>
     <div class="pwa-install-banner__actions">
@@ -88,7 +88,7 @@ function showCookieBanner() {
     return;
   }
 
-  const consent = window.localStorage.getItem('materi-cookie-consent');
+  const consent = window.localStorage.getItem('Matiri-cookie-consent');
   if (consent) {
     return;
   }
@@ -109,7 +109,7 @@ function showCookieBanner() {
   const declineButton = cookieBanner.querySelector('.cookie-banner__dismiss');
 
   const dismissBanner = (choice) => {
-    window.localStorage.setItem('materi-cookie-consent', choice);
+    window.localStorage.setItem('Matiri-cookie-consent', choice);
     cookieBanner.remove();
     cookieBanner = null;
   };
@@ -257,3 +257,4 @@ window.addEventListener('pageshow', (event) => {
   window.location.reload();
 });
 requestAnimationFrame(resetPagePosition);
+

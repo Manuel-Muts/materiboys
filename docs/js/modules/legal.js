@@ -1,11 +1,11 @@
-function createLegalContent(type) {
+﻿function createLegalContent(type) {
   if (type === 'privacy') {
     return `
       <section class="legal-page">
         <div class="container legal-card">
           <p class="eyebrow">Privacy Policy</p>
           <h1>Your privacy matters to us.</h1>
-          <p class="legal-intro">At Materi Boys' Senior School, we are committed to protecting the personal information of parents, students, and visitors in a respectful and transparent way.</p>
+          <p class="legal-intro">At Matiri Boys' Senior School, we are committed to protecting the personal information of parents, students, and visitors in a respectful and transparent way.</p>
           <div class="legal-list">
             <article class="legal-section">
               <h2>Information we collect</h2>
@@ -34,7 +34,7 @@ function createLegalContent(type) {
       <div class="container legal-card">
         <p class="eyebrow">Terms of Service</p>
         <h1>Terms of Service</h1>
-        <p class="legal-intro">These terms outline how visitors may use the Materi Boys' Senior School website and the expectations for respectful and responsible engagement with our online content.</p>
+        <p class="legal-intro">These terms outline how visitors may use the Matiri Boys' Senior School website and the expectations for respectful and responsible engagement with our online content.</p>
         <div class="legal-list">
           <article class="legal-section">
             <h2>Use of the website</h2>
@@ -64,3 +64,4 @@ export function renderLegalPage(type) {
   section.innerHTML = createLegalContent(type);
   return section;
 }
+

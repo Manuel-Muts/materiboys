@@ -1,12 +1,12 @@
-function createHistoryContent() {
+﻿function createHistoryContent() {
   return `
     <div class="container legal-card">
       <div class="standalone-topbar">
         <button type="button" class="button button--secondary standalone-back">Back</button>
       </div>
       <p class="eyebrow">Our Story</p>
-      <h1>History of Materi Boys' Senior School</h1>
-      <p class="legal-intro">Founded to build confidence, character, and academic strength, Materi Boys' Senior School has grown into a trusted place for young learners to thrive.</p>
+      <h1>History of Matiri Boys' Senior School</h1>
+      <p class="legal-intro">Founded to build confidence, character, and academic strength, Matiri Boys' Senior School has grown into a trusted place for young learners to thrive.</p>
       <div class="legal-list">
         <article class="legal-section">
           <h2>Roots and values</h2>
@@ -18,7 +18,7 @@ function createHistoryContent() {
         </article>
         <article class="legal-section">
           <h2>Community focus</h2>
-          <p>Families choose Materi Boys because we care deeply about safety, mentorship, and nurturing each boy's potential through positive guidance.</p>
+          <p>Families choose Matiri Boys because we care deeply about safety, mentorship, and nurturing each boy's potential through positive guidance.</p>
         </article>
         <article class="legal-section">
           <h2>Looking ahead</h2>
@@ -47,3 +47,4 @@ export function renderHistoryPage() {
 
   return section;
 }
+

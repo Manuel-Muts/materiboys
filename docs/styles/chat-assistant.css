@@ -22,6 +22,12 @@
   background: var(--color-accent, #7df0be);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
   font: 700 0.88rem Inter, sans-serif;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.chat-assistant__toggle.is-open {
+  transform: scale(0.96);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
 }
 
 .chat-assistant__toggle:hover,
@@ -37,6 +43,16 @@
   border-radius: 50%;
   color: var(--color-accent, #7df0be);
   background: #06111f;
+}
+
+.chat-assistant__toggle-icon svg {
+  width: 1rem;
+  height: 1rem;
+  fill: currentColor;
+}
+
+.chat-assistant__toggle-label {
+  white-space: nowrap;
 }
 
 .chat-assistant__panel {
@@ -91,12 +107,21 @@
 }
 
 .chat-assistant__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 0;
   color: #dbe9f5;
   background: transparent;
   cursor: pointer;
-  font-size: 1.55rem;
   line-height: 1;
+  padding: 0;
+}
+
+.chat-assistant__close svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  fill: currentColor;
 }
 
 .chat-assistant__messages {
@@ -307,6 +332,7 @@
 .chat-assistant__whatsapp:hover {
   color: #fff;
 }
+
 
 @keyframes chatPanelIn {
   from { opacity: 0; transform: translateY(8px) scale(0.98); }
