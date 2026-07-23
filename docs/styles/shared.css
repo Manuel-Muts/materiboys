@@ -86,7 +86,7 @@ img {
 }
 
 .section {
-  padding: 5rem 0;
+  padding: 3rem 0;
 }
 
 .section--light {
@@ -109,6 +109,27 @@ img {
   color: var(--color-accent);
   margin-bottom: 0.75rem;
   text-shadow: 0 0 18px rgba(125, 240, 190, 0.25);
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 700ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-visible {
+    transition: none;
+    transform: none;
+    opacity: 1;
+  }
 }
 
 @keyframes shimmer {

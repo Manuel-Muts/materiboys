@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="../styles/header.css" />
     <link rel="stylesheet" href="../styles/mobile.css" />
     <link rel="stylesheet" href="../styles/chat-assistant.css" />
+    <link rel="stylesheet" href="../styles/cookie-banner.css" />
     <link rel="icon" href="../logo/favicon.ico" type="image/x-icon" />
     <link rel="shortcut icon" href="../logo/favicon.ico" type="image/x-icon" />
     <link rel="apple-touch-icon" href="../logo/apple-touch-icon.png" />
@@ -26,12 +27,16 @@
     <div class="home-top">
       <div class="container school-intro">
         <div class="school-intro__content">
-          <p class="eyebrow">Admissions Open</p>
+          <p class="eyebrow" data-text="Admissions Open">Admissions Open</p>
           <h1>Materi Boys' Senior School</h1>
           <p class="school-motto">School Motto: <span>READ &amp; LEAD</span></p>
         </div>
         <div class="school-intro__logo" aria-label="School logo">
           <img src="../logo/IMG-20260716-WA0000.jpg" alt="Materi Boys School logo" />
+        </div>
+        <div class="banner-visual" aria-hidden="true">
+          <img class="banner-visual__image banner-visual__image--active" src="../images/top/learners&teacher.jpeg" alt="" />
+          <img class="banner-visual__image" src="../images/top/Bus.jpeg" alt="" />
         </div>
       </div>
     </div>
@@ -39,6 +44,66 @@
     <script type="module" src="../js/main.js"></script>
     <script type="module">
       import { initChatAssistant } from '../js/chat-assistant.js';
+
+      const typingBadge = document.querySelector('.school-intro .eyebrow');
+      const bannerImages = Array.from(document.querySelectorAll('.banner-visual__image'));
+      if (bannerImages.length > 1) {
+        let activeIndex = 0;
+
+        const rotateBanner = () => {
+          const currentImage = bannerImages[activeIndex];
+          const nextIndex = (activeIndex + 1) % bannerImages.length;
+          const nextImage = bannerImages[nextIndex];
+
+          currentImage.classList.remove('banner-visual__image--active');
+          currentImage.classList.add('banner-visual__image--exit');
+          nextImage.classList.add('banner-visual__image--active');
+          nextImage.classList.remove('banner-visual__image--exit');
+
+          window.setTimeout(() => {
+            currentImage.classList.remove('banner-visual__image--exit');
+            activeIndex = nextIndex;
+          }, 1100);
+        };
+
+        window.setInterval(rotateBanner, 9000);
+      }
+
+      if (typingBadge) {
+        const fullText = typingBadge.dataset.text || typingBadge.textContent.trim();
+        let index = 0;
+        let deleting = false;
+
+        const updateBadge = () => {
+          typingBadge.textContent = fullText.slice(0, index);
+
+          if (!deleting && index < fullText.length) {
+            index += 1;
+            window.setTimeout(updateBadge, 140);
+            return;
+          }
+
+          if (!deleting && index === fullText.length) {
+            deleting = true;
+            window.setTimeout(updateBadge, 900);
+            return;
+          }
+
+          if (deleting && index > 0) {
+            index -= 1;
+            window.setTimeout(updateBadge, 70);
+            return;
+          }
+
+          if (deleting && index === 0) {
+            deleting = false;
+            window.setTimeout(updateBadge, 420);
+          }
+        };
+
+        window.setTimeout(updateBadge, 400);
+      }
+
       initChatAssistant();
     </script>
   </body>

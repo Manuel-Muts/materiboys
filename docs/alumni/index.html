@@ -25,11 +25,19 @@
         </div>
 
         <div class="about-card alumni-card">
-          <p class="eyebrow">Alumni</p>
-          <h1>Alumni Highlights</h1>
-          <p class="legal-intro">
-            Our alumni continue to carry the spirit of Materi Boys into higher education, leadership, and service. This page highlights selected moments and stories from the 2024 and 2025 cohorts.
-          </p>
+          <header class="alumni-hero">
+            <div class="alumni-hero__copy">
+              <p class="eyebrow">Alumni</p>
+              <h1>Alumni Highlights</h1>
+              <p class="legal-intro">
+                Our alumni continue to carry the spirit of Materi Boys into higher education, leadership, and service. This page highlights selected moments and stories from the 2024 and 2025 cohorts.
+              </p>
+            </div>
+            <nav class="alumni-nav" aria-label="Alumni navigation">
+              <a href="#join-alumni" class="alumni-nav__link">Join Alumni Community</a>
+              <a href="#give-back" class="alumni-nav__link">Give Back</a>
+            </nav>
+          </header>
 
           <div class="alumni-years">
             <section class="alumni-year-card">
@@ -66,6 +74,41 @@
                   <figcaption>Networking event with mentors and partners</figcaption>
                 </figure>
               </div>
+            </section>
+          </div>
+
+          <div class="alumni-panels">
+            <section class="alumni-panel" id="join-alumni">
+              <h2>Join the Alumni Community</h2>
+              <p>Stay connected with mentorship opportunities, events, and updates from Materi Boys as our alumni network grows stronger each year.</p>
+
+              <form class="alumni-form" action="#" method="post" novalidate>
+                <div class="form-grid">
+                  <label class="form-field">
+                    <span>Full Name</span>
+                    <input type="text" name="full-name" placeholder="Your full name" required />
+                  </label>
+                  <label class="form-field">
+                    <span>Year of Completion</span>
+                    <input type="text" name="completion-year" placeholder="e.g. 2025" required />
+                  </label>
+                  <label class="form-field">
+                    <span>Email</span>
+                    <input type="email" name="email" placeholder="you@example.com" required />
+                  </label>
+                  <label class="form-field">
+                    <span>Phone Number</span>
+                    <input type="tel" name="phone" placeholder="+123 456 7890" required />
+                  </label>
+                </div>
+
+                <button type="submit" class="button button--primary">Submit</button>
+              </form>
+            </section>
+
+            <section class="alumni-panel" id="give-back">
+              <h2>Give Back</h2>
+              <p>Share your expertise, support new learners, and invest in the future of the school through alumni-led initiatives.</p>
             </section>
           </div>
         </div>

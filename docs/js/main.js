@@ -13,6 +13,7 @@ let deferredPrompt = null;
 let installBanner = null;
 let installBannerTimer = null;
 let installBannerDismissedUntil = Number(window.localStorage.getItem('materi-install-dismiss-until') || 0);
+let cookieBanner = null;
 
 function isStandaloneMode() {
   return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
@@ -82,6 +83,43 @@ function showInstallBanner() {
   document.body.appendChild(installBanner);
 }
 
+function showCookieBanner() {
+  if (cookieBanner) {
+    return;
+  }
+
+  const consent = window.localStorage.getItem('materi-cookie-consent');
+  if (consent) {
+    return;
+  }
+
+  cookieBanner = document.createElement('div');
+  cookieBanner.className = 'cookie-banner';
+  cookieBanner.innerHTML = `
+    <div class="cookie-banner__text">
+      We use cookies to improve your experience on this site and remember your preferences.
+    </div>
+    <div class="cookie-banner__actions">
+      <button type="button" class="cookie-banner__accept">Accept</button>
+      <button type="button" class="cookie-banner__dismiss">Decline</button>
+    </div>
+  `;
+
+  const acceptButton = cookieBanner.querySelector('.cookie-banner__accept');
+  const declineButton = cookieBanner.querySelector('.cookie-banner__dismiss');
+
+  const dismissBanner = (choice) => {
+    window.localStorage.setItem('materi-cookie-consent', choice);
+    cookieBanner.remove();
+    cookieBanner = null;
+  };
+
+  acceptButton.addEventListener('click', () => dismissBanner('accepted'));
+  declineButton.addEventListener('click', () => dismissBanner('declined'));
+
+  document.body.appendChild(cookieBanner);
+}
+
 function registerInstallExperience() {
   window.addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault();
@@ -117,6 +155,35 @@ function registerInstallExperience() {
   });
 }
 
+function initRevealOnScroll() {
+  const targets = Array.from(document.querySelectorAll('.section, .hero-copy, .hero-card, .card, .cta-card, .location-card, .admissions-copy'));
+
+  if (!targets.length) {
+    return;
+  }
+
+  targets.forEach((element, index) => {
+    element.classList.add('reveal');
+    element.style.transitionDelay = `${Math.min(index * 70, 260)}ms`;
+  });
+
+  const observer = new IntersectionObserver((entries, currentObserver) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) {
+        return;
+      }
+
+      entry.target.classList.add('reveal-visible');
+      currentObserver.unobserve(entry.target);
+    });
+  }, {
+    threshold: 0.14,
+    rootMargin: '0px 0px -8% 0px'
+  });
+
+  targets.forEach((element) => observer.observe(element));
+}
+
 export function renderHomePage() {
   if (!app) {
     return;
@@ -130,6 +197,7 @@ export function renderHomePage() {
   app.appendChild(renderCTA());
   app.appendChild(renderFooter());
   initImageSlider();
+  initRevealOnScroll();
 }
 
 window.renderHomePage = renderHomePage;
@@ -178,6 +246,7 @@ if (app) {
 }
 
 registerInstallExperience();
+showCookieBanner();
 initChatAssistant();
 window.addEventListener('load', resetPagePosition);
 window.addEventListener('pageshow', (event) => {

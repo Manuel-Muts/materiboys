@@ -19,8 +19,113 @@ const responses = {
   fallback: 'I can help with admissions, academic pathways, fees, downloads, and school contacts. For anything else, please send your question to the school on WhatsApp.'
 };
 
-function pageUrl(path) {
-  return new URL(`../${path}/`, import.meta.url).href;
+const pageContextMap = {
+  home: {
+    title: 'Home',
+    summary: 'This is the main landing page with the school overview, admissions highlight, and links to key sections.'
+  },
+  about: {
+    title: 'About us',
+    summary: 'This page introduces the school, its values, and the community behind Materi Boys.'
+  },
+  academics: {
+    title: 'Academics',
+    summary: 'This page explains the academic pathways and subject choices available to learners.'
+  },
+  admissions: {
+    title: 'Admissions',
+    summary: 'This page covers enrollment, application steps, and the admissions process for families.'
+  },
+  contact: {
+    title: 'Contact',
+    summary: 'This page shares the school contact details, phone numbers, email addresses, and physical location.'
+  },
+  alumni: {
+    title: 'Alumni',
+    summary: 'This page highlights alumni stories and the school community through its gallery.'
+  },
+  facilities: {
+    title: 'Facilities',
+    summary: 'This page showcases the learning spaces and facilities that support student growth.'
+  },
+  history: {
+    title: 'History',
+    summary: 'This page tells the story of the school and its journey over time.'
+  },
+  mission: {
+    title: 'Mission and vision',
+    summary: 'This page shares the school mission, vision, and core values.'
+  },
+  staff: {
+    title: 'Staff',
+    summary: 'This page highlights the teachers, leaders, and staff behind the school community.'
+  },
+  downloads: {
+    title: 'Downloads',
+    summary: 'This page gives access to application documents, fee schedules, prospectuses, and interview guidance.'
+  },
+  privacy: {
+    title: 'Privacy',
+    summary: 'This page explains the school privacy policy and how information is handled.'
+  },
+  terms: {
+    title: 'Terms',
+    summary: 'This page outlines the terms of service and usage guidelines for the website.'
+  }
+};
+
+function getCurrentPageContext() {
+  const pathname = window.location.pathname.replace(/\/+$/, '');
+  const segments = pathname.split('/').filter(Boolean);
+  const lastSegment = segments[segments.length - 1] || 'home';
+
+  if (segments.includes('downloads')) {
+    return pageContextMap.downloads;
+  }
+
+  if (lastSegment && pageContextMap[lastSegment]) {
+    return pageContextMap[lastSegment];
+  }
+
+  return pageContextMap.home;
+}
+
+function getPageContextFromText(text) {
+  const normalized = text.toLowerCase();
+
+  const pageMatches = [
+    { keys: ['home', 'homepage', 'landing page', 'main page', 'front page'], page: 'home' },
+    { keys: ['about', 'about us', 'about us page', 'who we are'], page: 'about' },
+    { keys: ['academic', 'academics', 'program', 'programs', 'pathway', 'pathways'], page: 'academics' },
+    { keys: ['admission', 'admissions', 'enroll', 'enrollment', 'apply', 'application'], page: 'admissions' },
+    { keys: ['contact', 'contact us', 'reach us', 'get in touch'], page: 'contact' },
+    { keys: ['alumni', 'old boys', 'graduates'], page: 'alumni' },
+    { keys: ['facility', 'facilities', 'campus'], page: 'facilities' },
+    { keys: ['history', 'our story'], page: 'history' },
+    { keys: ['mission', 'vision', 'mission and vision', 'values'], page: 'mission' },
+    { keys: ['staff', 'teachers', 'team'], page: 'staff' },
+    { keys: ['download', 'downloads', 'documents', 'prospectus', 'fee schedule', 'interview'], page: 'downloads' },
+    { keys: ['privacy', 'privacy policy'], page: 'privacy' },
+    { keys: ['terms', 'terms of service', 'terms page'], page: 'terms' }
+  ];
+
+  const match = pageMatches.find((entry) => entry.keys.some((key) => normalized.includes(key)));
+  return match ? pageContextMap[match.page] : null;
+}
+
+function isPageInquiry(text) {
+  return /(what('|’)?s on this page|what can i find here|what is this page about|tell me about this page|what is on this page|which page am i on|where am i|show me this page|page overview|this page|what is on the .*page|tell me about the .*page|show me the .*page)/.test(text);
+}
+
+function pageContextReply(text, explicitPageContext = null) {
+  const pageContext = explicitPageContext || getCurrentPageContext();
+  const pageName = pageContext?.title || 'this page';
+
+  if (text.includes('where am i') || text.includes('which page am i on')) {
+    return `You are currently on the ${pageName} page.`;
+  }
+
+  return `The ${pageName} page covers ${pageContext?.summary || 'important information about Materi Boys.'}`;
 }
 
 function responseFor(message) {
@@ -28,6 +133,13 @@ function responseFor(message) {
 
   if (isGreeting(text)) return greetingResponse(text);
   if (isFarewell(text)) return farewellResponse(text);
+
+  const explicitPageContext = getPageContextFromText(text);
+  if (explicitPageContext && (isPageInquiry(text) || /tell me about|show me|what is on/.test(text))) {
+    return pageContextReply(text, explicitPageContext);
+  }
+
+  if (isPageInquiry(text)) return pageContextReply(text);
 
   if (text.includes('admission') || text.includes('apply') || text.includes('enrol')) return responses.admissions;
   if (text.includes('academic') || text.includes('subject') || text.includes('pathway') || text.includes('stem')) return responses.academics;

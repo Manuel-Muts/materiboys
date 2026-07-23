@@ -16,11 +16,11 @@ export function renderAboutSection() {
         <div class="about-highlights">
           <div id="mission" class="about-highlight about-highlight--mission">
             <h3>Mission</h3>
-            <p>To nurture boys into disciplined, caring, and capable individuals who excel in learning and serve with integrity.</p>
+            <p>Nurture and instill strong moral values for character formation.</p>
           </div>
           <div id="vision" class="about-highlight about-highlight--vision">
             <h3>Vision</h3>
-            <p>To become a beacon of excellence where academic achievement and character development grow hand in hand.</p>
+            <p>To produce strong, self reliant students who become the leaders of tomorrow.</p>
           </div>
         </div>
       </div>
