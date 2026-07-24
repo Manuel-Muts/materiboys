@@ -820,8 +820,15 @@
   height: 2.8rem;
   border-radius: 50%;
   background: linear-gradient(135deg, rgba(59, 140, 255, 0.18), rgba(125, 240, 190, 0.18));
+  color: #2563eb;
   font-size: 1.25rem;
   flex-shrink: 0;
+}
+
+.location-card__icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: currentColor;
 }
 
 .location-card__content h2 {

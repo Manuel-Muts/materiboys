@@ -375,6 +375,8 @@ export function initChatAssistant() {
   const form = root.querySelector('.chat-assistant__form');
   const input = root.querySelector('#Matiri-chat-input');
 
+  if (!toggle || !toggleIcon || !toggleLabel || !panel || !messages || !form || !input) return;
+
   const setOpen = (isOpen) => {
     panel.hidden = !isOpen;
     toggle.setAttribute('aria-expanded', String(isOpen));
@@ -398,7 +400,9 @@ export function initChatAssistant() {
   };
 
   toggle.addEventListener('click', () => setOpen(!root.classList.contains('is-open')));
-  footerClose.addEventListener('click', () => setOpen(false));
+  if (footerClose) {
+    footerClose.addEventListener('click', () => setOpen(false));
+  }
 
   root.querySelectorAll('[data-chat-key]').forEach((button) => {
     button.addEventListener('click', () => answer(button.textContent, button.dataset.chatKey));
