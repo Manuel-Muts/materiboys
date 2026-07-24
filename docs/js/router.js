@@ -1,5 +1,6 @@
 ﻿import { renderLegalPage } from './modules/legal.js';
 import { renderHistoryPage } from './modules/history.js';
+import { renderNewsPage } from './modules/news.js';
 
 function renderHomeRoute() {
   if (typeof window.renderHomePage === 'function') {
@@ -20,6 +21,7 @@ const routes = {
   '/facilities': { title: 'Facilities | Matiri Boys\' Senior School', targetId: 'about-us' },
   '/academics': { title: 'Academics | Matiri Boys\' Senior School', targetId: 'features' },
   '/admissions': { title: 'Admissions | Matiri Boys\' Senior School', targetId: 'top' },
+  '/news': { title: 'Latest News and Updates | Matiri Boys\' Senior School', targetId: 'news-page' },
   '/contact': { title: 'Contact | Matiri Boys\' Senior School', targetId: 'contact' },
   '/history': { title: 'History | Matiri Boys\' Senior School', targetId: 'legal-page' },
   '/terms': { title: 'Terms of Service | Matiri Boys\' Senior School', targetId: 'legal-page' },
@@ -83,6 +85,18 @@ function renderHistoryRoute() {
   window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
 }
 
+function renderNewsRoute() {
+  const app = document.getElementById('app');
+  if (!app) return;
+
+  app.innerHTML = '';
+
+  const section = renderNewsPage();
+  section.id = 'news-page';
+  app.appendChild(section);
+  window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+}
+
 function scrollToTarget(targetId) {
   const target = document.getElementById(targetId);
 
@@ -103,9 +117,11 @@ export function navigate(path) {
   window.location.hash = `#${routePath}`;
   document.title = route.title;
 
-  if (routePath === '/terms' || routePath === '/privacy' || routePath === '/history') {
+  if (routePath === '/terms' || routePath === '/privacy' || routePath === '/history' || routePath === '/news') {
     if (routePath === '/history') {
       renderHistoryRoute();
+    } else if (routePath === '/news') {
+      renderNewsRoute();
     } else {
       renderLegalRoute(routePath === '/privacy' ? 'privacy' : 'terms');
     }
@@ -148,9 +164,11 @@ export function initRouter() {
     document.title = route.title;
 
     const routePath = normalizePath(window.location.hash);
-    if (routePath === '/terms' || routePath === '/privacy' || routePath === '/history') {
+    if (routePath === '/terms' || routePath === '/privacy' || routePath === '/history' || routePath === '/news') {
       if (routePath === '/history') {
         renderHistoryRoute();
+      } else if (routePath === '/news') {
+        renderNewsRoute();
       } else {
         renderLegalRoute(routePath === '/privacy' ? 'privacy' : 'terms');
       }
@@ -173,9 +191,11 @@ export function initRouter() {
   document.title = initialRoute.title;
 
   const routePath = normalizePath(window.location.hash);
-  if (routePath === '/terms' || routePath === '/privacy' || routePath === '/history') {
+  if (routePath === '/terms' || routePath === '/privacy' || routePath === '/history' || routePath === '/news') {
     if (routePath === '/history') {
       renderHistoryRoute();
+    } else if (routePath === '/news') {
+      renderNewsRoute();
     } else {
       renderLegalRoute(routePath === '/privacy' ? 'privacy' : 'terms');
     }

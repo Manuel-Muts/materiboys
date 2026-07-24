@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>School Admin | Matiri Boys' Senior School</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../styles/shared.css" />
+    <link rel="stylesheet" href="../styles/components.css" />
+    <link rel="stylesheet" href="../styles/admin.css" />
+    <link rel="icon" href="../logo/favicon.ico" type="image/x-icon" />
+  </head>
+  <body>
+    <div class="admin-shell">
+      <aside class="admin-sidebar">
+        <div class="admin-sidebar__header">
+          <h1>Mitiri Boys' Senior School</h1>
+          <p>Manage school content</p>
+        </div>
+        <nav class="admin-sidebar__nav" aria-label="Admin navigation">
+          <button class="admin-sidebar__link is-active" type="button" data-section="Admissions upload" data-title="Admission form" data-heading="Upload admissions document" data-description="Choose a document to make it available on the admissions page." data-storage-key="admissions" data-page="application-form.html" data-mode="document">Admissions upload</button>
+          <button class="admin-sidebar__link" type="button" data-section="Fee schedule upload" data-title="Fee schedule" data-heading="Upload fee schedule" data-description="Choose a fee schedule document to make it available on the downloads page." data-storage-key="fee-schedule" data-page="fee-schedule.html" data-mode="document">Fee schedule upload</button>
+          <button class="admin-sidebar__link" type="button" data-section="Interview requirements upload" data-title="Interview requirements" data-heading="Upload interview requirements" data-description="Choose a document to share interview requirements with applicants." data-storage-key="interview-requirements" data-page="interview-requirements.html" data-mode="document">Interview requirements upload</button>
+          <button class="admin-sidebar__link" type="button" data-section="Prospectus upload" data-title="Prospectus" data-heading="Upload prospectus" data-description="Choose a prospectus or school brochure to publish for families." data-storage-key="prospectus" data-page="prospectus.html" data-mode="document">Prospectus upload</button>
+          <button class="admin-sidebar__link" type="button" data-section="Vacancies" data-title="Vacancies" data-heading="Post a vacancy" data-description="Add a new vacancy with pathway, subjects, and post details." data-storage-key="vacancies" data-mode="vacancies">Vacancies</button>
+          <button class="admin-sidebar__link" type="button" data-section="News &amp; blogs" data-title="School news" data-heading="Create school news post" data-description="Write a story for the school news section and optionally add an attachment or a YouTube link." data-storage-key="news" data-mode="news">News &amp; blogs</button>
+        </nav>
+      </aside>
+
+      <main class="admin-main">
+        <header class="admin-main__header">
+          <div>
+            <p class="eyebrow">Admin panel</p>
+            <h2 id="admin-section-title">Admissions upload</h2>
+          </div>
+          <a href="../home/" class="button button--secondary">Back to site</a>
+        </header>
+
+        <section class="admin-card">
+          <h3 id="admin-card-heading">Upload admissions document</h3>
+          <p id="admin-card-description">Choose a document to make it available on the admissions page.</p>
+          <form class="admin-form" id="admin-upload-form">
+            <label class="admin-form__field" id="title-field">
+              <span>Title</span>
+              <input type="text" id="admin-title-input" name="title" value="Admission form" placeholder="Application form" />
+            </label>
+            <div class="admin-form__group" id="vacancies-fields" hidden>
+              <div class="admin-form__group admin-form__group--two-col">
+                <label class="admin-form__field">
+                  <span>Pathway</span>
+                  <input type="text" id="admin-pathway-input" name="pathway" placeholder="e.g. STEM" />
+                </label>
+                <label class="admin-form__field">
+                  <span>Subjects</span>
+                  <input type="text" id="admin-subjects-input" name="subjects" placeholder="e.g. Mathematics, Physics" />
+                </label>
+              </div>
+              <label class="admin-form__field">
+                <span>Post</span>
+                <input type="number" id="admin-post-input" name="post" min="1" step="1" placeholder="1" />
+              </label>
+            </div>
+            <div class="admin-form__group" id="news-only-fields" hidden>
+              <label class="admin-form__field" id="news-story-field">
+                <span>Story</span>
+                <div class="admin-richtext">
+                  <div class="admin-richtext__toolbar" role="toolbar" aria-label="Text formatting tools">
+                    <button type="button" data-command="bold" class="admin-richtext__button" aria-label="Bold">B</button>
+                    <button type="button" data-command="italic" class="admin-richtext__button" aria-label="Italic">I</button>
+                    <button type="button" data-command="underline" class="admin-richtext__button" aria-label="Underline">U</button>
+                    <button type="button" data-command="insertUnorderedList" class="admin-richtext__button" aria-label="Bullet list">•</button>
+                    <button type="button" data-command="insertOrderedList" class="admin-richtext__button" aria-label="Numbered list">1.</button>
+                    <button type="button" data-command="formatBlock" data-value="h2" class="admin-richtext__button" aria-label="Heading">H2</button>
+                    <button type="button" data-command="hiliteColor" data-value="yellow" class="admin-richtext__button" aria-label="Highlight">Mark</button>
+                  </div>
+                  <div id="admin-story-input" class="admin-richtext__editor" contenteditable="true" spellcheck="true" data-placeholder="Write a school news story here"></div>
+                </div>
+              </label>
+              <label class="admin-form__field" id="news-video-field">
+                <span>Optional YouTube URL</span>
+                <input type="url" id="admin-video-url-input" name="youtubeUrl" placeholder="https://www.youtube.com/watch?v=..." />
+              </label>
+            </div>
+            <label class="admin-form__field" id="file-field">
+              <span>Upload file</span>
+              <input type="file" name="file" id="admin-file-input" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" />
+            </label>
+            <button type="submit" class="button button--primary" id="admin-submit-button">Save upload</button>
+            <p class="admin-form__status" id="admin-form-status" aria-live="polite"></p>
+          </form>
+
+          <div class="admin-management" id="admin-management-panel">
+            <div class="admin-management__header">
+              <h4>Posted items</h4>
+              <p id="admin-management-caption">Manage the content already posted in this section.</p>
+            </div>
+            <div class="admin-management__table-wrap">
+              <table class="admin-management__table">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Details</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-management-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const buttons = Array.from(document.querySelectorAll('.admin-sidebar__link'));
+      const titleInput = document.getElementById('admin-title-input');
+      const sectionTitle = document.getElementById('admin-section-title');
+      const cardHeading = document.getElementById('admin-card-heading');
+      const cardDescription = document.getElementById('admin-card-description');
+      const uploadForm = document.getElementById('admin-upload-form');
+      const fileInput = document.getElementById('admin-file-input');
+      const statusText = document.getElementById('admin-form-status');
+      const submitButton = document.getElementById('admin-submit-button');
+      const fileField = document.getElementById('file-field');
+      const titleField = document.getElementById('title-field');
+      const vacanciesFields = document.getElementById('vacancies-fields');
+      const newsOnlyFields = document.getElementById('news-only-fields');
+      const storyEditor = document.getElementById('admin-story-input');
+      const videoUrlInput = document.getElementById('admin-video-url-input');
+      const pathwayInput = document.getElementById('admin-pathway-input');
+      const subjectsInput = document.getElementById('admin-subjects-input');
+      const postInput = document.getElementById('admin-post-input');
+      const managementBody = document.getElementById('admin-management-body');
+      const managementCaption = document.getElementById('admin-management-caption');
+
+      const DOCS_STORAGE_KEY = 'school-download-docs';
+      const NEWS_STORAGE_KEY = 'school-news-posts';
+      const VACANCIES_STORAGE_KEY = 'school-vacancies';
+      let activeEditState = null;
+
+      function escapeHtml(value = '') {
+        return String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function createItemId(prefix = 'item') {
+        return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      }
+
+      function readFileAsDataUrl(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(reader.error || new Error('Unable to read the selected file.'));
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function readStoredDocuments() {
+        try {
+          return JSON.parse(localStorage.getItem(DOCS_STORAGE_KEY) || '{}');
+        } catch (error) {
+          return {};
+        }
+      }
+
+      function writeStoredDocument(storageKey, title, url, metadata = {}) {
+        const documents = readStoredDocuments();
+        const existing = documents[storageKey] || {};
+        documents[storageKey] = {
+          title,
+          url,
+          storageKey,
+          id: existing.id || createItemId('document'),
+          fileName: metadata.fileName || existing.fileName || '',
+          mimeType: metadata.mimeType || existing.mimeType || '',
+          storageType: metadata.storageType || existing.storageType || 'data-url'
+        };
+        localStorage.setItem(DOCS_STORAGE_KEY, JSON.stringify(documents));
+        window.dispatchEvent(new Event('school-documents-updated'));
+      }
+
+      function deleteStoredDocument(storageKey) {
+        const documents = readStoredDocuments();
+        delete documents[storageKey];
+        localStorage.setItem(DOCS_STORAGE_KEY, JSON.stringify(documents));
+        window.dispatchEvent(new Event('school-documents-updated'));
+      }
+
+      function readStoredNewsPosts() {
+        try {
+          const posts = JSON.parse(localStorage.getItem(NEWS_STORAGE_KEY) || '[]');
+          return Array.isArray(posts) ? posts.map((post) => ({ ...post, id: post.id || createItemId('news') })) : [];
+        } catch (error) {
+          return [];
+        }
+      }
+
+      function saveNewsPost(post) {
+        const posts = readStoredNewsPosts();
+        posts.unshift({ ...post, id: post.id || createItemId('news') });
+        localStorage.setItem(NEWS_STORAGE_KEY, JSON.stringify(posts));
+      }
+
+      function updateNewsPost(postId, updates) {
+        const posts = readStoredNewsPosts();
+        const existing = posts.find((post) => post.id === postId);
+        if (!existing) {
+          return;
+        }
+
+        Object.assign(existing, updates);
+        localStorage.setItem(NEWS_STORAGE_KEY, JSON.stringify(posts));
+      }
+
+      function deleteNewsPost(postId) {
+        const posts = readStoredNewsPosts().filter((post) => post.id !== postId);
+        localStorage.setItem(NEWS_STORAGE_KEY, JSON.stringify(posts));
+      }
+
+      function readStoredVacancies() {
+        try {
+          const vacancies = JSON.parse(localStorage.getItem(VACANCIES_STORAGE_KEY) || '[]');
+          return Array.isArray(vacancies) ? vacancies.map((vacancy) => ({ ...vacancy, id: vacancy.id || createItemId('vacancy') })) : [];
+        } catch (error) {
+          return [];
+        }
+      }
+
+      function saveVacancy(vacancy) {
+        const vacancies = readStoredVacancies();
+        vacancies.unshift({ ...vacancy, id: vacancy.id || createItemId('vacancy') });
+        localStorage.setItem(VACANCIES_STORAGE_KEY, JSON.stringify(vacancies));
+        window.dispatchEvent(new Event('school-vacancies-updated'));
+      }
+
+      function updateVacancy(vacancyId, updates) {
+        const vacancies = readStoredVacancies();
+        const existing = vacancies.find((vacancy) => vacancy.id === vacancyId);
+        if (!existing) {
+          return;
+        }
+
+        Object.assign(existing, updates);
+        localStorage.setItem(VACANCIES_STORAGE_KEY, JSON.stringify(vacancies));
+        window.dispatchEvent(new Event('school-vacancies-updated'));
+      }
+
+      function deleteVacancy(vacancyId) {
+        const vacancies = readStoredVacancies().filter((vacancy) => vacancy.id !== vacancyId);
+        localStorage.setItem(VACANCIES_STORAGE_KEY, JSON.stringify(vacancies));
+        window.dispatchEvent(new Event('school-vacancies-updated'));
+      }
+
+      function updateStoryPlaceholder() {
+        const hasContent = storyEditor?.innerText?.trim();
+        if (!hasContent) {
+          storyEditor?.setAttribute('data-placeholder', 'Write a school news story here');
+        }
+      }
+
+      function renderManagementPanel() {
+        const mode = uploadForm.dataset.mode || 'document';
+        const storageKey = uploadForm.dataset.storageKey || 'admissions';
+
+        if (mode === 'news') {
+          const posts = readStoredNewsPosts();
+          managementCaption.textContent = 'Manage the news posts already published.';
+          if (!posts.length) {
+            managementBody.innerHTML = '<tr><td colspan="3">No news posts yet.</td></tr>';
+            return;
+          }
+
+          managementBody.innerHTML = posts.map((post) => `
+            <tr>
+              <td>${escapeHtml(post.title || 'Untitled post')}</td>
+              <td>${escapeHtml(post.story ? post.story.replace(/<[^>]+>/g, ' ').trim().slice(0, 90) : 'No story content')}</td>
+              <td>
+                <button type="button" class="admin-action--edit" data-action="edit" data-id="${escapeHtml(post.id)}">Edit</button>
+                <button type="button" class="admin-action--delete" data-action="delete" data-id="${escapeHtml(post.id)}">Delete</button>
+              </td>
+            </tr>
+          `).join('');
+          return;
+        }
+
+        if (mode === 'vacancies') {
+          const vacancies = readStoredVacancies();
+          managementCaption.textContent = 'Manage the vacancies already posted.';
+          if (!vacancies.length) {
+            managementBody.innerHTML = '<tr><td colspan="3">No vacancies yet.</td></tr>';
+            return;
+          }
+
+          managementBody.innerHTML = vacancies.map((vacancy) => `
+            <tr>
+              <td>${escapeHtml(vacancy.pathway || 'Vacancy')}</td>
+              <td>${escapeHtml(`${vacancy.subjects || 'Subjects pending'} • Post ${vacancy.post || 0}`)}</td>
+              <td>
+                <button type="button" class="admin-action--edit" data-action="edit" data-id="${escapeHtml(vacancy.id)}">Edit</button>
+                <button type="button" class="admin-action--delete" data-action="delete" data-id="${escapeHtml(vacancy.id)}">Delete</button>
+              </td>
+            </tr>
+          `).join('');
+          return;
+        }
+
+        const documents = readStoredDocuments();
+        const documentItem = documents[storageKey];
+        managementCaption.textContent = 'Manage the document already posted for this section.';
+        if (!documentItem) {
+          managementBody.innerHTML = '<tr><td colspan="3">No document posted yet.</td></tr>';
+          return;
+        }
+
+        managementBody.innerHTML = `
+          <tr>
+            <td>${escapeHtml(documentItem.title || 'Untitled document')}</td>
+            <td><a href="${escapeHtml(documentItem.url || '#')}" target="_blank" rel="noopener noreferrer">Open file</a></td>
+            <td>
+              <button type="button" class="admin-action--edit" data-action="edit" data-id="${escapeHtml(storageKey)}">Edit</button>
+              <button type="button" class="admin-action--delete" data-action="delete" data-id="${escapeHtml(storageKey)}">Delete</button>
+            </td>
+          </tr>
+        `;
+      }
+
+      function resetFormState() {
+        activeEditState = null;
+        submitButton.textContent = 'Save upload';
+      }
+
+      function beginEdit(mode, item) {
+        activeEditState = { mode, id: item.id, storageKey: item.storageKey || item.id };
+
+        if (mode === 'news') {
+          titleInput.value = item.title || '';
+          storyEditor.innerHTML = item.story || '';
+          videoUrlInput.value = item.youtubeUrl || '';
+          submitButton.textContent = 'Update post';
+          return;
+        }
+
+        if (mode === 'vacancies') {
+          pathwayInput.value = item.pathway || '';
+          subjectsInput.value = item.subjects || '';
+          postInput.value = item.post || '';
+          submitButton.textContent = 'Update';
+          return;
+        }
+
+        titleInput.value = item.title || '';
+        submitButton.textContent = 'Update upload';
+      }
+
+      function updateFormMode(button) {
+        resetFormState();
+        const isNewsMode = button.dataset.mode === 'news';
+        const isVacanciesMode = button.dataset.mode === 'vacancies';
+        const isDocumentMode = !isNewsMode && !isVacanciesMode;
+        const sectionName = button.dataset.section || button.textContent.trim();
+        const titleValue = button.dataset.title || sectionName;
+        const headingText = button.dataset.heading || sectionName;
+        const descriptionText = button.dataset.description || 'Choose a document for this section.';
+        const storedDocuments = readStoredDocuments();
+        const storedDoc = storedDocuments[button.dataset.storageKey];
+
+        sectionTitle.textContent = sectionName;
+        cardHeading.textContent = headingText;
+        cardDescription.textContent = descriptionText;
+        titleInput.value = storedDoc?.title || titleValue;
+        titleField.hidden = isVacanciesMode;
+        fileInput.required = isDocumentMode;
+        fileInput.accept = '.jpg,.jpeg,.png,.pdf,.doc,.docx';
+        fileField.hidden = isVacanciesMode;
+        fileField.style.display = isVacanciesMode ? 'none' : '';
+        fileField.querySelector('span').textContent = 'Upload file';
+        newsOnlyFields.hidden = !isNewsMode;
+        vacanciesFields.hidden = !isVacanciesMode;
+        newsOnlyFields.style.display = isNewsMode ? '' : 'none';
+        vacanciesFields.style.display = isVacanciesMode ? '' : 'none';
+        submitButton.textContent = isNewsMode ? 'Save news post' : isVacanciesMode ? 'Post' : 'Save upload';
+
+        if (!isNewsMode) {
+          storyEditor.innerHTML = '';
+          videoUrlInput.value = '';
+        }
+
+        if (isNewsMode) {
+          storyEditor.innerHTML = '';
+        }
+        uploadForm.dataset.storageKey = button.dataset.storageKey || '';
+        uploadForm.dataset.page = button.dataset.page || '';
+        uploadForm.dataset.mode = button.dataset.mode || 'document';
+        renderManagementPanel();
+      }
+
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+          buttons.forEach((item) => item.classList.remove('is-active'));
+          button.classList.add('is-active');
+          updateFormMode(button);
+        });
+      });
+
+      const activeButton = buttons.find((button) => button.classList.contains('is-active')) || buttons[0];
+      if (activeButton) {
+        activeButton.click();
+      }
+
+      managementBody.addEventListener('click', (event) => {
+        const actionButton = event.target.closest('button[data-action]');
+        if (!actionButton) {
+          return;
+        }
+
+        const action = actionButton.dataset.action;
+        const itemId = actionButton.dataset.id;
+
+        if (action === 'delete') {
+          if (uploadForm.dataset.mode === 'news') {
+            deleteNewsPost(itemId);
+          } else if (uploadForm.dataset.mode === 'vacancies') {
+            deleteVacancy(itemId);
+          } else {
+            deleteStoredDocument(itemId);
+          }
+
+          renderManagementPanel();
+          statusText.textContent = 'Item removed.';
+          return;
+        }
+
+        if (action === 'edit') {
+          if (uploadForm.dataset.mode === 'news') {
+            const posts = readStoredNewsPosts();
+            const post = posts.find((entry) => entry.id === itemId);
+            if (post) {
+              beginEdit('news', post);
+            }
+          } else if (uploadForm.dataset.mode === 'vacancies') {
+            const vacancies = readStoredVacancies();
+            const vacancy = vacancies.find((entry) => entry.id === itemId);
+            if (vacancy) {
+              beginEdit('vacancies', vacancy);
+            }
+          } else {
+            const documents = readStoredDocuments();
+            const documentItem = documents[itemId];
+            if (documentItem) {
+              beginEdit('document', documentItem);
+            }
+          }
+        }
+      });
+
+      document.querySelectorAll('.admin-richtext__button').forEach((button) => {
+        button.addEventListener('click', () => {
+          const command = button.dataset.command;
+          const value = button.dataset.value || null;
+
+          if (command === 'hiliteColor') {
+            document.execCommand('hiliteColor', false, value);
+            button.classList.add('is-active');
+            storyEditor.focus();
+            return;
+          }
+
+          document.execCommand(command, false, value);
+          button.classList.toggle('is-active');
+          storyEditor.focus();
+        });
+      });
+
+      storyEditor.addEventListener('mouseup', () => {
+        document.querySelectorAll('.admin-richtext__button').forEach((button) => {
+          const command = button.dataset.command;
+          if (command === 'bold' && document.queryCommandState('bold')) {
+            button.classList.add('is-active');
+          } else if (command === 'italic' && document.queryCommandState('italic')) {
+            button.classList.add('is-active');
+          } else if (command === 'underline' && document.queryCommandState('underline')) {
+            button.classList.add('is-active');
+          } else if (command === 'insertUnorderedList' && document.queryCommandState('insertUnorderedList')) {
+            button.classList.add('is-active');
+          } else if (command === 'insertOrderedList' && document.queryCommandState('insertOrderedList')) {
+            button.classList.add('is-active');
+          } else if (command === 'formatBlock' && document.queryCommandState('formatBlock')) {
+            button.classList.add('is-active');
+          } else {
+            button.classList.remove('is-active');
+          }
+        });
+      });
+
+      storyEditor.addEventListener('input', updateStoryPlaceholder);
+      storyEditor.addEventListener('blur', updateStoryPlaceholder);
+
+      uploadForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const isNewsMode = uploadForm.dataset.mode === 'news';
+        const isVacanciesMode = uploadForm.dataset.mode === 'vacancies';
+        const documentTitle = titleInput.value.trim() || (isNewsMode ? 'School news story' : isVacanciesMode ? 'Vacancy' : 'Document');
+        const storageKey = uploadForm.dataset.storageKey || (isNewsMode ? 'news' : isVacanciesMode ? 'vacancies' : 'admissions');
+        const pageName = uploadForm.dataset.page || 'application-form.html';
+
+        if (activeEditState?.mode === 'vacancies') {
+          const pathway = pathwayInput.value.trim();
+          const subjects = subjectsInput.value.trim();
+          const post = postInput.value.trim();
+
+          if (!pathway || !subjects || !post) {
+            statusText.textContent = 'Please fill in the pathway, subjects, and post fields.';
+            return;
+          }
+
+          updateVacancy(activeEditState.id, {
+            pathway,
+            subjects,
+            post: Number(post),
+            updatedAt: new Date().toISOString()
+          });
+
+          statusText.textContent = `Vacancy updated for ${pathway}.`;
+          uploadForm.reset();
+          titleInput.value = documentTitle;
+          pathwayInput.value = '';
+          subjectsInput.value = '';
+          postInput.value = '';
+          resetFormState();
+          renderManagementPanel();
+          return;
+        }
+
+        if (isVacanciesMode) {
+          const pathway = pathwayInput.value.trim();
+          const subjects = subjectsInput.value.trim();
+          const post = postInput.value.trim();
+
+          if (!pathway || !subjects || !post) {
+            statusText.textContent = 'Please fill in the pathway, subjects, and post fields.';
+            return;
+          }
+
+          saveVacancy({
+            pathway,
+            subjects,
+            post: Number(post),
+            createdAt: new Date().toISOString()
+          });
+
+          statusText.textContent = `Vacancy saved for ${pathway} with ${subjects}.`;
+          uploadForm.reset();
+          titleInput.value = documentTitle;
+          pathwayInput.value = '';
+          subjectsInput.value = '';
+          postInput.value = '';
+          renderManagementPanel();
+          return;
+        }
+
+        if (activeEditState?.mode === 'news') {
+          const storyHtml = storyEditor.innerHTML.trim();
+          const storyText = storyEditor.innerText.trim();
+          const youtubeUrl = videoUrlInput.value.trim();
+
+          updateNewsPost(activeEditState.id, {
+            title: documentTitle,
+            story: storyHtml || storyText,
+            youtubeUrl,
+            updatedAt: new Date().toISOString()
+          });
+
+          statusText.textContent = `News post updated. “${documentTitle}” has been revised.`;
+          uploadForm.reset();
+          titleInput.value = documentTitle;
+          storyEditor.innerHTML = '';
+          videoUrlInput.value = '';
+          resetFormState();
+          renderManagementPanel();
+          return;
+        }
+
+        if (isNewsMode) {
+          const storyHtml = storyEditor.innerHTML.trim();
+          const storyText = storyEditor.innerText.trim();
+          const youtubeUrl = videoUrlInput.value.trim();
+          const attachedFile = fileInput.files[0];
+
+          if (!storyText && !attachedFile && !youtubeUrl) {
+            statusText.textContent = 'Please add a story, an attachment, or a YouTube link.';
+            return;
+          }
+
+          let attachmentUrl = '';
+          let attachmentFileName = '';
+          let attachmentMimeType = '';
+          if (attachedFile) {
+            statusText.textContent = 'Preparing attachment...';
+            try {
+              attachmentUrl = await readFileAsDataUrl(attachedFile);
+              attachmentFileName = attachedFile.name;
+              attachmentMimeType = attachedFile.type || 'application/octet-stream';
+            } catch (error) {
+              statusText.textContent = `News save failed: ${error.message}`;
+              return;
+            }
+          }
+
+          saveNewsPost({
+            title: documentTitle,
+            story: storyHtml || storyText,
+            attachmentUrl,
+            attachmentFileName,
+            attachmentMimeType,
+            youtubeUrl,
+            createdAt: new Date().toISOString()
+          });
+
+          statusText.textContent = `News post saved. “${documentTitle}” is ready for the school news section.`;
+          uploadForm.reset();
+          titleInput.value = documentTitle;
+          storyEditor.innerHTML = '';
+          videoUrlInput.value = '';
+          renderManagementPanel();
+          return;
+        }
+
+        if (activeEditState?.mode === 'document') {
+          const existingDocument = readStoredDocuments()[activeEditState.storageKey];
+          writeStoredDocument(activeEditState.storageKey, documentTitle, existingDocument?.url || '');
+          statusText.textContent = `Document updated. “${documentTitle}” was revised.`;
+          uploadForm.reset();
+          titleInput.value = documentTitle;
+          resetFormState();
+          renderManagementPanel();
+          return;
+        }
+
+        const file = fileInput.files[0];
+        if (!file) {
+          statusText.textContent = 'Please choose a file first.';
+          return;
+        }
+
+        statusText.textContent = 'Saving file locally...';
+
+        try {
+          const fileUrl = await readFileAsDataUrl(file);
+          writeStoredDocument(storageKey, documentTitle, fileUrl, {
+            fileName: file.name,
+            mimeType: file.type || 'application/octet-stream',
+            storageType: 'data-url'
+          });
+          statusText.textContent = `Upload complete. “${documentTitle}” is now available from the downloads menu and ${pageName}.`;
+          uploadForm.reset();
+          titleInput.value = documentTitle;
+          renderManagementPanel();
+        } catch (error) {
+          statusText.textContent = `Upload failed: ${error.message}`;
+        }
+      });
+    </script>
+  </body>
+</html>

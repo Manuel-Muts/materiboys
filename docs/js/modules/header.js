@@ -1,3 +1,32 @@
+const DOWNLOAD_MENU_ITEMS = [
+  { key: 'admissions', label: 'Admission form', href: '../downloads/application-form.html' },
+  { key: 'interview-requirements', label: 'Interview requirements', href: '../downloads/interview-requirements.html' },
+  { key: 'fee-schedule', label: 'Fee schedule', href: '../downloads/fee-schedule.html' },
+  { key: 'prospectus', label: 'Prospectus', href: '../downloads/prospectus.html' }
+];
+
+function readStoredDocuments() {
+  try {
+    return JSON.parse(localStorage.getItem('school-download-docs') || '{}');
+  } catch (error) {
+    return {};
+  }
+}
+
+function buildDownloadsMarkup() {
+  const documents = readStoredDocuments();
+
+  return DOWNLOAD_MENU_ITEMS.map((item) => {
+    const storedDoc = documents[item.key];
+    const title = storedDoc?.title || item.label;
+    const href = storedDoc?.url
+      ? `${item.href}?title=${encodeURIComponent(title)}&url=${encodeURIComponent(storedDoc.url)}`
+      : item.href;
+
+    return `<a href="${href}" target="_self">${title}</a>`;
+  }).join('');
+}
+
 export function renderHeader() {
   const header = document.createElement('header');
   header.className = 'site-header';
@@ -16,11 +45,11 @@ export function renderHeader() {
         <details class="dropdown">
           <summary>Downloads</summary>
           <div class="dropdown-menu">
-            <a href="../downloads/admission-form.pdf" target="_blank" rel="noopener noreferrer">Admission Form</a>
-            <a href="../downloads/interview-requirements.pdf" target="_blank" rel="noopener noreferrer">Interview Requirements</a>
-            <a href="../downloads/fee-schedule.pdf" target="_blank" rel="noopener noreferrer">Fee Schedule</a>
+            ${buildDownloadsMarkup()}
           </div>
         </details>
+        <a href="#/news" target="_self"> News & Updates</a>
+        <a href="../vacancies/" target="_self">Vacancies</a>
         <a href="../academics/" target="_self">Academics</a>
         <a href="../contact/" target="_self">Contact</a>
         <a href="../staff/" target="_self">Staff</a>

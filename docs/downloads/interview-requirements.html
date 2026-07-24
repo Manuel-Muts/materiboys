@@ -29,12 +29,39 @@
         <article class="legal-section">
           <h2>What to bring</h2>
           <p>Original academic records, a copy of your birth certificate, and any supporting documents requested by the admissions office.</p>
+          <div class="download-card" id="download-card">
+            <p>Document preview will appear here once a Cloudinary upload is linked.</p>
+          </div>
         </article>
       </div>
     </section>
     <script type="module">
       import { initChatAssistant } from '../js/chat-assistant.js';
       initChatAssistant();
+
+      const downloadCard = document.getElementById('download-card');
+      const params = new URLSearchParams(window.location.search);
+      const fileUrl = params.get('url');
+      const documentTitle = params.get('title') || 'Uploaded document';
+      const fileName = params.get('fileName') || documentTitle;
+      const mimeType = params.get('mimeType') || '';
+
+      if (fileUrl && downloadCard) {
+        const isImage = mimeType.startsWith('image/');
+        const isPdf = mimeType === 'application/pdf';
+        const previewMarkup = isImage
+          ? `<div style="margin-top: 1rem;"><img src="${fileUrl}" alt="${documentTitle}" style="max-width: 100%; border-radius: 12px;" /></div>`
+          : isPdf
+            ? `<div style="margin-top: 1rem;"><iframe src="${fileUrl}" title="${documentTitle}" loading="lazy" style="width: 100%; min-height: 460px; border: 0; border-radius: 12px;"></iframe></div>`
+            : '';
+
+        downloadCard.innerHTML = `
+          <p><strong>${documentTitle}</strong></p>
+          <p>${fileName}</p>
+          <a class="button button--primary" href="${fileUrl}" target="_blank" rel="noopener noreferrer" download="${fileName}">Open / download document</a>
+          ${previewMarkup}
+        `;
+      }
     </script>
   </body>
 </html>

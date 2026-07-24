@@ -1,0 +1,266 @@
+:root {
+  --admin-bg: #f4f7fb;
+  --admin-panel: #ffffff;
+  --admin-border: #dbe4f0;
+  --admin-accent: #0f766e;
+  --admin-accent-2: #2563eb;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, "Segoe UI", sans-serif;
+  background: var(--admin-bg);
+  color: #0f172a;
+  overflow: hidden;
+}
+
+.admin-shell {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+}
+
+.admin-sidebar {
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  color: #ffffff;
+  padding: 1.5rem 0.9rem;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.admin-sidebar__header h1 {
+  margin: 0 0 0.3rem;
+  font-size: 1.25rem;
+}
+
+.admin-sidebar__header p {
+  margin: 0 0 1.5rem;
+  color: #cbd5e1;
+}
+
+.admin-sidebar__nav {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.admin-sidebar__link {
+  border: 0;
+  border-radius: 12px;
+  padding: 0.8rem 0.95rem;
+  text-align: left;
+  background: transparent;
+  color: #e2e8f0;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.admin-sidebar__link.is-active {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+}
+
+.admin-main {
+  padding: 2rem;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.admin-main__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.admin-main__header h2 {
+  margin: 0.25rem 0 0;
+  font-size: 1.6rem;
+}
+
+.admin-card {
+  background: var(--admin-panel);
+  border: 1px solid var(--admin-border);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.06);
+}
+
+.admin-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.35rem;
+}
+
+.admin-card p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #475569;
+}
+
+.admin-form {
+  display: grid;
+  gap: 1rem;
+  max-width: 680px;
+}
+
+.admin-form__group {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-form__group--two-col {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.admin-form__field {
+  display: grid;
+  gap: 0.4rem;
+  font-weight: 600;
+}
+
+.admin-form__field input,
+.admin-form__field textarea {
+  width: 100%;
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  padding: 0.8rem 0.9rem;
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.admin-form__field textarea {
+  resize: vertical;
+}
+
+.admin-richtext {
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.admin-richtext__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.55rem;
+  border-bottom: 1px solid var(--admin-border);
+  background: #f8fafc;
+}
+
+.admin-richtext__button {
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  background: #ffffff;
+  color: #0f172a;
+  cursor: pointer;
+  padding: 0.4rem 0.6rem;
+  font-weight: 700;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-richtext__button.is-active {
+  background: var(--admin-accent-2);
+  color: #ffffff;
+  border-color: var(--admin-accent-2);
+}
+
+.admin-richtext__editor {
+  min-height: 180px;
+  padding: 0.9rem 1rem;
+  outline: none;
+  line-height: 1.6;
+}
+
+.admin-richtext__editor:empty::before {
+  content: attr(data-placeholder);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.admin-form__status {
+  min-height: 1.4rem;
+  margin: 0;
+  color: #0f766e;
+  font-weight: 600;
+}
+
+.admin-management {
+  margin-top: 1.4rem;
+  border-top: 1px solid var(--admin-border);
+  padding-top: 1.2rem;
+}
+
+.admin-management__header h4 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+
+.admin-management__header p {
+  margin: 0 0 0.9rem;
+  color: #64748b;
+}
+
+.admin-management__table-wrap {
+  overflow-x: auto;
+}
+
+.admin-management__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.admin-management__table th,
+.admin-management__table td {
+  padding: 0.7rem 0.6rem;
+  border-bottom: 1px solid var(--admin-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.admin-management__table th {
+  color: #475569;
+  font-weight: 700;
+}
+
+.admin-management__table td button {
+  border: 0;
+  border-radius: 8px;
+  padding: 0.4rem 0.7rem;
+  margin-right: 0.45rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.admin-management__table td .admin-action--edit {
+  background: rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+}
+
+.admin-management__table td .admin-action--delete {
+  background: rgba(220, 38, 38, 0.12);
+  color: #b91c1c;
+}
+
+@media (max-width: 860px) {
+  body {
+    overflow: auto;
+  }
+
+  .admin-shell {
+    height: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .admin-sidebar {
+    padding-bottom: 1rem;
+    overflow-y: visible;
+  }
+
+  .admin-main {
+    padding: 1.25rem;
+    overflow-y: visible;
+  }
+}

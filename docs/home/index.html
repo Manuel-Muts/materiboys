@@ -31,8 +31,11 @@
           <h1>Matiri Boys' Senior School</h1>
           <p class="school-motto">School Motto: <span>READ &amp; LEAD</span></p>
         </div>
-        <div class="school-intro__logo" aria-label="School logo">
-          <img src="../logo/IMG-20260716-WA0000.jpg" alt="Matiri Boys School logo" />
+        <div class="school-intro__logo-wrap">
+          <div class="school-intro__logo" aria-label="School logo">
+            <img src="../logo/IMG-20260716-WA0000.jpg" alt="Matiri Boys School logo" />
+          </div>
+          <button class="school-intro__login" type="button" data-open-login>Login</button>
         </div>
         <div class="banner-visual" aria-hidden="true">
           <img class="banner-visual__image banner-visual__image--active" src="../images/top/learners&teacher.jpeg" alt="" />
@@ -41,6 +44,26 @@
       </div>
     </div>
     <div id="app"></div>
+    <div class="login-modal__backdrop" data-close-login hidden></div>
+    <div class="login-modal" id="login-modal" role="dialog" aria-modal="true" aria-labelledby="login-modal-title" hidden>
+      <div class="login-modal__panel">
+        <button class="login-modal__close" type="button" data-close-login aria-label="Close login">×</button>
+        <h2 id="login-modal-title">Login</h2>
+        <form class="login-modal__form">
+          <label class="login-modal__field">
+            <span>Email</span>
+            <input type="email" name="email" placeholder="Enter email" required />
+          </label>
+          <label class="login-modal__field">
+            <span>Password</span>
+            <input type="password" name="password" placeholder="Enter password" required />
+          </label>
+          <button type="submit" class="button button--primary login-modal__submit">Login</button>
+          <button type="button" class="login-modal__forgot" data-forgot-password>Forgot password?</button>
+          <p class="login-modal__status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
     <script type="module" src="../js/main.js"></script>
     <script type="module">
       import { initChatAssistant } from '../js/chat-assistant.js';
@@ -68,6 +91,49 @@
 
         window.setInterval(rotateBanner, 9000);
       }
+
+      const loginButton = document.querySelector('[data-open-login]');
+      const loginModal = document.getElementById('login-modal');
+      const loginBackdrop = document.querySelector('.login-modal__backdrop');
+      const loginForm = loginModal?.querySelector('.login-modal__form');
+      const loginStatus = loginModal?.querySelector('.login-modal__status');
+
+      const openLoginModal = () => {
+        if (!loginModal || !loginBackdrop) return;
+        loginModal.hidden = false;
+        loginBackdrop.hidden = false;
+        document.body.classList.add('has-login-modal');
+        loginModal.querySelector('input')?.focus();
+      };
+
+      const closeLoginModal = () => {
+        if (!loginModal || !loginBackdrop) return;
+        loginModal.hidden = true;
+        loginBackdrop.hidden = true;
+        document.body.classList.remove('has-login-modal');
+      };
+
+      loginButton?.addEventListener('click', openLoginModal);
+      loginBackdrop?.addEventListener('click', closeLoginModal);
+      loginModal?.querySelector('[data-close-login]')?.addEventListener('click', closeLoginModal);
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !loginModal?.hidden) {
+          closeLoginModal();
+        }
+      });
+
+      loginForm?.addEventListener('submit', (event) => {
+        event.preventDefault();
+        if (loginStatus) {
+          loginStatus.textContent = 'Login form is ready. Authentication logic will be added next.';
+        }
+      });
+
+      loginModal?.querySelector('[data-forgot-password]')?.addEventListener('click', () => {
+        if (loginStatus) {
+          loginStatus.textContent = 'Password reset flow will be added next.';
+        }
+      });
 
       if (typingBadge) {
         const fullText = typingBadge.dataset.text || typingBadge.textContent.trim();

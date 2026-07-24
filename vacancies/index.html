@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0d3b66" />
+    <title>Vacancies | Matiri Boys' Senior School</title>
+    <meta name="description" content="View current school vacancies and recruitment updates." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../docs/styles/shared.css" />
+    <link rel="stylesheet" href="../docs/styles/components.css" />
+    <link rel="stylesheet" href="../docs/styles/header.css" />
+    <link rel="stylesheet" href="../docs/styles/layout.css" />
+    <link rel="stylesheet" href="../docs/styles/mobile.css" />
+    <link rel="stylesheet" href="../docs/styles/chat-assistant.css" />
+    <link rel="icon" href="../docs/logo/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="../docs/logo/favicon.ico" type="image/x-icon" />
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module">
+      import { renderHeader } from '../docs/js/modules/header.js';
+      import { initChatAssistant } from '../docs/js/chat-assistant.js';
+
+      const app = document.getElementById('app');
+      const VACANCIES_STORAGE_KEY = 'school-vacancies';
+
+      function escapeHtml(value = '') {
+        return String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function readStoredVacancies() {
+        try {
+          return JSON.parse(window.localStorage.getItem(VACANCIES_STORAGE_KEY) || '[]');
+        } catch (error) {
+          return [];
+        }
+      }
+
+      function formatBadge(item) {
+        const createdAt = item.createdAt ? new Date(item.createdAt) : null;
+        if (!createdAt || Number.isNaN(createdAt.getTime())) {
+          return '<span class="vacancies-badge vacancies-badge--new">New</span>';
+        }
+
+        const now = new Date();
+        const oneWeekAgo = new Date(now);
+        oneWeekAgo.setDate(now.getDate() - 7);
+
+        if (createdAt >= oneWeekAgo) {
+          return '<span class="vacancies-badge vacancies-badge--new">New</span>';
+        }
+
+        return `<span class="vacancies-badge vacancies-badge--date">${createdAt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>`;
+      }
+
+      function renderPage() {
+        if (!app) {
+          return;
+        }
+
+        app.innerHTML = '';
+        app.appendChild(renderHeader());
+
+        const section = document.createElement('section');
+        section.className = 'vacancies-page';
+        section.innerHTML = `
+          <div class="container">
+            <div class="vacancies-card">
+              <p class="eyebrow">Vacancies</p>
+              <h1>Current opportunities</h1>
+              <p class="legal-intro">Browse the latest vacancies posted by the school. New postings stay marked as “New” for seven days before changing to the posted date.</p>
+              <div id="vacancies-table-wrap" class="vacancies-table-wrap"></div>
+            </div>
+          </div>
+        `;
+
+        const vacancies = readStoredVacancies();
+        const tableWrap = section.querySelector('#vacancies-table-wrap');
+        if (!vacancies.length) {
+          tableWrap.innerHTML = '<div class="vacancies-empty">No vacancies are available at the moment.</div>';
+        } else {
+          tableWrap.innerHTML = `
+            <table class="vacancies-table">
+              <thead>
+                <tr>
+                  <th>Status</th>
+                  <th>Pathway</th>
+                  <th>Subjects</th>
+                  <th>Posts</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${vacancies.map((item) => `
+                  <tr>
+                    <td>${formatBadge(item)}</td>
+                    <td>${escapeHtml(item.pathway || 'To be confirmed')}</td>
+                    <td>${escapeHtml(item.subjects || 'To be confirmed')}</td>
+                    <td>${escapeHtml(String(item.post || 0))}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          `;
+        }
+
+        app.appendChild(section);
+      }
+
+      renderPage();
+      initChatAssistant();
+      window.addEventListener('storage', renderPage);
+      window.addEventListener('school-vacancies-updated', renderPage);
+    </script>
+  </body>
+</html>

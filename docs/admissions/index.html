@@ -96,11 +96,67 @@
           <button type="submit" class="button button--primary">Submit Application</button>
         </form>
         </div>
+
+        <section class="vacancies-section" aria-labelledby="vacancies-heading">
+          <div class="vacancies-section__header">
+            <p class="eyebrow">Current vacancies</p>
+            <h2 id="vacancies-heading">Open positions</h2>
+            <p class="legal-intro">Latest vacancies posted by the school administration.</p>
+          </div>
+          <div id="vacancies-list" class="vacancies-list" aria-live="polite"></div>
+        </section>
       </div>
     </section>
     <script type="module">
       import { initChatAssistant } from '../js/chat-assistant.js';
       initChatAssistant();
+
+      const VACANCIES_STORAGE_KEY = 'school-vacancies';
+
+      function escapeHtml(value = '') {
+        return String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function readStoredVacancies() {
+        try {
+          return JSON.parse(window.localStorage.getItem(VACANCIES_STORAGE_KEY) || '[]');
+        } catch (error) {
+          return [];
+        }
+      }
+
+      function renderVacancies() {
+        const container = document.getElementById('vacancies-list');
+        if (!container) {
+          return;
+        }
+
+        const vacancies = readStoredVacancies();
+        if (!vacancies.length) {
+          container.innerHTML = '<div class="vacancy-card vacancy-card--empty">No vacancies have been posted yet.</div>';
+          return;
+        }
+
+        container.innerHTML = vacancies.map((item) => `
+          <article class="vacancy-card">
+            <div class="vacancy-card__meta">
+              <span class="vacancy-pill">Post ${Number(item.post || 0)}</span>
+            </div>
+            <h3>${escapeHtml(item.pathway || 'Vacancy')}</h3>
+            <p><strong>Pathway:</strong> ${escapeHtml(item.pathway || 'To be confirmed')}</p>
+            <p><strong>Subjects:</strong> ${escapeHtml(item.subjects || 'To be confirmed')}</p>
+          </article>
+        `).join('');
+      }
+
+      renderVacancies();
+      window.addEventListener('storage', renderVacancies);
+      window.addEventListener('school-vacancies-updated', renderVacancies);
     </script>
   </body>
 </html>
