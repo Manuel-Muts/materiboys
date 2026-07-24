@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="../styles/components.css" />
     <link rel="stylesheet" href="../styles/admin.css" />
     <link rel="icon" href="../logo/favicon.ico" type="image/x-icon" />
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   </head>
   <body>
     <div class="admin-shell">
@@ -142,6 +145,82 @@
       const VACANCIES_STORAGE_KEY = 'school-vacancies';
       let activeEditState = null;
 
+      const FIREBASE_CONFIG = {
+        apiKey: '',
+        authDomain: '',
+        projectId: '',
+        storageBucket: '',
+        messagingSenderId: '',
+        appId: ''
+      };
+
+      let db = null;
+      let auth = null;
+
+      if (window.firebase?.app && typeof window.firebase.initializeApp === 'function') {
+        const hasConfig = FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.authDomain && FIREBASE_CONFIG.projectId && FIREBASE_CONFIG.appId;
+        if (hasConfig) {
+          try {
+            window.firebase.initializeApp(FIREBASE_CONFIG);
+            db = window.firebase.firestore();
+            auth = window.firebase.auth();
+          } catch (error) {
+            console.warn('Firebase initialization failed:', error);
+          }
+        }
+      }
+
+      function writeNewsToFirestore(post) {
+        if (!db) return;
+        try {
+          db.collection('news-posts').doc(post.id).set({
+            title: post.title,
+            story: post.story,
+            attachmentUrl: post.attachmentUrl || '',
+            attachmentFileName: post.attachmentFileName || '',
+            attachmentMimeType: post.attachmentMimeType || '',
+            youtubeUrl: post.youtubeUrl || '',
+            createdAt: post.createdAt,
+            updatedAt: post.updatedAt || new Date().toISOString()
+          }, { merge: true }).catch((error) => console.warn('Firestore write failed:', error));
+        } catch (error) {
+          console.warn('Firestore error:', error);
+        }
+      }
+
+      function deleteNewsFromFirestore(postId) {
+        if (!db) return;
+        try {
+          db.collection('news-posts').doc(postId).delete().catch((error) => console.warn('Firestore delete failed:', error));
+        } catch (error) {
+          console.warn('Firestore error:', error);
+        }
+      }
+
+      function writeVacancyToFirestore(vacancy) {
+        if (!db) return;
+        try {
+          db.collection('vacancies').doc(vacancy.id).set({
+            pathway: vacancy.pathway,
+            subjects: vacancy.subjects,
+            post: vacancy.post,
+            createdAt: vacancy.createdAt,
+            updatedAt: vacancy.updatedAt || new Date().toISOString()
+          }, { merge: true }).catch((error) => console.warn('Firestore write failed:', error));
+        } catch (error) {
+          console.warn('Firestore error:', error);
+        }
+      }
+
+      function deleteVacancyFromFirestore(vacancyId) {
+        if (!db) return;
+        try {
+          db.collection('vacancies').doc(vacancyId).delete().catch((error) => console.warn('Firestore delete failed:', error));
+        } catch (error) {
+          console.warn('Firestore error:', error);
+        }
+      }
+
       function escapeHtml(value = '') {
         return String(value)
           .replace(/&/g, '&amp;')
@@ -197,8 +276,10 @@
 
       function saveNewsPost(post) {
         const posts = readStoredNewsPosts();
-        posts.unshift({ ...post, id: post.id || createItemId('news') });
+        const newPost = { ...post, id: post.id || createItemId('news') };
+        posts.unshift(newPost);
         localStorage.setItem(NEWS_STORAGE_KEY, JSON.stringify(posts));
+        writeNewsToFirestore(newPost);
       }
 
       function updateNewsPost(postId, updates) {
@@ -210,11 +291,13 @@
 
         Object.assign(existing, updates);
         localStorage.setItem(NEWS_STORAGE_KEY, JSON.stringify(posts));
+        writeNewsToFirestore(existing);
       }
 
       function deleteNewsPost(postId) {
         const posts = readStoredNewsPosts().filter((post) => post.id !== postId);
         localStorage.setItem(NEWS_STORAGE_KEY, JSON.stringify(posts));
+        deleteNewsFromFirestore(postId);
       }
 
       function readStoredVacancies() {
@@ -228,8 +311,10 @@
 
       function saveVacancy(vacancy) {
         const vacancies = readStoredVacancies();
-        vacancies.unshift({ ...vacancy, id: vacancy.id || createItemId('vacancy') });
+        const newVacancy = { ...vacancy, id: vacancy.id || createItemId('vacancy') };
+        vacancies.unshift(newVacancy);
         localStorage.setItem(VACANCIES_STORAGE_KEY, JSON.stringify(vacancies));
+        writeVacancyToFirestore(newVacancy);
         window.dispatchEvent(new Event('school-vacancies-updated'));
       }
 
@@ -242,12 +327,14 @@
 
         Object.assign(existing, updates);
         localStorage.setItem(VACANCIES_STORAGE_KEY, JSON.stringify(vacancies));
+        writeVacancyToFirestore(existing);
         window.dispatchEvent(new Event('school-vacancies-updated'));
       }
 
       function deleteVacancy(vacancyId) {
         const vacancies = readStoredVacancies().filter((vacancy) => vacancy.id !== vacancyId);
         localStorage.setItem(VACANCIES_STORAGE_KEY, JSON.stringify(vacancies));
+        deleteVacancyFromFirestore(vacancyId);
         window.dispatchEvent(new Event('school-vacancies-updated'));
       }
 

@@ -7,6 +7,29 @@ function escapeHtml(value = '') {
     .replace(/'/g, '&#39;');
 }
 
+const FIREBASE_CONFIG = {
+  apiKey: '',
+  authDomain: '',
+  projectId: '',
+  storageBucket: '',
+  messagingSenderId: '',
+  appId: ''
+};
+
+let firebaseDb = null;
+
+if (window.firebase?.app && typeof window.firebase.initializeApp === 'function') {
+  const hasConfig = FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.authDomain && FIREBASE_CONFIG.projectId && FIREBASE_CONFIG.appId;
+  if (hasConfig) {
+    try {
+      const app = window.firebase.apps?.length > 0 ? window.firebase.app() : window.firebase.initializeApp(FIREBASE_CONFIG);
+      firebaseDb = window.firebase.firestore(app);
+    } catch (error) {
+      console.warn('Firebase init in news module failed:', error);
+    }
+  }
+}
+
 function getAttachmentPreview(post) {
   const attachmentUrl = post.attachmentUrl || '';
   const attachmentFileName = post.attachmentFileName || 'attachment';
@@ -43,12 +66,30 @@ function readStoredNewsPosts() {
   }
 }
 
-export function renderNewsPage() {
+async function fetchNewsPostsFromFirestore() {
+  if (!firebaseDb) {
+    return readStoredNewsPosts();
+  }
+
+  try {
+    const snapshot = await firebaseDb.collection('news-posts').orderBy('createdAt', 'desc').get();
+    const posts = [];
+    snapshot.forEach((doc) => {
+      posts.push({ ...doc.data(), id: doc.id });
+    });
+    return posts.length > 0 ? posts : readStoredNewsPosts();
+  } catch (error) {
+    console.warn('Firestore fetch failed, using localStorage:', error);
+    return readStoredNewsPosts();
+  }
+}
+
+export async function renderNewsPage() {
   const section = document.createElement('section');
   section.className = 'legal-page-shell';
   section.id = 'news-page';
 
-  const posts = readStoredNewsPosts();
+  const posts = await fetchNewsPostsFromFirestore();
   const postsMarkup = posts.length
     ? posts.map((post) => {
         const story = post.story ? `<p>${escapeHtml(post.story)}</p>` : '';

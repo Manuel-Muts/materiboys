@@ -91,10 +91,16 @@ function renderNewsRoute() {
 
   app.innerHTML = '';
 
-  const section = renderNewsPage();
-  section.id = 'news-page';
-  app.appendChild(section);
-  window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  renderNewsPage().then((section) => {
+    if (section) {
+      section.id = 'news-page';
+      app.appendChild(section);
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }).catch((error) => {
+    console.error('Failed to render news page:', error);
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  });
 }
 
 function scrollToTarget(targetId) {

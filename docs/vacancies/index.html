@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="../styles/chat-assistant.css" />
     <link rel="icon" href="../logo/favicon.ico" type="image/x-icon" />
     <link rel="shortcut icon" href="../logo/favicon.ico" type="image/x-icon" />
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   </head>
   <body>
     <div id="app"></div>
@@ -26,6 +28,22 @@
 
       const app = document.getElementById('app');
       const VACANCIES_STORAGE_KEY = 'school-vacancies';
+
+      // Firebase configuration
+      const FIREBASE_CONFIG = {
+        apiKey: '',
+        authDomain: '',
+        projectId: '',
+        storageBucket: '',
+        messagingSenderId: '',
+        appId: '',
+      };
+
+      let firebaseDb = null;
+      if (FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId) {
+        firebase.initializeApp(FIREBASE_CONFIG);
+        firebaseDb = firebase.firestore();
+      }
 
       function escapeHtml(value = '') {
         return String(value)
@@ -41,6 +59,24 @@
           return JSON.parse(window.localStorage.getItem(VACANCIES_STORAGE_KEY) || '[]');
         } catch (error) {
           return [];
+        }
+      }
+
+      async function fetchVacanciesFromFirestore() {
+        if (!firebaseDb) {
+          return readStoredVacancies();
+        }
+
+        try {
+          const snapshot = await firebaseDb.collection('vacancies').orderBy('createdAt', 'desc').get();
+          const vacancies = [];
+          snapshot.forEach((doc) => {
+            vacancies.push({ ...doc.data(), id: doc.id });
+          });
+          return vacancies.length > 0 ? vacancies : readStoredVacancies();
+        } catch (error) {
+          console.warn('Firestore fetch failed, using localStorage:', error);
+          return readStoredVacancies();
         }
       }
 
@@ -61,7 +97,7 @@
         return `<span class="vacancies-badge vacancies-badge--date">${createdAt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>`;
       }
 
-      function renderPage() {
+      async function renderPage() {
         if (!app) {
           return;
         }
@@ -82,7 +118,7 @@
           </div>
         `;
 
-        const vacancies = readStoredVacancies();
+        const vacancies = await fetchVacanciesFromFirestore();
         const tableWrap = section.querySelector('#vacancies-table-wrap');
         if (!vacancies.length) {
           tableWrap.innerHTML = '<div class="vacancies-empty">No vacancies are available at the moment.</div>';
@@ -114,10 +150,14 @@
         app.appendChild(section);
       }
 
-      renderPage();
-      initChatAssistant();
-      window.addEventListener('storage', renderPage);
-      window.addEventListener('school-vacancies-updated', renderPage);
+      renderPage().then(() => {
+        initChatAssistant();
+      }).catch((error) => {
+        console.error('Failed to render vacancies page:', error);
+      });
+
+      window.addEventListener('storage', () => renderPage().catch(console.error));
+      window.addEventListener('school-vacancies-updated', () => renderPage().catch(console.error));
     </script>
   </body>
 </html>
