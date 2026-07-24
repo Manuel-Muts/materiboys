@@ -3,6 +3,8 @@ import { renderHistoryPage } from './modules/history.js';
 import { renderNewsPage } from './modules/news.js';
 
 function renderHomeRoute() {
+  setHomeShellVisibility(true);
+
   if (typeof window.renderHomePage === 'function') {
     window.renderHomePage();
     return;
@@ -61,10 +63,18 @@ function getHashTargetId(hash = window.location.hash) {
   return fragment;
 }
 
+function setHomeShellVisibility(isVisible) {
+  const homeTop = document.querySelector('.home-top');
+  if (homeTop) {
+    homeTop.hidden = !isVisible;
+  }
+}
+
 function renderLegalRoute(type) {
   const app = document.getElementById('app');
   if (!app) return;
 
+  setHomeShellVisibility(false);
   app.innerHTML = '';
 
   const section = renderLegalPage(type);
@@ -77,6 +87,7 @@ function renderHistoryRoute() {
   const app = document.getElementById('app');
   if (!app) return;
 
+  setHomeShellVisibility(false);
   app.innerHTML = '';
 
   const section = renderHistoryPage();
@@ -89,6 +100,7 @@ function renderNewsRoute() {
   const app = document.getElementById('app');
   if (!app) return;
 
+  setHomeShellVisibility(false);
   app.innerHTML = '';
 
   renderNewsPage().then((section) => {
@@ -122,20 +134,6 @@ export function navigate(path) {
 
   window.location.hash = `#${routePath}`;
   document.title = route.title;
-
-  if (routePath === '/terms' || routePath === '/privacy' || routePath === '/history' || routePath === '/news') {
-    if (routePath === '/history') {
-      renderHistoryRoute();
-    } else if (routePath === '/news') {
-      renderNewsRoute();
-    } else {
-      renderLegalRoute(routePath === '/privacy' ? 'privacy' : 'terms');
-    }
-    return;
-  }
-
-  renderHomeRoute();
-  window.requestAnimationFrame(() => scrollToTarget(route.targetId));
 }
 
 export function initRouter() {

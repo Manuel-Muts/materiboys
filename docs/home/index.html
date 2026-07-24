@@ -64,6 +64,21 @@
         </form>
       </div>
     </div>
+    <div class="login-modal" id="reset-modal" role="dialog" aria-modal="true" aria-labelledby="reset-modal-title" hidden>
+      <div class="login-modal__panel">
+        <button class="login-modal__close" type="button" data-close-reset aria-label="Close reset password">×</button>
+        <h2 id="reset-modal-title">Reset password</h2>
+        <form class="login-modal__form" id="reset-password-form">
+          <label class="login-modal__field">
+            <span>Email</span>
+            <input type="email" name="resetEmail" placeholder="Enter your email" required />
+          </label>
+          <button type="submit" id="reset-submit" class="button button--primary login-modal__submit">Send reset link</button>
+          <button type="button" id="back-to-login-button" class="login-modal__forgot" data-back-to-login>Back to login</button>
+          <p class="login-modal__status reset-modal__status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -79,13 +94,76 @@
       let firebaseDb = null;
       let admissionsSettingsUnsubscribe = null;
 
+      let typingLoopTimer = null;
+      let typingLoopIndex = 0;
+      let typingLoopTarget = '';
+
+      const stopTypingLoop = () => {
+        if (typingLoopTimer) {
+          window.clearTimeout(typingLoopTimer);
+          typingLoopTimer = null;
+        }
+      };
+
+      const startTypingLoop = (label) => {
+        if (!typingBadge) {
+          return;
+        }
+
+        const nextLabel = label || typingBadge.dataset.text || 'Admissions Open';
+        typingLoopTarget = nextLabel;
+        typingLoopIndex = 0;
+        typingBadge.dataset.text = nextLabel;
+
+        const typeNextCharacter = () => {
+          if (!typingBadge) {
+            return;
+          }
+
+          typingBadge.textContent = nextLabel.slice(0, typingLoopIndex + 1);
+          typingLoopIndex += 1;
+
+          if (typingLoopIndex < nextLabel.length) {
+            typingLoopTimer = window.setTimeout(typeNextCharacter, 70);
+            return;
+          }
+
+          typingLoopTimer = window.setTimeout(() => {
+            eraseNextCharacter();
+          }, 1200);
+        };
+
+        const eraseNextCharacter = () => {
+          if (!typingBadge) {
+            return;
+          }
+
+          typingBadge.textContent = nextLabel.slice(0, typingLoopIndex - 1);
+          typingLoopIndex -= 1;
+
+          if (typingLoopIndex > 0) {
+            typingLoopTimer = window.setTimeout(eraseNextCharacter, 45);
+            return;
+          }
+
+          typingLoopTimer = window.setTimeout(() => {
+            startTypingLoop(nextLabel);
+          }, 500);
+        };
+
+        stopTypingLoop();
+        typeNextCharacter();
+      };
+
       const updateAdmissionsBadge = (settings = {}) => {
         const isAdmissionsOpen = settings.admissionsOpen !== false;
+        const nextLabel = isAdmissionsOpen ? 'Admissions Open' : 'Admissions Closed';
+
         if (typingBadge) {
-          typingBadge.textContent = isAdmissionsOpen ? 'Admissions Open' : 'Admissions Closed';
-          typingBadge.dataset.text = isAdmissionsOpen ? 'Admissions Open' : 'Admissions Closed';
+          typingBadge.dataset.text = nextLabel;
           typingBadge.classList.toggle('is-open', isAdmissionsOpen);
           typingBadge.classList.toggle('is-closed', !isAdmissionsOpen);
+          startTypingLoop(nextLabel);
         }
       };
 
@@ -181,9 +259,12 @@
 
       const loginButton = document.querySelector('[data-open-login]');
       const loginModal = document.getElementById('login-modal');
+      const resetModal = document.getElementById('reset-modal');
       const loginBackdrop = document.querySelector('.login-modal__backdrop');
       const loginForm = loginModal?.querySelector('.login-modal__form');
+      const resetForm = document.getElementById('reset-password-form');
       const loginStatus = loginModal?.querySelector('.login-modal__status');
+      const resetStatus = resetModal?.querySelector('.reset-modal__status');
 
       const FIREBASE_CONFIG = {
         apiKey: 'AIzaSyBIGqZLYcDg3CR5VamDwBhtOOfl2Y0NYeI',
@@ -194,27 +275,59 @@
         appId: "1:563809562931:web:750ff7e819f2d57e9dce46"
       };
 
+      const getResetActionUrl = () => {
+        const currentOrigin = window.location.origin;
+        const isSafeOrigin = Boolean(currentOrigin && currentOrigin !== 'null' && currentOrigin !== 'file://');
+
+        if (isSafeOrigin) {
+          return `${currentOrigin}/`;
+        }
+
+        return 'https://timotech-films.web.app/';
+      };
+
+      const RESET_ACTION_URL = getResetActionUrl();
+
       const openLoginModal = () => {
         if (!loginModal || !loginBackdrop) return;
         loginModal.hidden = false;
+        if (resetModal) {
+          resetModal.hidden = true;
+        }
         loginBackdrop.hidden = false;
         document.body.classList.add('has-login-modal');
         loginModal.querySelector('input')?.focus();
       };
 
-      const closeLoginModal = () => {
-        if (!loginModal || !loginBackdrop) return;
+      const openResetModal = () => {
+        if (!resetModal || !loginBackdrop) return;
+        resetModal.hidden = false;
         loginModal.hidden = true;
+        loginBackdrop.hidden = false;
+        document.body.classList.add('has-login-modal');
+        resetModal.querySelector('input')?.focus();
+      };
+
+      const closeAllModals = () => {
+        if (!loginBackdrop) return;
+        loginModal.hidden = true;
+        if (resetModal) {
+          resetModal.hidden = true;
+        }
         loginBackdrop.hidden = true;
         document.body.classList.remove('has-login-modal');
       };
 
       loginButton?.addEventListener('click', openLoginModal);
-      loginBackdrop?.addEventListener('click', closeLoginModal);
-      loginModal?.querySelector('[data-close-login]')?.addEventListener('click', closeLoginModal);
+      loginBackdrop?.addEventListener('click', closeAllModals);
+      loginModal?.querySelector('[data-close-login]')?.addEventListener('click', closeAllModals);
+      resetModal?.querySelector('[data-close-reset]')?.addEventListener('click', closeAllModals);
       document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && !loginModal?.hidden) {
-          closeLoginModal();
+          closeAllModals();
+        }
+        if (event.key === 'Escape' && !resetModal?.hidden) {
+          closeAllModals();
         }
       });
 
@@ -224,8 +337,12 @@
         const hasConfig = FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.authDomain && FIREBASE_CONFIG.projectId && FIREBASE_CONFIG.appId;
 
         if (hasConfig) {
-          window.firebase.initializeApp(FIREBASE_CONFIG);
+          if (!window.firebase.apps?.length) {
+            window.firebase.initializeApp(FIREBASE_CONFIG);
+          }
+
           auth = window.firebase.auth();
+          auth.useDeviceLanguage?.();
         } else {
           if (loginStatus) {
             loginStatus.textContent = 'Firebase config is not set yet. Add your Firebase web config values in the page script.';
@@ -290,54 +407,71 @@
         }
       });
 
-      loginModal?.querySelector('[data-forgot-password]')?.addEventListener('click', async () => {
-        const email = String(new FormData(loginForm).get('email') || '').trim();
-        const forgotButton = loginModal?.querySelector('[data-forgot-password]');
+      loginModal?.querySelector('[data-forgot-password]')?.addEventListener('click', () => {
+        openResetModal();
+      });
+
+      resetModal?.querySelector('[data-back-to-login]')?.addEventListener('click', () => {
+        openLoginModal();
+      });
+
+      resetForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
 
         if (!auth) {
-          if (loginStatus) {
-            loginStatus.textContent = 'Firebase Auth is not ready. Add your Firebase configuration first.';
+          if (resetStatus) {
+            resetStatus.textContent = 'Firebase Auth is not ready. Add your Firebase configuration first.';
           }
           return;
         }
+
+        const submitButton = resetForm.querySelector('button[type="submit"]');
+        const formData = new FormData(resetForm);
+        const email = String(formData.get('resetEmail') || '').trim();
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!email) {
-          if (loginStatus) {
-            loginStatus.textContent = 'Enter your email address so a reset link can be sent.';
+          if (resetStatus) {
+            resetStatus.textContent = 'Enter your email address so a reset link can be sent.';
           }
           return;
         }
 
-        // Show loading state
-        if (forgotButton) {
-          stateManager.setButtonLoading(forgotButton?.id || 'forgot-password-button', true, {
-            loadingText: 'Sending...'
-          });
+        if (!emailPattern.test(email)) {
+          if (resetStatus) {
+            resetStatus.textContent = 'Please enter a valid email address.';
+          }
+          return;
         }
 
-        if (loginStatus) {
-          loginStatus.textContent = '';
+        stateManager.setButtonLoading(submitButton?.id || 'reset-submit', true, {
+          loadingText: 'Sending...'
+        });
+
+        if (resetStatus) {
+          resetStatus.textContent = '';
         }
 
         try {
-          await auth.sendPasswordResetEmail(email);
-          
-          // Hide loading state on success
-          if (forgotButton) {
-            stateManager.setButtonLoading(forgotButton?.id || 'forgot-password-button', false);
+          const actionCodeSettings = {
+            url: RESET_ACTION_URL,
+            handleCodeInApp: false
+          };
+
+          await auth.sendPasswordResetEmail(email, actionCodeSettings);
+          stateManager.setButtonLoading(submitButton?.id || 'reset-submit', false);
+
+          if (resetStatus) {
+            resetStatus.textContent = 'If that account exists, a password reset link has been sent to your email.';
           }
-          
-          if (loginStatus) {
-            loginStatus.textContent = 'A password reset link has been sent to your email.';
-          }
+
+          resetForm.reset();
+          submitButton?.focus?.();
         } catch (error) {
-          // Hide loading state on error
-          if (forgotButton) {
-            stateManager.setButtonLoading(forgotButton?.id || 'forgot-password-button', false);
-          }
-          
-          if (loginStatus) {
-            loginStatus.textContent = error?.message || 'Unable to send a reset email.';
+          stateManager.setButtonLoading(submitButton?.id || 'reset-submit', false);
+
+          if (resetStatus) {
+            resetStatus.textContent = error?.message || 'Unable to send a reset email.';
           }
         }
       });

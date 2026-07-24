@@ -111,23 +111,36 @@ export async function renderNewsPage() {
     : `
       <article class="legal-section">
         <h2>No stories yet</h2>
-        <p>School news posts will appear here once they are added from the admin panel.</p>
+        <p>School news posts will appear here once they are added by the school.</p>
       </article>
     `;
 
   section.innerHTML = `
-    <div class="container legal-card">
-      <div class="standalone-topbar">
-        <a href="../home/" class="button button--secondary standalone-back" target="_self">Back</a>
+    <section class="legal-page">
+      <div class="container legal-card">
+        <div class="standalone-topbar">
+          <button type="button" class="button button--secondary standalone-back">Back</button>
+        </div>
+        <p class="eyebrow">School updates</p>
+        <h1>Latest News and Updates</h1>
+        <p class="legal-intro">Stay informed with school achievements, community stories, events, and announcements.</p>
+        <div class="legal-list">
+          ${postsMarkup}
+        </div>
       </div>
-      <p class="eyebrow">School updates</p>
-      <h1>Latest News and Updates</h1>
-      <p class="legal-intro">Stay informed with school achievements, community stories, events, and announcements.</p>
-      <div class="legal-list">
-        ${postsMarkup}
-      </div>
-    </div>
+    </section>
   `;
+
+  const backButton = section.querySelector('.standalone-back');
+  if (backButton) {
+    backButton.addEventListener('click', () => {
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.assign('../home/');
+      }
+    });
+  }
 
   return section;
 }
