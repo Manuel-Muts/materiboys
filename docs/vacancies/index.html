@@ -25,6 +25,7 @@
     <script type="module">
       import { renderHeader } from '../js/modules/header.js';
       import { initChatAssistant } from '../js/chat-assistant.js';
+      import { createOfflineNoticeMarkup, isBrowserOnline } from '../js/modules/network-status.js';
 
       const app = document.getElementById('app');
       const VACANCIES_STORAGE_KEY = 'school-vacancies';
@@ -63,8 +64,8 @@
       }
 
       async function fetchVacanciesFromFirestore() {
-        if (!firebaseDb) {
-          return readStoredVacancies();
+        if (!isBrowserOnline() || !firebaseDb) {
+          return { vacancies: readStoredVacancies(), offline: true };
         }
 
         try {
@@ -73,10 +74,10 @@
           snapshot.forEach((doc) => {
             vacancies.push({ ...doc.data(), id: doc.id });
           });
-          return vacancies.length > 0 ? vacancies : readStoredVacancies();
+          return { vacancies: vacancies.length > 0 ? vacancies : readStoredVacancies(), offline: false };
         } catch (error) {
           console.warn('Firestore fetch failed, using localStorage:', error);
-          return readStoredVacancies();
+          return { vacancies: readStoredVacancies(), offline: true };
         }
       }
 
@@ -110,6 +111,9 @@
         section.innerHTML = `
           <div class="container">
             <div class="vacancies-card">
+              <div class="standalone-topbar">
+                <button type="button" class="button button--secondary standalone-back">Back</button>
+              </div>
               <p class="eyebrow">Vacancies</p>
               <h1>Current opportunities</h1>
               <p class="legal-intro">Browse the latest vacancies posted by the school.</p>
@@ -118,9 +122,14 @@
           </div>
         `;
 
-        const vacancies = await fetchVacanciesFromFirestore();
+        const { vacancies, offline } = await fetchVacanciesFromFirestore();
         const tableWrap = section.querySelector('#vacancies-table-wrap');
-        if (!vacancies.length) {
+        if (offline && !vacancies.length) {
+          tableWrap.innerHTML = createOfflineNoticeMarkup({
+            title: 'Vacancies unavailable right now',
+            message: 'We could not load current vacancies because the connection is unavailable or the feed is temporarily unreachable.'
+          });
+        } else if (!vacancies.length) {
           tableWrap.innerHTML = '<div class="vacancies-empty">No vacancies are available at the moment.</div>';
         } else {
           tableWrap.innerHTML = `
@@ -145,6 +154,17 @@
               </tbody>
             </table>
           `;
+        }
+
+        const backButton = section.querySelector('.standalone-back');
+        if (backButton) {
+          backButton.addEventListener('click', () => {
+            if (window.history.length > 1) {
+              window.history.back();
+            } else {
+              window.location.assign('../home/');
+            }
+          });
         }
 
         app.appendChild(section);

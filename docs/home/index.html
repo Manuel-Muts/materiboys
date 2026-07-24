@@ -27,7 +27,7 @@
     <div class="home-top">
       <div class="container school-intro">
         <div class="school-intro__content">
-          <p class="eyebrow" data-text="Admissions Open">Admissions Open</p>
+          <p class="eyebrow" data-text="" hidden></p>
           <h1>Matiri Boys' Senior School</h1>
           <p class="school-motto">School Motto: <span>READ &amp; LEAD</span></p>
         </div>
@@ -105,6 +105,18 @@
         }
       };
 
+      const clearAdmissionsBadge = () => {
+        if (!typingBadge) {
+          return;
+        }
+
+        stopTypingLoop();
+        typingBadge.textContent = '';
+        typingBadge.dataset.text = '';
+        typingBadge.classList.remove('is-open', 'is-closed');
+        typingBadge.classList.add('is-hidden');
+      };
+
       const startTypingLoop = (label) => {
         if (!typingBadge) {
           return;
@@ -156,15 +168,24 @@
       };
 
       const updateAdmissionsBadge = (settings = {}) => {
+        if (!typingBadge) {
+          return;
+        }
+
+        const hasStatus = Object.prototype.hasOwnProperty.call(settings, 'admissionsOpen');
+        if (!hasStatus) {
+          clearAdmissionsBadge();
+          return;
+        }
+
         const isAdmissionsOpen = settings.admissionsOpen !== false;
         const nextLabel = isAdmissionsOpen ? 'Admissions Open' : 'Admissions Closed';
 
-        if (typingBadge) {
-          typingBadge.dataset.text = nextLabel;
-          typingBadge.classList.toggle('is-open', isAdmissionsOpen);
-          typingBadge.classList.toggle('is-closed', !isAdmissionsOpen);
-          startTypingLoop(nextLabel);
-        }
+        typingBadge.dataset.text = nextLabel;
+        typingBadge.classList.remove('is-hidden');
+        typingBadge.classList.toggle('is-open', isAdmissionsOpen);
+        typingBadge.classList.toggle('is-closed', !isAdmissionsOpen);
+        startTypingLoop(nextLabel);
       };
 
       const applyStoredAdmissionsSettings = (settings = {}) => {
@@ -181,8 +202,9 @@
       }
 
       function syncAdmissionsStatusFromFirestore() {
+        clearAdmissionsBadge();
+
         if (!window.firebase?.firestore || !window.firebase?.apps?.length) {
-          updateAdmissionsBadge(readStoredSiteSettings());
           return;
         }
 
@@ -204,16 +226,16 @@
                   return;
                 }
 
-                updateAdmissionsBadge(readStoredSiteSettings());
+                clearAdmissionsBadge();
               },
               (error) => {
                 console.warn('Firestore site settings read failed:', error);
-                updateAdmissionsBadge(readStoredSiteSettings());
+                clearAdmissionsBadge();
               }
             );
         } catch (error) {
           console.warn('Firestore site settings listener failed:', error);
-          updateAdmissionsBadge(readStoredSiteSettings());
+          clearAdmissionsBadge();
         }
       }
 
@@ -275,18 +297,23 @@
         appId: "1:563809562931:web:750ff7e819f2d57e9dce46"
       };
 
-      const getResetActionUrl = () => {
-        const currentOrigin = window.location.origin;
-        const isSafeOrigin = Boolean(currentOrigin && currentOrigin !== 'null' && currentOrigin !== 'file://');
+      const RESET_ACTION_URL = 'https://timotech-films.web.app/reset-password/';
 
-        if (isSafeOrigin) {
-          return `${currentOrigin}/`;
+      const sendPasswordResetRequest = async (email) => {
+        try {
+          return await auth.sendPasswordResetEmail(email, {
+            url: RESET_ACTION_URL,
+            handleCodeInApp: true
+          });
+        } catch (error) {
+          const message = error?.message || '';
+          if (message.includes('unauthorized-continue-uri') || message.includes('allowlisted')) {
+            return auth.sendPasswordResetEmail(email);
+          }
+
+          throw error;
         }
-
-        return 'https://timotech-films.web.app/';
       };
-
-      const RESET_ACTION_URL = getResetActionUrl();
 
       const openLoginModal = () => {
         if (!loginModal || !loginBackdrop) return;
@@ -453,12 +480,7 @@
         }
 
         try {
-          const actionCodeSettings = {
-            url: RESET_ACTION_URL,
-            handleCodeInApp: false
-          };
-
-          await auth.sendPasswordResetEmail(email, actionCodeSettings);
+          await sendPasswordResetRequest(email);
           stateManager.setButtonLoading(submitButton?.id || 'reset-submit', false);
 
           if (resetStatus) {

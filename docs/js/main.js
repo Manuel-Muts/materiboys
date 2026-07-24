@@ -7,6 +7,7 @@ import { renderFooter } from './modules/footer.js';
 import { initImageSlider } from './slider.js';
 import { initRouter } from './router.js';
 import { initChatAssistant } from './chat-assistant.js';
+import { createOfflineNoticeMarkup, isBrowserOnline } from './modules/network-status.js';
 
 const app = document.getElementById('app');
 let deferredPrompt = null;
@@ -155,6 +156,19 @@ function registerInstallExperience() {
   });
 }
 
+function showOfflineNoticeIfNeeded() {
+  const existingNotice = document.querySelector('.network-status');
+  if (!existingNotice && !isBrowserOnline()) {
+    const notice = document.createElement('div');
+    notice.className = 'network-status';
+    notice.innerHTML = createOfflineNoticeMarkup({
+      title: 'Connection unavailable',
+      message: 'Some content may be unavailable while the connection is offline. Please check your network and try again.'
+    });
+    document.body.prepend(notice);
+  }
+}
+
 function initRevealOnScroll() {
   const targets = Array.from(document.querySelectorAll('.section, .hero-copy, .hero-card, .card, .cta-card, .location-card, .admissions-copy'));
 
@@ -247,8 +261,18 @@ if (app) {
 
 registerInstallExperience();
 showCookieBanner();
+showOfflineNoticeIfNeeded();
 initChatAssistant();
 window.addEventListener('load', resetPagePosition);
+window.addEventListener('online', () => {
+  const notice = document.querySelector('.network-status');
+  if (notice) {
+    notice.remove();
+  }
+});
+window.addEventListener('offline', () => {
+  showOfflineNoticeIfNeeded();
+});
 window.addEventListener('pageshow', (event) => {
   if (!event.persisted) {
     return;

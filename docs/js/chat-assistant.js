@@ -1,4 +1,6 @@
-﻿const WHATSAPP_NUMBER = '254721272094';
+﻿import { createOfflineNoticeMarkup, isBrowserOnline } from './modules/network-status.js';
+
+const WHATSAPP_NUMBER = '254721272094';
 
 const quickActions = [
   { label: 'Admissions', key: 'admissions' },
@@ -317,6 +319,23 @@ function addMessage(messages, text, type) {
   messages.scrollTop = messages.scrollHeight;
 }
 
+function showOfflineNoticeInChatAssistant() {
+  if (!document.querySelector('.chat-assistant')) return;
+  const existingNotice = document.querySelector('.chat-assistant .network-status');
+  if (!existingNotice && !isBrowserOnline()) {
+    const notice = document.createElement('div');
+    notice.className = 'network-status';
+    notice.innerHTML = createOfflineNoticeMarkup({
+      title: 'Connection unavailable',
+      message: 'Some content may be unavailable while the connection is offline.'
+    });
+    const panel = document.querySelector('.chat-assistant__panel');
+    if (panel) {
+      panel.prepend(notice);
+    }
+  }
+}
+
 export function initChatAssistant() {
   if (document.querySelector('.chat-assistant')) return;
 
@@ -365,6 +384,7 @@ export function initChatAssistant() {
   `;
 
   document.body.appendChild(root);
+  showOfflineNoticeInChatAssistant();
 
   const toggle = root.querySelector('.chat-assistant__toggle');
   const toggleIcon = root.querySelector('.chat-assistant__toggle-icon');
@@ -416,4 +436,13 @@ export function initChatAssistant() {
     input.value = '';
   });
 
+  window.addEventListener('online', () => {
+    const notice = document.querySelector('.chat-assistant .network-status');
+    if (notice) {
+      notice.remove();
+    }
+  });
+  window.addEventListener('offline', () => {
+    showOfflineNoticeInChatAssistant();
+  });
 }

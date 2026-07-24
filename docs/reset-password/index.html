@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reset Password | Matiri Boys</title>
+    <link rel="stylesheet" href="../styles/shared.css" />
+    <link rel="stylesheet" href="../styles/components.css" />
+    <style>
+      body {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, #07111f 0%, #113d83 48%, #1f6aa9 100%);
+        color: #f8fafc;
+        padding: 1.5rem;
+      }
+
+      .reset-card {
+        width: min(100%, 480px);
+        padding: 2rem;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.95);
+        color: #0f172a;
+        box-shadow: 0 24px 60px rgba(2, 8, 23, 0.28);
+      }
+
+      .reset-card h1 {
+        margin: 0 0 0.6rem;
+        font-size: 1.6rem;
+      }
+
+      .reset-card p {
+        margin: 0 0 1rem;
+        line-height: 1.6;
+        color: #475569;
+      }
+
+      .reset-card form {
+        display: grid;
+        gap: 0.9rem;
+      }
+
+      .reset-card input {
+        width: 100%;
+        padding: 0.8rem 0.95rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 12px;
+        font: inherit;
+      }
+
+      .reset-card button {
+        border: 0;
+        border-radius: 999px;
+        padding: 0.8rem 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        color: #fff;
+      }
+
+      .reset-card .status {
+        min-height: 1.3rem;
+        margin-top: 0.25rem;
+        font-size: 0.95rem;
+        color: #0f766e;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="reset-card">
+      <h1>Reset your password</h1>
+      <p>Enter a new password for your admin account.</p>
+      <form id="new-password-form">
+        <input type="password" id="new-password" name="password" placeholder="New password" required />
+        <input type="password" id="confirm-password" name="confirmPassword" placeholder="Confirm password" required />
+        <button type="submit">Update password</button>
+        <p class="status" id="reset-status" aria-live="polite"></p>
+      </form>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script>
+      const FIREBASE_CONFIG = {
+        apiKey: 'AIzaSyBIGqZLYcDg3CR5VamDwBhtOOfl2Y0NYeI',
+        authDomain: 'timotech-films.firebaseapp.com',
+        projectId: 'timotech-films',
+        storageBucket: 'timotech-films.firebasestorage.app',
+        messagingSenderId: '563809562931',
+        appId: '1:563809562931:web:750ff7e819f2d57e9dce46'
+      };
+
+      if (!window.firebase.apps?.length) {
+        window.firebase.initializeApp(FIREBASE_CONFIG);
+      }
+
+      const auth = window.firebase.auth();
+      const form = document.getElementById('new-password-form');
+      const statusEl = document.getElementById('reset-status');
+
+      const getModeParams = () => {
+        const params = new URLSearchParams(window.location.search);
+        return {
+          oobCode: params.get('oobCode') || '',
+          mode: params.get('mode') || ''
+        };
+      };
+
+      const verifyResetLink = async () => {
+        const { oobCode, mode } = getModeParams();
+        if (!oobCode || mode !== 'resetPassword') {
+          statusEl.textContent = 'This reset link is invalid or has expired.';
+          return false;
+        }
+
+        try {
+          await auth.applyActionCode(oobCode);
+          statusEl.textContent = 'The password reset link is valid. Enter a new password below.';
+          return true;
+        } catch (error) {
+          statusEl.textContent = error?.message || 'This reset link is invalid or has expired.';
+          return false;
+        }
+      };
+
+      let isLinkVerified = false;
+
+      verifyResetLink().then((verified) => {
+        isLinkVerified = verified;
+      });
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const password = document.getElementById('new-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+
+        if (!password || password.length < 6) {
+          statusEl.textContent = 'Use a password with at least 6 characters.';
+          return;
+        }
+
+        if (password !== confirmPassword) {
+          statusEl.textContent = 'Passwords do not match.';
+          return;
+        }
+
+        if (!isLinkVerified) {
+          statusEl.textContent = 'The reset link has not been verified yet.';
+          return;
+        }
+
+        const { oobCode } = getModeParams();
+
+        try {
+          await auth.confirmPasswordReset(oobCode, password);
+          statusEl.textContent = 'Password updated successfully. You can now sign in.';
+          form.reset();
+        } catch (error) {
+          statusEl.textContent = error?.message || 'Unable to update password.';
+        }
+      });
+    </script>
+  </body>
+</html>

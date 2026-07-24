@@ -1,3 +1,5 @@
+import { createOfflineNoticeMarkup, isBrowserOnline } from './network-status.js';
+
 function escapeHtml(value = '') {
   return String(value)
     .replace(/&/g, '&amp;')
@@ -5,6 +7,94 @@ function escapeHtml(value = '') {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+function sanitizeNewsStoryHtml(html = '') {
+  if (!html) {
+    return '';
+  }
+
+  const container = document.createElement('div');
+  container.innerHTML = html;
+
+  const allowedTags = new Set(['p', 'div', 'span', 'br', 'strong', 'b', 'em', 'i', 'u', 'ul', 'ol', 'li', 'a', 'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
+  const allowedStyles = new Set(['font-weight', 'font-style', 'text-decoration', 'color', 'background-color', 'text-align', 'font-size']);
+
+  const sanitizeNode = (node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      return;
+    }
+
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      return;
+    }
+
+    const tagName = node.tagName.toLowerCase();
+    if (!allowedTags.has(tagName)) {
+      const fragment = document.createDocumentFragment();
+      Array.from(node.childNodes).forEach((child) => fragment.appendChild(child));
+      node.replaceWith(fragment);
+      return;
+    }
+
+    if (tagName === 'a') {
+      const href = node.getAttribute('href');
+      const isSafeHref = href && /^(https?:|mailto:|tel:|\/)/i.test(href);
+      if (!isSafeHref) {
+        node.removeAttribute('href');
+      }
+      node.setAttribute('rel', 'noopener noreferrer');
+      node.setAttribute('target', '_blank');
+    }
+
+    const styleAttr = node.getAttribute('style');
+    if (styleAttr) {
+      const sanitizedStyles = styleAttr
+        .split(';')
+        .map((entry) => entry.trim())
+        .filter(Boolean)
+        .map((entry) => {
+          const [property, ...valueParts] = entry.split(':');
+          const normalizedProperty = property.trim().toLowerCase();
+          const value = valueParts.join(':').trim();
+          if (!allowedStyles.has(normalizedProperty)) {
+            return '';
+          }
+
+          const safeValue = value.replace(/javascript:/gi, '').replace(/on\w+/gi, '').trim();
+          return `${normalizedProperty}: ${safeValue}`;
+        })
+        .filter(Boolean);
+
+      const hasHighlight = sanitizedStyles.some((entry) => entry.toLowerCase().includes('background-color'));
+      if (hasHighlight) {
+        node.classList.add('news-highlight');
+        const hasExplicitColor = sanitizedStyles.some((entry) => entry.toLowerCase().startsWith('color:'));
+        if (!hasExplicitColor) {
+          sanitizedStyles.push('color: #07111f');
+        }
+      }
+
+      if (sanitizedStyles.length) {
+        node.setAttribute('style', sanitizedStyles.join('; '));
+      } else {
+        node.removeAttribute('style');
+      }
+    }
+
+    Array.from(node.attributes).forEach((attribute) => {
+      const attributeName = attribute.name.toLowerCase();
+      if (attributeName === 'style' || attributeName === 'href' || attributeName === 'target' || attributeName === 'rel' || attributeName === 'class') {
+        return;
+      }
+      node.removeAttribute(attribute.name);
+    });
+
+    Array.from(node.childNodes).forEach(sanitizeNode);
+  };
+
+  Array.from(container.childNodes).forEach(sanitizeNode);
+  return container.innerHTML;
 }
 
 const FIREBASE_CONFIG = {
@@ -67,8 +157,12 @@ function readStoredNewsPosts() {
 }
 
 async function fetchNewsPostsFromFirestore() {
+  if (!navigator.onLine) {
+    return { posts: readStoredNewsPosts(), offline: true };
+  }
+
   if (!firebaseDb) {
-    return readStoredNewsPosts();
+    return { posts: readStoredNewsPosts(), offline: true };
   }
 
   try {
@@ -77,10 +171,10 @@ async function fetchNewsPostsFromFirestore() {
     snapshot.forEach((doc) => {
       posts.push({ ...doc.data(), id: doc.id });
     });
-    return posts.length > 0 ? posts : readStoredNewsPosts();
+    return { posts: posts.length > 0 ? posts : readStoredNewsPosts(), offline: false };
   } catch (error) {
     console.warn('Firestore fetch failed, using localStorage:', error);
-    return readStoredNewsPosts();
+    return { posts: readStoredNewsPosts(), offline: true };
   }
 }
 
@@ -89,10 +183,10 @@ export async function renderNewsPage() {
   section.className = 'legal-page-shell';
   section.id = 'news-page';
 
-  const posts = await fetchNewsPostsFromFirestore();
+  const { posts, offline } = await fetchNewsPostsFromFirestore();
   const postsMarkup = posts.length
     ? posts.map((post) => {
-        const story = post.story ? `<p>${escapeHtml(post.story)}</p>` : '';
+        const story = post.story ? `<div class="news-story-content">${sanitizeNewsStoryHtml(post.story)}</div>` : '';
         const attachment = getAttachmentPreview(post);
         const youtubeEmbed = post.youtubeUrl ? getYoutubeEmbedUrl(post.youtubeUrl) : '';
         const videoMarkup = youtubeEmbed
@@ -108,12 +202,17 @@ export async function renderNewsPage() {
           </article>
         `;
       }).join('')
-    : `
-      <article class="legal-section">
-        <h2>No stories yet</h2>
-        <p>School news posts will appear here once they are added by the school.</p>
-      </article>
-    `;
+    : offline
+      ? createOfflineNoticeMarkup({
+          title: 'News unavailable right now',
+          message: 'We could not load the latest school news because the connection is unavailable or the feed is temporarily unreachable.'
+        })
+      : `
+        <article class="legal-section">
+          <h2>No stories yet</h2>
+          <p>School news posts will appear here once they are added by the school.</p>
+        </article>
+      `;
 
   section.innerHTML = `
     <section class="legal-page">

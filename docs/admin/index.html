@@ -23,6 +23,10 @@
           <p>Manage school content</p>
         </div>
         <nav class="admin-sidebar__nav" aria-label="Admin navigation">
+          <label class="admin-sidebar__toggle" for="admin-admissions-toggle">
+            <input type="checkbox" id="admin-admissions-toggle" />
+            <span class="admin-sidebar__toggle-text" id="admin-admissions-toggle-text">Admissions is open</span>
+          </label>
           <button class="admin-sidebar__link is-active" type="button" data-section="Admissions upload" data-title="Admission form" data-heading="Upload admissions document" data-description="Choose a document to make it available on the admissions page." data-storage-key="admissions" data-page="application-form.html" data-mode="document">Admissions upload</button>
           <button class="admin-sidebar__link" type="button" data-section="Fee schedule upload" data-title="Fee schedule" data-heading="Upload fee schedule" data-description="Choose a fee schedule document to make it available on the downloads page." data-storage-key="fee-schedule" data-page="fee-schedule.html" data-mode="document">Fee schedule upload</button>
           <button class="admin-sidebar__link" type="button" data-section="Interview requirements upload" data-title="Interview requirements" data-heading="Upload interview requirements" data-description="Choose a document to share interview requirements with applicants." data-storage-key="interview-requirements" data-page="interview-requirements.html" data-mode="document">Interview requirements upload</button>
@@ -49,10 +53,6 @@
             <label class="admin-form__field" id="title-field">
               <span>Title</span>
               <input type="text" id="admin-title-input" name="title" value="Admission form" placeholder="Application form" />
-            </label>
-            <label class="admin-form__toggle" for="admin-admissions-toggle">
-              <input type="checkbox" id="admin-admissions-toggle" />
-              <span class="admin-form__toggle-text" id="admin-admissions-toggle-text">Admissions is open</span>
             </label>
             <div class="admin-form__group" id="vacancies-fields" hidden>
               <div class="admin-form__group admin-form__group--two-col">
@@ -123,6 +123,7 @@
 
     <script type="module">
       import { stateManager } from '../js/modules/state-manager.js';
+      import { showToast } from '../js/modules/toast.js';
 
       const buttons = Array.from(document.querySelectorAll('.admin-sidebar__link'));
       const titleInput = document.getElementById('admin-title-input');
@@ -352,7 +353,7 @@
       auth?.onAuthStateChanged?.((user) => {
         currentAdminUser = user;
         if (!user) {
-          statusText.textContent = 'Please sign in from the home page to sync this setting with Firebase.';
+          showToast('Please sign in from the home page to sync this setting with Firebase.', { type: 'info' });
           return;
         }
 
@@ -637,7 +638,7 @@
           }
 
           renderManagementPanel();
-          statusText.textContent = 'Item removed.';
+          showToast('Item removed.', { type: 'info' });
           return;
         }
 
@@ -716,11 +717,11 @@
 
         const firebaseSaved = await writeSiteSettingsToFirestore(ADMISSIONS_SETTINGS_ID, settings);
         if (firebaseSaved) {
-          statusText.textContent = isAdmissionsOpen ? 'Admissions opened successfully.' : 'Admissions closed successfully.';
+          showToast(isAdmissionsOpen ? 'Admissions opened successfully.' : 'Admissions closed successfully.', { type: 'success' });
         } else if (!auth?.currentUser) {
-          statusText.textContent = 'Saved locally on this device. Sign in with an admin account to sync the public website in Firestore.';
+          showToast('Saved locally on this device. Sign in with an admin account to sync the public website in Firestore.', { type: 'info' });
         } else {
-          statusText.textContent = 'The Firebase site settings update is not available right now. Your local setting has been saved.';
+          showToast('The Firebase site settings update is not available right now. Your local setting has been saved.', { type: 'info' });
         }
       });
 
@@ -739,7 +740,7 @@
           const post = postInput.value.trim();
 
           if (!pathway || !subjects || !post) {
-            statusText.textContent = 'Please fill in the pathway, subjects, and post fields.';
+            showToast('Please fill in the pathway, subjects, and post fields.', { type: 'error' });
             return;
           }
 
@@ -750,7 +751,7 @@
             updatedAt: new Date().toISOString()
           });
 
-          statusText.textContent = `Vacancy updated for ${pathway}.`;
+          showToast(`Vacancy updated for ${pathway}.`, { type: 'success' });
           uploadForm.reset();
           titleInput.value = documentTitle;
           pathwayInput.value = '';
@@ -767,7 +768,7 @@
           const post = postInput.value.trim();
 
           if (!pathway || !subjects || !post) {
-            statusText.textContent = 'Please fill in the pathway, subjects, and post fields.';
+            showToast('Please fill in the pathway, subjects, and post fields.', { type: 'error' });
             return;
           }
 
@@ -778,7 +779,7 @@
             createdAt: new Date().toISOString()
           });
 
-          statusText.textContent = `Vacancy saved for ${pathway} with ${subjects}.`;
+          showToast(`Vacancy saved for ${pathway} with ${subjects}.`, { type: 'success' });
           uploadForm.reset();
           titleInput.value = documentTitle;
           pathwayInput.value = '';
@@ -800,7 +801,7 @@
             updatedAt: new Date().toISOString()
           });
 
-          statusText.textContent = `News post updated. “${documentTitle}” has been revised.`;
+          showToast(`News post updated. “${documentTitle}” has been revised.`, { type: 'success' });
           uploadForm.reset();
           titleInput.value = documentTitle;
           storyEditor.innerHTML = '';
@@ -817,7 +818,7 @@
           const attachedFile = fileInput.files[0];
 
           if (!storyText && !attachedFile && !youtubeUrl) {
-            statusText.textContent = 'Please add a story, an attachment, or a YouTube link.';
+            showToast('Please add a story, an attachment, or a YouTube link.', { type: 'error' });
             return;
           }
 
@@ -825,7 +826,7 @@
           let attachmentFileName = '';
           let attachmentMimeType = '';
           if (attachedFile) {
-            statusText.textContent = 'Uploading attachment to Cloudinary...';
+            showToast('Uploading attachment to Cloudinary...', { type: 'info' });
             const formData = new FormData();
             formData.append('file', attachedFile);
             formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
@@ -846,7 +847,7 @@
               attachmentFileName = attachedFile.name;
               attachmentMimeType = attachedFile.type || 'application/octet-stream';
             } catch (error) {
-              statusText.textContent = `News save failed: ${error.message}`;
+              showToast(`News save failed: ${error.message}`, { type: 'error' });
               return;
             }
           }
@@ -861,7 +862,7 @@
             createdAt: new Date().toISOString()
           });
 
-          statusText.textContent = `News post saved. “${documentTitle}” is ready for the school news section.`;
+          showToast(`News post saved. “${documentTitle}” is ready for the school news section.`, { type: 'success' });
           uploadForm.reset();
           titleInput.value = documentTitle;
           storyEditor.innerHTML = '';
@@ -873,7 +874,7 @@
         if (activeEditState?.mode === 'document') {
           const existingDocument = readStoredDocuments()[activeEditState.storageKey];
           writeStoredDocument(activeEditState.storageKey, documentTitle, existingDocument?.url || '');
-          statusText.textContent = `Document updated. “${documentTitle}” was revised.`;
+          showToast(`Document updated. “${documentTitle}” was revised.`, { type: 'success' });
           uploadForm.reset();
           titleInput.value = documentTitle;
           resetFormState();
@@ -883,11 +884,10 @@
 
         const file = fileInput.files[0];
         if (!file) {
-          statusText.textContent = 'Please choose a file first.';
+          showToast('Please choose a file first.', { type: 'error' });
           return;
         }
 
-        statusText.textContent = '';
         submitButton.disabled = true;
 
         let progressContainer = document.getElementById('admin-upload-progress');
@@ -941,19 +941,19 @@
                 storageType: 'cloudinary'
               });
 
-              statusText.textContent = 'Uploaded successfully.';
+              showToast('Uploaded successfully.', { type: 'success' });
               uploadForm.reset();
               titleInput.value = documentTitle;
               renderManagementPanel();
             } catch (error) {
-              statusText.textContent = `Upload failed: ${error.message}`;
+              showToast(`Upload failed: ${error.message}`, { type: 'error' });
             }
           } else {
             try {
               const result = JSON.parse(xhr.responseText);
-              statusText.textContent = result.error?.message || 'Upload failed';
+              showToast(result.error?.message || 'Upload failed', { type: 'error' });
             } catch (error) {
-              statusText.textContent = 'Upload failed';
+              showToast('Upload failed', { type: 'error' });
             }
           }
         });
@@ -961,22 +961,22 @@
         xhr.addEventListener('error', () => {
           progressContainer.remove();
           submitButton.disabled = false;
-          statusText.textContent = 'Upload failed: network error.';
+          showToast('Upload failed: network error.', { type: 'error' });
         });
 
         xhr.addEventListener('abort', () => {
           progressContainer.remove();
           submitButton.disabled = false;
-          statusText.textContent = 'Upload cancelled.';
+          showToast('Upload cancelled.', { type: 'info' });
         });
 
         try {
-          xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`);
+          xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`);
           xhr.send(formData);
         } catch (error) {
           progressContainer.remove();
           submitButton.disabled = false;
-          statusText.textContent = `Upload failed: ${error.message}`;
+          showToast(`Upload failed: ${error.message}`, { type: 'error' });
         }
       });
 
