@@ -26,6 +26,8 @@ body {
   padding: 1.5rem 0.9rem;
   overflow-y: auto;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .admin-sidebar__header h1 {
@@ -41,6 +43,7 @@ body {
 .admin-sidebar__nav {
   display: grid;
   gap: 0.6rem;
+  flex: 1;
 }
 
 .admin-sidebar__link {
@@ -71,6 +74,50 @@ body {
   align-items: center;
   gap: 1rem;
   margin-bottom: 1.25rem;
+}
+
+.admin-main__header > div:first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-main__header a {
+  flex-shrink: 0;
+}
+
+.admin-header__actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.admin-sidebar__logout {
+  margin-top: auto;
+  padding: 0.8rem 0.95rem;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.admin-sidebar__logout:hover {
+  background: rgba(239, 68, 68, 0.25);
+  color: #fecaca;
+}
+
+.admin-sidebar__logout:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.admin-sidebar__logout.is-loading {
+  opacity: 1;
 }
 
 .admin-main__header h2 {
@@ -117,6 +164,28 @@ body {
   display: grid;
   gap: 0.4rem;
   font-weight: 600;
+}
+
+.admin-form__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.8rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(15, 118, 110, 0.2);
+  border-radius: 12px;
+  background: rgba(15, 118, 110, 0.06);
+  font-weight: 700;
+}
+
+.admin-form__toggle input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: #0f766e;
+}
+
+.admin-form__toggle-text {
+  color: #0f766e;
 }
 
 .admin-form__field input,
@@ -177,6 +246,44 @@ body {
   content: attr(data-placeholder);
   color: #94a3b8;
   pointer-events: none;
+}
+
+.admin-form__progress {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(15, 118, 110, 0.1);
+  border: 1px solid rgba(15, 118, 110, 0.2);
+  border-radius: 8px;
+}
+
+.admin-form__progress-bar {
+  width: 100%;
+  height: 24px;
+  background: rgba(15, 118, 110, 0.2);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.admin-form__progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0f766e, #14b8a6);
+  width: 0%;
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+}
+
+.admin-form__progress-text {
+  margin: 0;
+  color: #0f766e;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-align: center;
 }
 
 .admin-form__status {

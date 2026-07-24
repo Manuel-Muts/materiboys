@@ -30,6 +30,7 @@
           <button class="admin-sidebar__link" type="button" data-section="Vacancies" data-title="Vacancies" data-heading="Post a vacancy" data-description="Add a new vacancy with pathway, subjects, and post details." data-storage-key="vacancies" data-mode="vacancies">Vacancies</button>
           <button class="admin-sidebar__link" type="button" data-section="News &amp; blogs" data-title="School news" data-heading="Create school news post" data-description="Write a story for the school news section and optionally add an attachment or a YouTube link." data-storage-key="news" data-mode="news">News &amp; blogs</button>
         </nav>
+        <button id="admin-logout-button" class="admin-sidebar__logout" type="button">Logout</button>
       </aside>
 
       <main class="admin-main">
@@ -48,6 +49,10 @@
             <label class="admin-form__field" id="title-field">
               <span>Title</span>
               <input type="text" id="admin-title-input" name="title" value="Admission form" placeholder="Application form" />
+            </label>
+            <label class="admin-form__toggle" for="admin-admissions-toggle">
+              <input type="checkbox" id="admin-admissions-toggle" />
+              <span class="admin-form__toggle-text" id="admin-admissions-toggle-text">Admissions is open</span>
             </label>
             <div class="admin-form__group" id="vacancies-fields" hidden>
               <div class="admin-form__group admin-form__group--two-col">
@@ -116,7 +121,9 @@
       </main>
     </div>
 
-    <script>
+    <script type="module">
+      import { stateManager } from '../js/modules/state-manager.js';
+
       const buttons = Array.from(document.querySelectorAll('.admin-sidebar__link'));
       const titleInput = document.getElementById('admin-title-input');
       const sectionTitle = document.getElementById('admin-section-title');
@@ -137,25 +144,30 @@
       const postInput = document.getElementById('admin-post-input');
       const managementBody = document.getElementById('admin-management-body');
       const managementCaption = document.getElementById('admin-management-caption');
+      const admissionsToggle = document.getElementById('admin-admissions-toggle');
+      const admissionsToggleText = document.getElementById('admin-admissions-toggle-text');
 
       const CLOUDINARY_CLOUD_NAME = 'djbkqazzt';
       const CLOUDINARY_UPLOAD_PRESET = 'matiriboys';
       const DOCS_STORAGE_KEY = 'school-download-docs';
       const NEWS_STORAGE_KEY = 'school-news-posts';
       const VACANCIES_STORAGE_KEY = 'school-vacancies';
+      const SETTINGS_STORAGE_KEY = 'school-site-settings';
+      const ADMISSIONS_SETTINGS_ID = 'admissions';
       let activeEditState = null;
 
       const FIREBASE_CONFIG = {
-        apiKey: '',
-        authDomain: '',
-        projectId: '',
-        storageBucket: '',
-        messagingSenderId: '',
-        appId: ''
+        apiKey: 'AIzaSyBIGqZLYcDg3CR5VamDwBhtOOfl2Y0NYeI',
+        authDomain: 'timotech-films.firebaseapp.com',
+        projectId: 'timotech-films',
+        storageBucket: 'timotech-films.firebasestorage.app',
+        messagingSenderId: '563809562931',
+        appId: '1:563809562931:web:750ff7e819f2d57e9dce46'
       };
 
       let db = null;
       let auth = null;
+      let currentAdminUser = null;
 
       if (window.firebase?.app && typeof window.firebase.initializeApp === 'function') {
         const hasConfig = FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.authDomain && FIREBASE_CONFIG.projectId && FIREBASE_CONFIG.appId;
@@ -169,6 +181,13 @@
           }
         }
       }
+
+      const initialSettings = readStoredSiteSettings();
+      if (admissionsToggle && admissionsToggleText) {
+        admissionsToggle.checked = getAdmissionsStatusFromSettings(initialSettings);
+        admissionsToggleText.textContent = getAdmissionsStatusFromSettings(initialSettings) ? 'Admissions is open' : 'Admissions is closed';
+      }
+      syncAdmissionsStatusFromFirestore();
 
       function writeNewsToFirestore(post) {
         if (!db) return;
@@ -221,6 +240,32 @@
         }
       }
 
+      function writeDocumentToFirestore(documentRecord) {
+        if (!db) return;
+        try {
+          db.collection('documents').doc(documentRecord.id).set({
+            title: documentRecord.title,
+            url: documentRecord.url,
+            storageKey: documentRecord.storageKey,
+            fileName: documentRecord.fileName || '',
+            mimeType: documentRecord.mimeType || '',
+            storageType: documentRecord.storageType || 'cloudinary',
+            updatedAt: new Date().toISOString()
+          }, { merge: true }).catch((error) => console.warn('Firestore document write failed:', error));
+        } catch (error) {
+          console.warn('Firestore document error:', error);
+        }
+      }
+
+      function deleteDocumentFromFirestore(documentId) {
+        if (!db) return;
+        try {
+          db.collection('documents').doc(documentId).delete().catch((error) => console.warn('Firestore document delete failed:', error));
+        } catch (error) {
+          console.warn('Firestore document error:', error);
+        }
+      }
+
       function escapeHtml(value = '') {
         return String(value)
           .replace(/&/g, '&amp;')
@@ -242,10 +287,78 @@
         }
       }
 
+      function readStoredSiteSettings() {
+        try {
+          return JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY) || '{}');
+        } catch (error) {
+          return {};
+        }
+      }
+
+      function writeStoredSiteSettings(settings = {}) {
+        localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+      }
+
+      function getAdmissionsStatusFromSettings(settings = {}) {
+        return settings.admissionsOpen !== false;
+      }
+
+      async function writeSiteSettingsToFirestore(settingsId, settings = {}) {
+        if (!db || !auth?.currentUser) {
+          return false;
+        }
+
+        try {
+          await db.collection('site-settings').doc(settingsId).set({
+            admissionsOpen: settings.admissionsOpen,
+            updatedAt: new Date().toISOString()
+          }, { merge: true });
+          return true;
+        } catch (error) {
+          console.warn('Firestore site settings write failed:', error);
+          return false;
+        }
+      }
+
+      async function syncAdmissionsStatusFromFirestore() {
+        if (!db) {
+          return;
+        }
+
+        try {
+          const snapshot = await db.collection('site-settings').doc(ADMISSIONS_SETTINGS_ID).get();
+          if (!snapshot.exists) {
+            return;
+          }
+
+          const settings = snapshot.data() || {};
+          writeStoredSiteSettings({ admissionsOpen: settings.admissionsOpen !== false });
+          const admissionsToggle = document.getElementById('admin-admissions-toggle');
+          const admissionsToggleText = document.getElementById('admin-admissions-toggle-text');
+          if (admissionsToggle && admissionsToggleText) {
+            admissionsToggle.checked = settings.admissionsOpen !== false;
+            admissionsToggleText.textContent = settings.admissionsOpen !== false ? 'Admissions is open' : 'Admissions is closed';
+          }
+        } catch (error) {
+          console.warn('Firestore site settings sync failed:', error);
+        }
+      }
+
+      auth?.onAuthStateChanged?.((user) => {
+        currentAdminUser = user;
+        if (!user) {
+          statusText.textContent = 'Please sign in from the home page to sync this setting with Firebase.';
+          return;
+        }
+
+        statusText.textContent = '';
+        syncAdmissionsStatusFromFirestore();
+      });
+
       function writeStoredDocument(storageKey, title, url, metadata = {}) {
         const documents = readStoredDocuments();
         const existing = documents[storageKey] || {};
-        documents[storageKey] = {
+        const documentRecord = {
           title,
           url,
           storageKey,
@@ -254,14 +367,20 @@
           mimeType: metadata.mimeType || existing.mimeType || '',
           storageType: metadata.storageType || existing.storageType || 'cloudinary'
         };
+        documents[storageKey] = documentRecord;
         localStorage.setItem(DOCS_STORAGE_KEY, JSON.stringify(documents));
+        writeDocumentToFirestore(documentRecord);
         window.dispatchEvent(new Event('school-documents-updated'));
       }
 
       function deleteStoredDocument(storageKey) {
         const documents = readStoredDocuments();
+        const documentRecord = documents[storageKey];
         delete documents[storageKey];
         localStorage.setItem(DOCS_STORAGE_KEY, JSON.stringify(documents));
+        if (documentRecord?.id) {
+          deleteDocumentFromFirestore(documentRecord.id);
+        }
         window.dispatchEvent(new Event('school-documents-updated'));
       }
 
@@ -582,6 +701,23 @@
       storyEditor.addEventListener('input', updateStoryPlaceholder);
       storyEditor.addEventListener('blur', updateStoryPlaceholder);
 
+      admissionsToggle?.addEventListener('change', async () => {
+        const isAdmissionsOpen = admissionsToggle.checked;
+        const settings = readStoredSiteSettings();
+        settings.admissionsOpen = isAdmissionsOpen;
+        writeStoredSiteSettings(settings);
+        admissionsToggleText.textContent = isAdmissionsOpen ? 'Admissions is open' : 'Admissions is closed';
+
+        const firebaseSaved = await writeSiteSettingsToFirestore(ADMISSIONS_SETTINGS_ID, settings);
+        if (firebaseSaved) {
+          statusText.textContent = isAdmissionsOpen ? 'Admissions opened successfully.' : 'Admissions closed successfully.';
+        } else if (!auth?.currentUser) {
+          statusText.textContent = 'Please sign in from the home page to sync this setting with Firebase.';
+        } else {
+          statusText.textContent = 'The Firebase site settings update is not available right now. Your local setting has been saved.';
+        }
+      });
+
       uploadForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
@@ -745,38 +881,123 @@
           return;
         }
 
-        statusText.textContent = 'Uploading to Cloudinary...';
+        statusText.textContent = '';
+        submitButton.disabled = true;
+
+        let progressContainer = document.getElementById('admin-upload-progress');
+        if (!progressContainer) {
+          progressContainer = document.createElement('div');
+          progressContainer.className = 'admin-form__progress';
+          progressContainer.id = 'admin-upload-progress';
+          progressContainer.innerHTML = `
+            <div class="admin-form__progress-bar">
+              <div class="admin-form__progress-fill" id="admin-progress-fill"></div>
+            </div>
+            <p class="admin-form__progress-text" id="admin-progress-text">0%</p>
+          `;
+          fileField.insertAdjacentElement('afterend', progressContainer);
+        }
+
+        const progressFill = document.getElementById('admin-progress-fill');
+        const progressText = document.getElementById('admin-progress-text');
+        progressFill.style.width = '0%';
+        progressText.textContent = '0%';
+        progressContainer.hidden = false;
 
         const formData = new FormData();
         formData.append('file', file);
         formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
         formData.append('folder', 'school-documents');
 
-        try {
-          const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`, {
-            method: 'POST',
-            body: formData
-          });
+        const xhr = new XMLHttpRequest();
 
-          const result = await response.json();
-
-          if (!response.ok) {
-            throw new Error(result.error?.message || 'Upload failed');
+        xhr.upload.addEventListener('progress', (event) => {
+          if (!event.lengthComputable) {
+            return;
           }
 
-          writeStoredDocument(storageKey, documentTitle, result.secure_url, {
-            fileName: file.name,
-            mimeType: file.type || 'application/octet-stream',
-            storageType: 'cloudinary'
-          });
-          statusText.textContent = `Upload complete. “${documentTitle}” is linked to the downloads menu and ${pageName}.`;
-          uploadForm.reset();
-          titleInput.value = documentTitle;
-          renderManagementPanel();
+          const percentComplete = Math.round((event.loaded / event.total) * 100);
+          progressFill.style.width = `${percentComplete}%`;
+          progressText.textContent = `${percentComplete}%`;
+        });
+
+        xhr.addEventListener('load', () => {
+          progressContainer.remove();
+          submitButton.disabled = false;
+
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              const result = JSON.parse(xhr.responseText);
+
+              writeStoredDocument(storageKey, documentTitle, result.secure_url, {
+                fileName: file.name,
+                mimeType: file.type || 'application/octet-stream',
+                storageType: 'cloudinary'
+              });
+
+              statusText.textContent = 'Uploaded successfully.';
+              uploadForm.reset();
+              titleInput.value = documentTitle;
+              renderManagementPanel();
+            } catch (error) {
+              statusText.textContent = `Upload failed: ${error.message}`;
+            }
+          } else {
+            try {
+              const result = JSON.parse(xhr.responseText);
+              statusText.textContent = result.error?.message || 'Upload failed';
+            } catch (error) {
+              statusText.textContent = 'Upload failed';
+            }
+          }
+        });
+
+        xhr.addEventListener('error', () => {
+          progressContainer.remove();
+          submitButton.disabled = false;
+          statusText.textContent = 'Upload failed: network error.';
+        });
+
+        xhr.addEventListener('abort', () => {
+          progressContainer.remove();
+          submitButton.disabled = false;
+          statusText.textContent = 'Upload cancelled.';
+        });
+
+        try {
+          xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`);
+          xhr.send(formData);
         } catch (error) {
+          progressContainer.remove();
+          submitButton.disabled = false;
           statusText.textContent = `Upload failed: ${error.message}`;
         }
       });
+
+      // Logout functionality
+      const logoutButton = document.getElementById('admin-logout-button');
+      if (logoutButton) {
+        logoutButton.addEventListener('click', () => {
+          // Show loading state
+          stateManager.setButtonLoading('admin-logout-button', true, {
+            loadingText: 'Logging out...'
+          });
+
+          if (auth) {
+            auth.signOut().then(() => {
+              window.location.href = '../home/';
+            }).catch((error) => {
+              console.error('Logout failed:', error);
+              // Hide loading state and redirect anyway if logout fails
+              stateManager.setButtonLoading('admin-logout-button', false);
+              window.location.href = '../home/';
+            });
+          } else {
+            // If Firebase is not configured, just redirect
+            window.location.href = '../home/';
+          }
+        });
+      }
     </script>
   </body>
 </html>

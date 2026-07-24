@@ -58,20 +58,105 @@
             <span>Password</span>
             <input type="password" name="password" placeholder="Enter password" required />
           </label>
-          <button type="submit" class="button button--primary login-modal__submit">Login</button>
-          <button type="button" class="login-modal__forgot" data-forgot-password>Forgot password?</button>
+          <button type="submit" id="login-submit" class="button button--primary login-modal__submit">Login</button>
+          <button type="button" id="forgot-password-button" class="login-modal__forgot" data-forgot-password>Forgot password?</button>
           <p class="login-modal__status" aria-live="polite"></p>
         </form>
       </div>
     </div>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script type="module" src="../js/main.js"></script>
     <script type="module">
       import { initChatAssistant } from '../js/chat-assistant.js';
+      import { stateManager } from '../js/modules/state-manager.js';
 
       const typingBadge = document.querySelector('.school-intro .eyebrow');
       const bannerImages = Array.from(document.querySelectorAll('.banner-visual__image'));
+      const SETTINGS_STORAGE_KEY = 'school-site-settings';
+      const ADMISSIONS_SETTINGS_ID = 'admissions';
+      let firebaseDb = null;
+      let admissionsSettingsUnsubscribe = null;
+
+      const updateAdmissionsBadge = (settings = {}) => {
+        const isAdmissionsOpen = settings.admissionsOpen !== false;
+        if (typingBadge) {
+          typingBadge.textContent = isAdmissionsOpen ? 'Admissions Open' : 'Admissions Closed';
+          typingBadge.dataset.text = isAdmissionsOpen ? 'Admissions Open' : 'Admissions Closed';
+          typingBadge.classList.toggle('is-open', isAdmissionsOpen);
+          typingBadge.classList.toggle('is-closed', !isAdmissionsOpen);
+        }
+      };
+
+      const applyStoredAdmissionsSettings = (settings = {}) => {
+        localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+        updateAdmissionsBadge(settings);
+      };
+
+      function readStoredSiteSettings() {
+        try {
+          return JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY) || '{}');
+        } catch (error) {
+          return {};
+        }
+      }
+
+      function syncAdmissionsStatusFromFirestore() {
+        if (!window.firebase?.firestore || !window.firebase?.apps?.length) {
+          updateAdmissionsBadge(readStoredSiteSettings());
+          return;
+        }
+
+        try {
+          firebaseDb = window.firebase.firestore();
+
+          if (admissionsSettingsUnsubscribe) {
+            admissionsSettingsUnsubscribe();
+          }
+
+          admissionsSettingsUnsubscribe = firebaseDb
+            .collection('site-settings')
+            .doc(ADMISSIONS_SETTINGS_ID)
+            .onSnapshot(
+              (snapshot) => {
+                if (snapshot.exists) {
+                  const settings = snapshot.data() || {};
+                  applyStoredAdmissionsSettings(settings);
+                  return;
+                }
+
+                updateAdmissionsBadge(readStoredSiteSettings());
+              },
+              (error) => {
+                console.warn('Firestore site settings read failed:', error);
+                updateAdmissionsBadge(readStoredSiteSettings());
+              }
+            );
+        } catch (error) {
+          console.warn('Firestore site settings listener failed:', error);
+          updateAdmissionsBadge(readStoredSiteSettings());
+        }
+      }
+
+      window.addEventListener('storage', (event) => {
+        if (event.key !== SETTINGS_STORAGE_KEY) {
+          return;
+        }
+
+        try {
+          const nextSettings = JSON.parse(event.newValue || '{}');
+          updateAdmissionsBadge(nextSettings);
+        } catch (error) {
+          updateAdmissionsBadge({});
+        }
+      });
+
+      window.addEventListener('focus', () => {
+        syncAdmissionsStatusFromFirestore();
+      });
+
+      syncAdmissionsStatusFromFirestore();
       if (bannerImages.length > 1) {
         let activeIndex = 0;
 
@@ -160,6 +245,7 @@
           return;
         }
 
+        const submitButton = loginForm.querySelector('button[type="submit"]');
         const formData = new FormData(loginForm);
         const email = String(formData.get('email') || '').trim();
         const password = String(formData.get('password') || '');
@@ -171,17 +257,33 @@
           return;
         }
 
+        // Show loading state
+        stateManager.setButtonLoading(submitButton?.id || 'login-submit', true, {
+          loadingText: 'Signing in...'
+        });
+
         if (loginStatus) {
-          loginStatus.textContent = 'Signing in...';
+          loginStatus.textContent = '';
         }
 
         try {
           const credential = await auth.signInWithEmailAndPassword(email, password);
+          
+          // Hide loading state on success
+          stateManager.setButtonLoading(submitButton?.id || 'login-submit', false);
+          
           if (loginStatus) {
             loginStatus.textContent = `Welcome back, ${credential.user?.email || 'admin'}.`;
           }
-          window.location.href = '../admin/';
+          
+          // Redirect after brief delay
+          window.setTimeout(() => {
+            window.location.href = '../admin/';
+          }, 500);
         } catch (error) {
+          // Hide loading state on error
+          stateManager.setButtonLoading(submitButton?.id || 'login-submit', false);
+          
           if (loginStatus) {
             loginStatus.textContent = error?.message || 'Unable to sign in right now.';
           }
@@ -190,6 +292,7 @@
 
       loginModal?.querySelector('[data-forgot-password]')?.addEventListener('click', async () => {
         const email = String(new FormData(loginForm).get('email') || '').trim();
+        const forgotButton = loginModal?.querySelector('[data-forgot-password]');
 
         if (!auth) {
           if (loginStatus) {
@@ -205,16 +308,34 @@
           return;
         }
 
+        // Show loading state
+        if (forgotButton) {
+          stateManager.setButtonLoading(forgotButton?.id || 'forgot-password-button', true, {
+            loadingText: 'Sending...'
+          });
+        }
+
         if (loginStatus) {
-          loginStatus.textContent = 'Sending password reset email...';
+          loginStatus.textContent = '';
         }
 
         try {
           await auth.sendPasswordResetEmail(email);
+          
+          // Hide loading state on success
+          if (forgotButton) {
+            stateManager.setButtonLoading(forgotButton?.id || 'forgot-password-button', false);
+          }
+          
           if (loginStatus) {
             loginStatus.textContent = 'A password reset link has been sent to your email.';
           }
         } catch (error) {
+          // Hide loading state on error
+          if (forgotButton) {
+            stateManager.setButtonLoading(forgotButton?.id || 'forgot-password-button', false);
+          }
+          
           if (loginStatus) {
             loginStatus.textContent = error?.message || 'Unable to send a reset email.';
           }
