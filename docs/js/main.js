@@ -5,9 +5,9 @@ import { renderAboutSection } from './modules/about.js';
 import { renderCTA } from './modules/cta.js';
 import { renderFooter } from './modules/footer.js';
 import { initImageSlider } from './slider.js';
-import { initRouter } from './router.js';
+import { initRouter, refreshCurrentRoute } from './router.js';
 import { initChatAssistant } from './chat-assistant.js';
-import { createOfflineNoticeMarkup, isBrowserOnline } from './modules/network-status.js';
+import { createOfflineNoticeMarkup, showOfflineOverlay, hideOfflineOverlay, isBrowserOnline } from './modules/network-status.js';
 
 const app = document.getElementById('app');
 let deferredPrompt = null;
@@ -157,15 +157,11 @@ function registerInstallExperience() {
 }
 
 function showOfflineNoticeIfNeeded() {
-  const existingNotice = document.querySelector('.network-status');
-  if (!existingNotice && !isBrowserOnline()) {
-    const notice = document.createElement('div');
-    notice.className = 'network-status';
-    notice.innerHTML = createOfflineNoticeMarkup({
+  if (!isBrowserOnline()) {
+    showOfflineOverlay({
       title: 'Connection unavailable',
       message: 'Some content may be unavailable while the connection is offline. Please check your network and try again.'
     });
-    document.body.prepend(notice);
   }
 }
 
@@ -265,10 +261,8 @@ showOfflineNoticeIfNeeded();
 initChatAssistant();
 window.addEventListener('load', resetPagePosition);
 window.addEventListener('online', () => {
-  const notice = document.querySelector('.network-status');
-  if (notice) {
-    notice.remove();
-  }
+  hideOfflineOverlay();
+  refreshCurrentRoute();
 });
 window.addEventListener('offline', () => {
   showOfflineNoticeIfNeeded();

@@ -53,6 +53,19 @@ function getRoute(pathname) {
   return routes[normalizePath(pathname)] || routes['/'];
 }
 
+export function refreshCurrentRoute() {
+  const routePath = normalizePath(window.location.hash);
+  if (routePath === '/history') {
+    renderHistoryRoute();
+  } else if (routePath === '/news') {
+    renderNewsRoute();
+  } else if (routePath === '/privacy' || routePath === '/terms') {
+    renderLegalRoute(routePath === '/privacy' ? 'privacy' : 'terms');
+  } else {
+    renderHomeRoute();
+  }
+}
+
 function getHashTargetId(hash = window.location.hash) {
   const fragment = (hash || '').replace(/^#/, '').trim();
 
