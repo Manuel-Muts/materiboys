@@ -64,6 +64,8 @@
         </form>
       </div>
     </div>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script type="module" src="../js/main.js"></script>
     <script type="module">
       import { initChatAssistant } from '../js/chat-assistant.js';
@@ -98,6 +100,15 @@
       const loginForm = loginModal?.querySelector('.login-modal__form');
       const loginStatus = loginModal?.querySelector('.login-modal__status');
 
+      const FIREBASE_CONFIG = {
+        apiKey: 'AIzaSyBIGqZLYcDg3CR5VamDwBhtOOfl2Y0NYeI',
+        authDomain: 'timotech-films.firebaseapp.com',
+        projectId: 'timotech-films',
+        storageBucket: "timotech-films.firebasestorage.app",
+        messagingSenderId: "563809562931",
+        appId: "1:563809562931:web:750ff7e819f2d57e9dce46"
+      };
+
       const openLoginModal = () => {
         if (!loginModal || !loginBackdrop) return;
         loginModal.hidden = false;
@@ -122,16 +133,91 @@
         }
       });
 
-      loginForm?.addEventListener('submit', (event) => {
+      let auth = null;
+
+      if (window.firebase?.app && typeof window.firebase.initializeApp === 'function') {
+        const hasConfig = FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.authDomain && FIREBASE_CONFIG.projectId && FIREBASE_CONFIG.appId;
+
+        if (hasConfig) {
+          window.firebase.initializeApp(FIREBASE_CONFIG);
+          auth = window.firebase.auth();
+        } else {
+          if (loginStatus) {
+            loginStatus.textContent = 'Firebase config is not set yet. Add your Firebase web config values in the page script.';
+          }
+        }
+      } else if (loginStatus) {
+        loginStatus.textContent = 'Firebase SDK did not load. Check the network connection and Firebase script tags.';
+      }
+
+      loginForm?.addEventListener('submit', async (event) => {
         event.preventDefault();
+
+        if (!auth) {
+          if (loginStatus) {
+            loginStatus.textContent = 'Firebase Auth is not ready. Add your Firebase configuration first.';
+          }
+          return;
+        }
+
+        const formData = new FormData(loginForm);
+        const email = String(formData.get('email') || '').trim();
+        const password = String(formData.get('password') || '');
+
+        if (!email || !password) {
+          if (loginStatus) {
+            loginStatus.textContent = 'Please enter both your email and password.';
+          }
+          return;
+        }
+
         if (loginStatus) {
-          loginStatus.textContent = 'Login form is ready. Authentication logic will be added next.';
+          loginStatus.textContent = 'Signing in...';
+        }
+
+        try {
+          const credential = await auth.signInWithEmailAndPassword(email, password);
+          if (loginStatus) {
+            loginStatus.textContent = `Welcome back, ${credential.user?.email || 'admin'}.`;
+          }
+          window.location.href = '../admin/';
+        } catch (error) {
+          if (loginStatus) {
+            loginStatus.textContent = error?.message || 'Unable to sign in right now.';
+          }
         }
       });
 
-      loginModal?.querySelector('[data-forgot-password]')?.addEventListener('click', () => {
+      loginModal?.querySelector('[data-forgot-password]')?.addEventListener('click', async () => {
+        const email = String(new FormData(loginForm).get('email') || '').trim();
+
+        if (!auth) {
+          if (loginStatus) {
+            loginStatus.textContent = 'Firebase Auth is not ready. Add your Firebase configuration first.';
+          }
+          return;
+        }
+
+        if (!email) {
+          if (loginStatus) {
+            loginStatus.textContent = 'Enter your email address so a reset link can be sent.';
+          }
+          return;
+        }
+
         if (loginStatus) {
-          loginStatus.textContent = 'Password reset flow will be added next.';
+          loginStatus.textContent = 'Sending password reset email...';
+        }
+
+        try {
+          await auth.sendPasswordResetEmail(email);
+          if (loginStatus) {
+            loginStatus.textContent = 'A password reset link has been sent to your email.';
+          }
+        } catch (error) {
+          if (loginStatus) {
+            loginStatus.textContent = error?.message || 'Unable to send a reset email.';
+          }
         }
       });
 
