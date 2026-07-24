@@ -342,41 +342,6 @@
         }
       });
 
-      if (typingBadge) {
-        const fullText = typingBadge.dataset.text || typingBadge.textContent.trim();
-        let index = 0;
-        let deleting = false;
-
-        const updateBadge = () => {
-          typingBadge.textContent = fullText.slice(0, index);
-
-          if (!deleting && index < fullText.length) {
-            index += 1;
-            window.setTimeout(updateBadge, 140);
-            return;
-          }
-
-          if (!deleting && index === fullText.length) {
-            deleting = true;
-            window.setTimeout(updateBadge, 900);
-            return;
-          }
-
-          if (deleting && index > 0) {
-            index -= 1;
-            window.setTimeout(updateBadge, 70);
-            return;
-          }
-
-          if (deleting && index === 0) {
-            deleting = false;
-            window.setTimeout(updateBadge, 420);
-          }
-        };
-
-        window.setTimeout(updateBadge, 400);
-      }
-
       initChatAssistant();
     </script>
   </body>

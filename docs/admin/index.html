@@ -182,10 +182,19 @@
         }
       }
 
+      function setAdmissionsToggleState(isOpen) {
+        if (!admissionsToggle || !admissionsToggleText) {
+          return;
+        }
+
+        admissionsToggle.checked = isOpen;
+        admissionsToggleText.textContent = isOpen ? 'Admissions is open' : 'Admissions is closed';
+      }
+
       const initialSettings = readStoredSiteSettings();
       if (admissionsToggle && admissionsToggleText) {
-        admissionsToggle.checked = getAdmissionsStatusFromSettings(initialSettings);
-        admissionsToggleText.textContent = getAdmissionsStatusFromSettings(initialSettings) ? 'Admissions is open' : 'Admissions is closed';
+        const isOpen = getAdmissionsStatusFromSettings(initialSettings);
+        setAdmissionsToggleState(isOpen);
       }
       syncAdmissionsStatusFromFirestore();
 
@@ -332,13 +341,9 @@
           }
 
           const settings = snapshot.data() || {};
-          writeStoredSiteSettings({ admissionsOpen: settings.admissionsOpen !== false });
-          const admissionsToggle = document.getElementById('admin-admissions-toggle');
-          const admissionsToggleText = document.getElementById('admin-admissions-toggle-text');
-          if (admissionsToggle && admissionsToggleText) {
-            admissionsToggle.checked = settings.admissionsOpen !== false;
-            admissionsToggleText.textContent = settings.admissionsOpen !== false ? 'Admissions is open' : 'Admissions is closed';
-          }
+          const nextAdmissionsOpen = settings.admissionsOpen !== false;
+          writeStoredSiteSettings({ admissionsOpen: nextAdmissionsOpen, updatedAt: settings.updatedAt || new Date().toISOString() });
+          setAdmissionsToggleState(nextAdmissionsOpen);
         } catch (error) {
           console.warn('Firestore site settings sync failed:', error);
         }
@@ -705,14 +710,15 @@
         const isAdmissionsOpen = admissionsToggle.checked;
         const settings = readStoredSiteSettings();
         settings.admissionsOpen = isAdmissionsOpen;
+        settings.updatedAt = new Date().toISOString();
         writeStoredSiteSettings(settings);
-        admissionsToggleText.textContent = isAdmissionsOpen ? 'Admissions is open' : 'Admissions is closed';
+        setAdmissionsToggleState(isAdmissionsOpen);
 
         const firebaseSaved = await writeSiteSettingsToFirestore(ADMISSIONS_SETTINGS_ID, settings);
         if (firebaseSaved) {
           statusText.textContent = isAdmissionsOpen ? 'Admissions opened successfully.' : 'Admissions closed successfully.';
         } else if (!auth?.currentUser) {
-          statusText.textContent = 'Please sign in from the home page to sync this setting with Firebase.';
+          statusText.textContent = 'Saved locally on this device. Sign in with an admin account to sync the public website in Firestore.';
         } else {
           statusText.textContent = 'The Firebase site settings update is not available right now. Your local setting has been saved.';
         }
