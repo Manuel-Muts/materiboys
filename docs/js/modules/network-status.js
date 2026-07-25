@@ -7,6 +7,25 @@ function escapeHtml(value = '') {
     .replace(/'/g, '&#39;');
 }
 
+function ensureNetworkStatusListeners() {
+  if (typeof window === 'undefined' || window.__networkStatusListenersAttached) {
+    return;
+  }
+
+  window.addEventListener('online', () => {
+    hideOfflineOverlay();
+  });
+
+  window.addEventListener('offline', () => {
+    showOfflineOverlay({
+      title: 'Connection unavailable',
+      message: 'Your connection is offline. Some sections may not update until the network is restored.'
+    });
+  });
+
+  window.__networkStatusListenersAttached = true;
+}
+
 function createOverlayElement() {
   const existing = document.body.querySelector('.network-status-overlay');
   if (existing) {
@@ -30,9 +49,12 @@ export function createOfflineNoticeMarkup({
   message = 'We could not load this content right now. Please check your internet connection and try again.'
 } = {}) {
   return `
-    <div class="network-status" role="status" style="padding: 1.25rem 1.5rem; border: 1px solid rgba(13, 59, 102, 0.16); border-radius: 14px; background: rgba(13, 59, 102, 0.04); color: #0d3b66;">
-      <h2 style="margin: 0 0 0.5rem; font-size: 1.1rem;">${escapeHtml(title)}</h2>
-      <p style="margin: 0; line-height: 1.6;">${escapeHtml(message)}</p>
+    <div class="network-status" role="status">
+      <div class="network-status__icon">⚠️</div>
+      <div class="network-status__content">
+        <h2>${escapeHtml(title)}</h2>
+        <p>${escapeHtml(message)}</p>
+      </div>
     </div>
   `;
 }
@@ -57,9 +79,17 @@ export function showOfflineOverlay(options = {}) {
     return;
   }
 
+  ensureNetworkStatusListeners();
+
   const overlay = createOverlayElement();
   overlay.innerHTML = createOfflineOverlayMarkup(options);
+  overlay.setAttribute('aria-hidden', 'false');
   overlay.classList.add('is-visible');
+  document.body.classList.add('has-network-status-overlay');
+
+  window.requestAnimationFrame(() => {
+    overlay.classList.add('is-visible');
+  });
 }
 
 export function hideOfflineOverlay() {
@@ -69,11 +99,25 @@ export function hideOfflineOverlay() {
 
   const overlay = document.body.querySelector('.network-status-overlay');
   if (!overlay) {
+    document.body.classList.remove('has-network-status-overlay');
     return;
   }
 
   overlay.classList.remove('is-visible');
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('has-network-status-overlay');
   window.setTimeout(() => {
     overlay.remove();
   }, 220);
+}
+
+export function syncNetworkStatusUI(options = {}) {
+  ensureNetworkStatusListeners();
+
+  if (!isBrowserOnline()) {
+    showOfflineOverlay(options);
+    return;
+  }
+
+  hideOfflineOverlay();
 }

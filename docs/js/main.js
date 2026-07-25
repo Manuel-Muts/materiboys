@@ -7,7 +7,7 @@ import { renderFooter } from './modules/footer.js';
 import { initImageSlider } from './slider.js';
 import { initRouter, refreshCurrentRoute } from './router.js';
 import { initChatAssistant } from './chat-assistant.js';
-import { createOfflineNoticeMarkup, showOfflineOverlay, hideOfflineOverlay, isBrowserOnline } from './modules/network-status.js';
+import { createOfflineNoticeMarkup, showOfflineOverlay, hideOfflineOverlay, isBrowserOnline, syncNetworkStatusUI } from './modules/network-status.js';
 
 const app = document.getElementById('app');
 let deferredPrompt = null;
@@ -157,12 +157,10 @@ function registerInstallExperience() {
 }
 
 function showOfflineNoticeIfNeeded() {
-  if (!isBrowserOnline()) {
-    showOfflineOverlay({
-      title: 'Connection unavailable',
-      message: 'Some content may be unavailable while the connection is offline. Please check your network and try again.'
-    });
-  }
+  syncNetworkStatusUI({
+    title: 'Connection unavailable',
+    message: 'Some content may be unavailable while the connection is offline. Please check your network and try again.'
+  });
 }
 
 function initRevealOnScroll() {

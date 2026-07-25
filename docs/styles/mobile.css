@@ -69,6 +69,11 @@
     width: 100%;
     padding-left: 1rem;
     margin-top: 0.4rem;
+    display: none;
+  }
+
+  .dropdown[open] .dropdown-menu {
+    display: grid;
   }
 
   .nav-links {

@@ -80,18 +80,9 @@ export function renderHeader() {
       return;
     }
 
-    let closeTimer = null;
     const isTouchDevice = window.matchMedia('(hover: none), (pointer: coarse)').matches;
 
-    const clearCloseTimer = () => {
-      if (closeTimer) {
-        window.clearTimeout(closeTimer);
-        closeTimer = null;
-      }
-    };
-
     const openDropdown = () => {
-      clearCloseTimer();
       dropdowns.forEach((other) => {
         if (other !== dropdown) {
           other.removeAttribute('open');
@@ -101,10 +92,7 @@ export function renderHeader() {
     };
 
     const closeDropdown = () => {
-      clearCloseTimer();
-      closeTimer = window.setTimeout(() => {
-        dropdown.removeAttribute('open');
-      }, 180);
+      dropdown.removeAttribute('open');
     };
 
     summary.addEventListener('click', (event) => {
@@ -134,13 +122,12 @@ export function renderHeader() {
       menu.addEventListener('click', (event) => {
         const target = event.target;
         if (target instanceof HTMLElement && target.closest('a')) {
-          clearCloseTimer();
-          dropdown.removeAttribute('open');
+          closeDropdown();
         }
       });
 
       dropdown.addEventListener('touchstart', () => {
-        clearCloseTimer();
+        openDropdown();
       }, { passive: true });
     }
 
