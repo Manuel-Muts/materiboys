@@ -281,6 +281,8 @@
           </div>
         `;
 
+        app.appendChild(section);
+
         const tableWrap = section.querySelector('#vacancies-table-wrap');
         tableWrap.innerHTML = createVacanciesLoadingMarkup();
 
@@ -347,7 +349,6 @@
         }
 
         const applyModal = createApplyModal();
-        app.appendChild(section);
         document.body.appendChild(applyModal);
 
         const openApplyModal = (vacancy) => {

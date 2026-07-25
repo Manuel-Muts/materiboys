@@ -81,8 +81,17 @@ export function renderHeader() {
     }
 
     const isTouchDevice = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+    let closeTimer = null;
+
+    const clearCloseTimer = () => {
+      if (closeTimer) {
+        window.clearTimeout(closeTimer);
+        closeTimer = null;
+      }
+    };
 
     const openDropdown = () => {
+      clearCloseTimer();
       dropdowns.forEach((other) => {
         if (other !== dropdown) {
           other.removeAttribute('open');
@@ -92,7 +101,10 @@ export function renderHeader() {
     };
 
     const closeDropdown = () => {
-      dropdown.removeAttribute('open');
+      clearCloseTimer();
+      closeTimer = window.setTimeout(() => {
+        dropdown.removeAttribute('open');
+      }, 220);
     };
 
     summary.addEventListener('click', (event) => {
@@ -131,12 +143,10 @@ export function renderHeader() {
       }, { passive: true });
     }
 
-    if (!isTouchDevice) {
-      dropdown.addEventListener('mouseenter', openDropdown);
-      dropdown.addEventListener('mouseleave', closeDropdown);
-      menu.addEventListener('mouseenter', openDropdown);
-      menu.addEventListener('mouseleave', closeDropdown);
-    }
+    dropdown.addEventListener('mouseenter', openDropdown);
+    dropdown.addEventListener('mouseleave', closeDropdown);
+    menu.addEventListener('mouseenter', openDropdown);
+    menu.addEventListener('mouseleave', closeDropdown);
   });
 
   // Bind a single document-level click handler once to avoid duplicates

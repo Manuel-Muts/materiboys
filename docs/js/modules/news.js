@@ -199,7 +199,7 @@ async function fetchNewsPostsFromFirestore() {
   }
 }
 
-export async function renderNewsPage() {
+export function createNewsPageSection() {
   const section = document.createElement('section');
   section.className = 'legal-page-shell';
   section.id = 'news-page';
@@ -218,6 +218,11 @@ export async function renderNewsPage() {
       </div>
     </section>
   `;
+  return section;
+}
+
+export async function renderNewsPage(section = null) {
+  const targetSection = section || createNewsPageSection();
 
   const { posts, offline } = await fetchNewsPostsFromFirestore();
   const postsMarkup = posts.length
@@ -250,7 +255,7 @@ export async function renderNewsPage() {
         </article>
       `;
 
-  section.innerHTML = `
+  targetSection.innerHTML = `
     <section class="legal-page">
       <div class="container legal-card">
         <div class="standalone-topbar">
@@ -266,7 +271,7 @@ export async function renderNewsPage() {
     </section>
   `;
 
-  const backButton = section.querySelector('.standalone-back');
+  const backButton = targetSection.querySelector('.standalone-back');
   if (backButton) {
     backButton.addEventListener('click', () => {
       if (window.history.length > 1) {
@@ -277,5 +282,5 @@ export async function renderNewsPage() {
     });
   }
 
-  return section;
+  return targetSection;
 }

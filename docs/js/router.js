@@ -1,6 +1,6 @@
 ﻿import { renderLegalPage } from './modules/legal.js';
 import { renderHistoryPage } from './modules/history.js';
-import { renderNewsPage } from './modules/news.js';
+import { createNewsPageSection, renderNewsPage } from './modules/news.js';
 
 function renderHomeRoute() {
   setHomeShellVisibility(true);
@@ -116,11 +116,10 @@ function renderNewsRoute() {
   setHomeShellVisibility(false);
   app.innerHTML = '';
 
-  renderNewsPage().then((section) => {
-    if (section) {
-      section.id = 'news-page';
-      app.appendChild(section);
-    }
+  const loadingSection = createNewsPageSection();
+  app.appendChild(loadingSection);
+
+  renderNewsPage(loadingSection).then(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   }).catch((error) => {
     console.error('Failed to render news page:', error);
