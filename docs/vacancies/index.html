@@ -131,7 +131,7 @@
       }
 
       function buildApplicationMailto(vacancyType, vacancyDetails, formData) {
-        const recipient = 'janekarithi3@gmail.com';
+        const recipient = 'matirischool@gmail.com';
         const isSupportStaff = vacancyType === 'support-staff';
         const pathway = vacancyDetails?.pathway || 'this vacancy';
         const title = vacancyDetails?.title || pathway;
@@ -141,7 +141,6 @@
           `Vacancy type: ${isSupportStaff ? 'Support staff' : 'Teacher'}`,
           `Pathway: ${pathway}`,
           subjects ? `Subjects: ${subjects}` : '',
-          `Vacancy: ${title}`,
           `Full name: ${formData.fullName}`,
           `Phone number: ${formData.phone}`,
           isSupportStaff ? `ID number: ${formData.idNumber}` : `Email: ${formData.email}`,
