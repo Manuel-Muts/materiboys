@@ -102,6 +102,13 @@ export function renderHeader() {
 
     const closeDropdown = () => {
       clearCloseTimer();
+      if (isTouchDevice) {
+        closeTimer = window.setTimeout(() => {
+          dropdown.removeAttribute('open');
+        }, 1200);
+        return;
+      }
+
       closeTimer = window.setTimeout(() => {
         dropdown.removeAttribute('open');
       }, 220);
@@ -120,9 +127,11 @@ export function renderHeader() {
         });
 
         if (isOpen) {
-          closeDropdown();
+          clearCloseTimer();
+          dropdown.removeAttribute('open');
         } else {
           openDropdown();
+          closeDropdown();
         }
         return;
       }
@@ -153,6 +162,7 @@ export function renderHeader() {
           dropdown.removeAttribute('open');
         } else {
           openDropdown();
+          closeDropdown();
         }
       }, { passive: false });
     }
