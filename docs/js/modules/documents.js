@@ -1,4 +1,12 @@
 const DOCUMENTS_STORAGE_KEY = 'school-download-docs';
+const FIREBASE_CONFIG = {
+  apiKey: 'AIzaSyBIGqZLYcDg3CR5VamDwBhtOOfl2Y0NYeI',
+  authDomain: 'timotech-films.firebaseapp.com',
+  projectId: 'timotech-films',
+  storageBucket: 'timotech-films.firebasestorage.app',
+  messagingSenderId: '563809562931',
+  appId: '1:563809562931:web:750ff7e819f2d57e9dce46'
+};
 
 function normalizeDocumentRecord(record = {}, fallbackStorageKey = '') {
   if (!record || typeof record !== 'object') {
@@ -46,41 +54,49 @@ function getFirebaseDb() {
   }
 
   try {
-    return window.firebase.firestore();
+    if (window.firebase.apps?.length) {
+      return window.firebase.firestore(window.firebase.app());
+    }
+
+    const hasConfig = FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.authDomain && FIREBASE_CONFIG.projectId && FIREBASE_CONFIG.appId;
+    if (!hasConfig) {
+      return null;
+    }
+
+    window.firebase.initializeApp(FIREBASE_CONFIG);
+    return window.firebase.firestore(window.firebase.app());
   } catch (error) {
+    console.warn('Firebase initialization failed for document loader:', error);
     return null;
   }
 }
 
 export async function getDocumentRecord(storageKey) {
-  const storedDocuments = readStoredDocuments();
-  const cachedDocument = normalizeDocumentRecord(storedDocuments[storageKey], storageKey);
-  if (cachedDocument) {
-    return cachedDocument;
-  }
-
   const firebaseDb = getFirebaseDb();
-  if (!firebaseDb) {
-    return null;
-  }
-
-  try {
-    const snapshot = await firebaseDb.collection('documents').get();
-    const nextDocuments = {};
-    snapshot.forEach((doc) => {
-      const data = doc.data() || {};
-      if (data.storageKey) {
-        const normalized = normalizeDocumentRecord({ ...data, id: data.id || doc.id }, data.storageKey);
-        if (normalized) {
-          nextDocuments[data.storageKey] = normalized;
+  if (firebaseDb && navigator.onLine) {
+    try {
+      const snapshot = await firebaseDb.collection('documents').get();
+      const nextDocuments = {};
+      snapshot.forEach((doc) => {
+        const data = doc.data() || {};
+        if (data.storageKey) {
+          const normalized = normalizeDocumentRecord({ ...data, id: data.id || doc.id }, data.storageKey);
+          if (normalized) {
+            nextDocuments[data.storageKey] = normalized;
+          }
         }
-      }
-    });
+      });
 
-    writeStoredDocuments(nextDocuments);
-    return normalizeDocumentRecord(nextDocuments[storageKey], storageKey);
-  } catch (error) {
-    console.warn('Failed to load document record from Firestore:', error);
-    return cachedDocument;
+      writeStoredDocuments(nextDocuments);
+      const firestoreDocument = normalizeDocumentRecord(nextDocuments[storageKey], storageKey);
+      if (firestoreDocument) {
+        return firestoreDocument;
+      }
+    } catch (error) {
+      console.warn('Failed to load document record from Firestore:', error);
+    }
   }
+
+  const storedDocuments = readStoredDocuments();
+  return normalizeDocumentRecord(storedDocuments[storageKey], storageKey);
 }

@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="../styles/chat-assistant.css" />
     <link rel="icon" href="../logo/favicon.ico" type="image/x-icon" />
     <link rel="shortcut icon" href="../logo/favicon.ico" type="image/x-icon" />
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   </head>
   <body>
     <section class="legal-page-shell">
@@ -49,6 +51,8 @@
           return;
         }
 
+        downloadCard.innerHTML = '<p>Refreshing document link…</p>';
+
         const documentRecord = await getDocumentRecord('fee-schedule');
         const resolvedUrl = documentRecord?.url || fileUrl || '';
         const resolvedTitle = documentRecord?.title || documentTitle;
@@ -66,6 +70,18 @@
           <a class="button button--primary" href="${resolvedUrl}" target="_blank" rel="noopener noreferrer" download="${resolvedFileName}">Download document</a>
         `;
       }
+
+      window.addEventListener('storage', () => {
+        renderDocument().catch((error) => {
+          console.warn('Failed to refresh fee schedule document:', error);
+        });
+      });
+
+      window.addEventListener('school-documents-updated', () => {
+        renderDocument().catch((error) => {
+          console.warn('Failed to refresh fee schedule document:', error);
+        });
+      });
 
       renderDocument().catch((error) => {
         console.warn('Failed to render fee schedule document:', error);
