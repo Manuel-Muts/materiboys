@@ -49,7 +49,13 @@ export function renderHeader() {
           </div>
         </details>
         <a href="#/news" target="_self"> News & Updates</a>
-        <a href="../vacancies/" target="_self">Vacancies</a>
+        <details class="dropdown">
+          <summary>Vacancies</summary>
+          <div class="dropdown-menu">
+            <a href="../vacancies/?type=teachers" target="_self">Teachers</a>
+            <a href="../vacancies/?type=support-staff" target="_self">Support staff</a>
+          </div>
+        </details>
         <a href="../academics/" target="_self">Academics</a>
         <a href="../contact/" target="_self">Contact</a>
         <a href="../staff/" target="_self">Staff</a>

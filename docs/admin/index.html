@@ -31,7 +31,13 @@
           <button class="admin-sidebar__link" type="button" data-section="Fee schedule upload" data-title="Fee schedule" data-heading="Upload fee schedule" data-description="Choose a fee schedule document to make it available on the downloads page." data-storage-key="fee-schedule" data-page="fee-schedule.html" data-mode="document">Fee schedule upload</button>
           <button class="admin-sidebar__link" type="button" data-section="Interview requirements upload" data-title="Interview requirements" data-heading="Upload interview requirements" data-description="Choose a document to share interview requirements with applicants." data-storage-key="interview-requirements" data-page="interview-requirements.html" data-mode="document">Interview requirements upload</button>
           <button class="admin-sidebar__link" type="button" data-section="Prospectus upload" data-title="Prospectus" data-heading="Upload prospectus" data-description="Choose a prospectus or school brochure to publish for families." data-storage-key="prospectus" data-page="prospectus.html" data-mode="document">Prospectus upload</button>
-          <button class="admin-sidebar__link" type="button" data-section="Vacancies" data-title="Vacancies" data-heading="Post a vacancy" data-description="Add a new vacancy with pathway, subjects, and post details." data-storage-key="vacancies" data-mode="vacancies">Vacancies</button>
+          <div class="admin-sidebar__group" id="vacancies-sidebar-group">
+            <button class="admin-sidebar__link admin-sidebar__link--parent" type="button" data-section="Vacancies" data-title="Vacancies" data-heading="Post a teaching vacancy" data-description="Add a teacher vacancy with position, post count, and requirements." data-storage-key="vacancies" data-mode="vacancies" data-vacancy-type="teachers">Vacancies</button>
+            <div class="admin-sidebar__children" id="vacancies-sidebar-children">
+              <button class="admin-sidebar__link admin-sidebar__link--child" type="button" data-section="Vacancies - Teachers" data-title="Teachers" data-heading="Post a teaching vacancy" data-description="Add a teacher vacancy with position, post count, and requirements." data-storage-key="vacancies" data-mode="vacancies" data-vacancy-type="teachers">Teachers</button>
+              <button class="admin-sidebar__link admin-sidebar__link--child" type="button" data-section="Vacancies - Support staff" data-title="Support staff" data-heading="Post a support staff vacancy" data-description="Add a support staff vacancy with position, post count, and requirements." data-storage-key="vacancies" data-mode="vacancies" data-vacancy-type="support-staff">Support staff</button>
+            </div>
+          </div>
           <button class="admin-sidebar__link" type="button" data-section="News &amp; blogs" data-title="School news" data-heading="Create school news post" data-description="Write a story for the school news section and optionally add an attachment or a YouTube link." data-storage-key="news" data-mode="news">News &amp; blogs</button>
         </nav>
         <button id="admin-logout-button" class="admin-sidebar__logout" type="button">Logout</button>
@@ -55,20 +61,34 @@
               <input type="text" id="admin-title-input" name="title" value="Admission form" placeholder="Application form" />
             </label>
             <div class="admin-form__group" id="vacancies-fields" hidden>
-              <div class="admin-form__group admin-form__group--two-col">
+              <div id="vacancies-teachers-fields">
+                <div class="admin-form__group admin-form__group--two-col">
+                  <label class="admin-form__field">
+                    <span>Pathway</span>
+                    <input type="text" id="admin-pathway-input" name="pathway" placeholder="e.g. STEM" />
+                  </label>
+                  <label class="admin-form__field">
+                    <span>Subjects</span>
+                    <input type="text" id="admin-subjects-input" name="subjects" placeholder="e.g. Mathematics, Physics" />
+                  </label>
+                </div>
+              </div>
+              <div id="vacancies-support-fields" hidden>
                 <label class="admin-form__field">
-                  <span>Pathway</span>
-                  <input type="text" id="admin-pathway-input" name="pathway" placeholder="e.g. STEM" />
-                </label>
-                <label class="admin-form__field">
-                  <span>Subjects</span>
-                  <input type="text" id="admin-subjects-input" name="subjects" placeholder="e.g. Mathematics, Physics" />
+                  <span>Position</span>
+                  <input type="text" id="admin-position-input" name="position" placeholder="e.g. Driver" />
                 </label>
               </div>
-              <label class="admin-form__field">
-                <span>Post</span>
-                <input type="number" id="admin-post-input" name="post" min="1" step="1" placeholder="1" />
-              </label>
+              <div class="admin-form__group admin-form__group--two-col">
+                <label class="admin-form__field">
+                  <span>Posts</span>
+                  <input type="number" id="admin-posts-input" name="posts" min="1" step="1" placeholder="1" />
+                </label>
+                <label class="admin-form__field">
+                  <span>Requirements</span>
+                  <textarea id="admin-requirements-input" name="requirements" rows="4" placeholder="List qualifications, experience, and skills required."></textarea>
+                </label>
+              </div>
             </div>
             <div class="admin-form__group" id="news-only-fields" hidden>
               <label class="admin-form__field" id="news-story-field">
@@ -107,7 +127,7 @@
             <div class="admin-management__table-wrap">
               <table class="admin-management__table">
                 <thead>
-                  <tr>
+                  <tr id="admin-management-header-row">
                     <th>Title</th>
                     <th>Details</th>
                     <th>Actions</th>
@@ -142,9 +162,16 @@
       const videoUrlInput = document.getElementById('admin-video-url-input');
       const pathwayInput = document.getElementById('admin-pathway-input');
       const subjectsInput = document.getElementById('admin-subjects-input');
-      const postInput = document.getElementById('admin-post-input');
+      const positionInput = document.getElementById('admin-position-input');
+      const postsInput = document.getElementById('admin-posts-input');
+      const requirementsInput = document.getElementById('admin-requirements-input');
+      const teacherVacancyFields = document.getElementById('vacancies-teachers-fields');
+      const supportVacancyFields = document.getElementById('vacancies-support-fields');
       const managementBody = document.getElementById('admin-management-body');
+      const managementHeader = document.getElementById('admin-management-header-row');
       const managementCaption = document.getElementById('admin-management-caption');
+      const vacanciesSidebarGroup = document.getElementById('vacancies-sidebar-group');
+      const vacanciesSidebarChildren = document.getElementById('vacancies-sidebar-children');
       const admissionsToggle = document.getElementById('admin-admissions-toggle');
       const admissionsToggleText = document.getElementById('admin-admissions-toggle-text');
 
@@ -230,9 +257,13 @@
         if (!db) return;
         try {
           db.collection('vacancies').doc(vacancy.id).set({
-            pathway: vacancy.pathway,
-            subjects: vacancy.subjects,
-            post: vacancy.post,
+            vacancyType: vacancy.vacancyType || 'teachers',
+            position: vacancy.position || vacancy.pathway || '',
+            posts: vacancy.posts ?? vacancy.post ?? 0,
+            requirements: vacancy.requirements || vacancy.subjects || '',
+            pathway: vacancy.pathway || vacancy.position || '',
+            subjects: vacancy.subjects || vacancy.requirements || '',
+            post: vacancy.post ?? vacancy.posts ?? 0,
             createdAt: vacancy.createdAt,
             updatedAt: vacancy.updatedAt || new Date().toISOString()
           }, { merge: true }).catch((error) => console.warn('Firestore write failed:', error));
@@ -475,6 +506,7 @@
         const storageKey = uploadForm.dataset.storageKey || 'admissions';
 
         if (mode === 'news') {
+          managementHeader.innerHTML = '<th>Title</th><th>Details</th><th>Actions</th>';
           const posts = readStoredNewsPosts();
           managementCaption.textContent = 'Manage the news posts already published.';
           if (!posts.length) {
@@ -496,26 +528,46 @@
         }
 
         if (mode === 'vacancies') {
-          const vacancies = readStoredVacancies();
-          managementCaption.textContent = 'Manage the vacancies already posted.';
+          const isSupportStaffVacancy = (uploadForm.dataset.vacancyType || 'teachers') === 'support-staff';
+          managementHeader.innerHTML = isSupportStaffVacancy
+            ? '<th>Position</th><th>Posts</th><th>Requirements</th><th>Actions</th>'
+            : '<th>Pathway</th><th>Subjects</th><th>Posts</th><th>Requirements</th><th>Actions</th>';
+          const vacancies = readStoredVacancies().filter((vacancy) => {
+            const vacancyType = vacancy.vacancyType || 'teachers';
+            return vacancyType === (uploadForm.dataset.vacancyType || 'teachers');
+          });
+          const vacancyTypeLabel = (uploadForm.dataset.vacancyType || 'teachers') === 'support-staff' ? 'support staff' : 'teacher';
+          managementCaption.textContent = `Manage the ${vacancyTypeLabel} vacancies already posted.`;
           if (!vacancies.length) {
-            managementBody.innerHTML = '<tr><td colspan="3">No vacancies yet.</td></tr>';
+            managementBody.innerHTML = '<tr><td colspan="4">No vacancies yet.</td></tr>';
             return;
           }
 
-          managementBody.innerHTML = vacancies.map((vacancy) => `
-            <tr>
-              <td>${escapeHtml(vacancy.pathway || 'Vacancy')}</td>
-              <td>${escapeHtml(`${vacancy.subjects || 'Subjects pending'} • Post ${vacancy.post || 0}`)}</td>
-              <td>
-                <button type="button" class="admin-action--edit" data-action="edit" data-id="${escapeHtml(vacancy.id)}">Edit</button>
-                <button type="button" class="admin-action--delete" data-action="delete" data-id="${escapeHtml(vacancy.id)}">Delete</button>
-              </td>
-            </tr>
-          `).join('');
+          managementBody.innerHTML = vacancies.map((vacancy) => {
+            const isSupportStaffVacancy = (vacancy.vacancyType || 'teachers') === 'support-staff';
+            const pathwayValue = escapeHtml(vacancy.pathway || vacancy.position || 'Vacancy');
+            const subjectsValue = escapeHtml(vacancy.subjects || '');
+            const positionValue = escapeHtml(vacancy.position || vacancy.pathway || 'Vacancy');
+            const postsValue = escapeHtml(`${vacancy.posts ?? vacancy.post ?? 0} post${(vacancy.posts ?? vacancy.post ?? 0) === 1 ? '' : 's'}`);
+            const requirementsValue = escapeHtml(vacancy.requirements || vacancy.subjects || 'Requirements pending');
+
+            return `
+              <tr>
+                ${isSupportStaffVacancy ? `<td>${positionValue}</td>` : `<td>${pathwayValue}</td>`}
+                ${isSupportStaffVacancy ? '' : `<td>${subjectsValue}</td>`}
+                <td>${postsValue}</td>
+                <td>${requirementsValue}</td>
+                <td>
+                  <button type="button" class="admin-action--edit" data-action="edit" data-id="${escapeHtml(vacancy.id)}">Edit</button>
+                  <button type="button" class="admin-action--delete" data-action="delete" data-id="${escapeHtml(vacancy.id)}">Delete</button>
+                </td>
+              </tr>
+            `;
+          }).join('');
           return;
         }
 
+        managementHeader.innerHTML = '<th>Title</th><th>Details</th><th>Actions</th>';
         const documents = readStoredDocuments();
         const documentItem = documents[storageKey];
         managementCaption.textContent = 'Manage the document already posted for this section.';
@@ -553,9 +605,11 @@
         }
 
         if (mode === 'vacancies') {
-          pathwayInput.value = item.pathway || '';
+          pathwayInput.value = item.pathway || item.position || '';
           subjectsInput.value = item.subjects || '';
-          postInput.value = item.post || '';
+          positionInput.value = item.position || item.pathway || '';
+          postsInput.value = item.posts ?? item.post ?? '';
+          requirementsInput.value = item.requirements || item.subjects || '';
           submitButton.textContent = 'Update';
           return;
         }
@@ -590,7 +644,16 @@
         vacanciesFields.hidden = !isVacanciesMode;
         newsOnlyFields.style.display = isNewsMode ? '' : 'none';
         vacanciesFields.style.display = isVacanciesMode ? '' : 'none';
-        submitButton.textContent = isNewsMode ? 'Save news post' : isVacanciesMode ? 'Post' : 'Save upload';
+        const isSupportStaffVacancy = isVacanciesMode && button.dataset.vacancyType === 'support-staff';
+        if (teacherVacancyFields) {
+          teacherVacancyFields.hidden = isSupportStaffVacancy;
+          teacherVacancyFields.style.display = isSupportStaffVacancy ? 'none' : '';
+        }
+        if (supportVacancyFields) {
+          supportVacancyFields.hidden = !isSupportStaffVacancy;
+          supportVacancyFields.style.display = isSupportStaffVacancy ? '' : 'none';
+        }
+        submitButton.textContent = isNewsMode ? 'Save news post' : isVacanciesMode ? 'Post vacancy' : 'Save upload';
 
         if (!isNewsMode) {
           storyEditor.innerHTML = '';
@@ -603,16 +666,53 @@
         uploadForm.dataset.storageKey = button.dataset.storageKey || '';
         uploadForm.dataset.page = button.dataset.page || '';
         uploadForm.dataset.mode = button.dataset.mode || 'document';
+        uploadForm.dataset.vacancyType = button.dataset.vacancyType || 'teachers';
         renderManagementPanel();
+      }
+
+      function setVacanciesDropdownState(isOpen) {
+        if (!vacanciesSidebarGroup) {
+          return;
+        }
+
+        vacanciesSidebarGroup.classList.toggle('is-open', isOpen);
       }
 
       buttons.forEach((button) => {
         button.addEventListener('click', () => {
+          if (button.classList.contains('admin-sidebar__link--parent')) {
+            const isOpen = !vacanciesSidebarGroup?.classList.contains('is-open');
+            setVacanciesDropdownState(isOpen);
+            if (!isOpen) {
+              buttons.forEach((item) => item.classList.remove('is-active'));
+              button.classList.add('is-active');
+              return;
+            }
+
+            const firstChild = buttons.find((item) => item.classList.contains('admin-sidebar__link--child') && item.dataset.vacancyType === 'teachers');
+            if (firstChild) {
+              buttons.forEach((item) => item.classList.remove('is-active'));
+              firstChild.classList.add('is-active');
+              button.classList.add('is-active');
+              updateFormMode(firstChild);
+            }
+            return;
+          }
+
           buttons.forEach((item) => item.classList.remove('is-active'));
           button.classList.add('is-active');
+          if (button.classList.contains('admin-sidebar__link--child')) {
+            const parentButton = buttons.find((item) => item.classList.contains('admin-sidebar__link--parent'));
+            if (parentButton) {
+              parentButton.classList.add('is-active');
+            }
+            setVacanciesDropdownState(true);
+          }
           updateFormMode(button);
         });
       });
+
+      setVacanciesDropdownState(false);
 
       const activeButton = buttons.find((button) => button.classList.contains('is-active')) || buttons[0];
       if (activeButton) {
@@ -735,56 +835,84 @@
         const pageName = uploadForm.dataset.page || 'application-form.html';
 
         if (activeEditState?.mode === 'vacancies') {
+          const posts = postsInput.value.trim();
+          const requirements = requirementsInput.value.trim();
+          const isSupportStaffVacancy = uploadForm.dataset.vacancyType === 'support-staff';
           const pathway = pathwayInput.value.trim();
           const subjects = subjectsInput.value.trim();
-          const post = postInput.value.trim();
+          const position = positionInput.value.trim();
 
-          if (!pathway || !subjects || !post) {
-            showToast('Please fill in the pathway, subjects, and post fields.', { type: 'error' });
+          if (isSupportStaffVacancy) {
+            if (!position || !posts || !requirements) {
+              showToast('Please fill in the position, posts, and requirements fields.', { type: 'error' });
+              return;
+            }
+          } else if (!pathway || !subjects || !posts || !requirements) {
+            showToast('Please fill in the pathway, subjects, posts, and requirements fields.', { type: 'error' });
             return;
           }
 
           updateVacancy(activeEditState.id, {
-            pathway,
-            subjects,
-            post: Number(post),
+            position: isSupportStaffVacancy ? position : pathway,
+            posts: Number(posts),
+            requirements,
+            pathway: isSupportStaffVacancy ? position : pathway,
+            subjects: isSupportStaffVacancy ? '' : subjects,
+            post: Number(posts),
+            vacancyType: uploadForm.dataset.vacancyType || 'teachers',
             updatedAt: new Date().toISOString()
           });
 
-          showToast(`Vacancy updated for ${pathway}.`, { type: 'success' });
+          showToast(`Vacancy updated for ${isSupportStaffVacancy ? position : pathway}.`, { type: 'success' });
           uploadForm.reset();
           titleInput.value = documentTitle;
           pathwayInput.value = '';
           subjectsInput.value = '';
-          postInput.value = '';
+          positionInput.value = '';
+          postsInput.value = '';
+          requirementsInput.value = '';
           resetFormState();
           renderManagementPanel();
           return;
         }
 
         if (isVacanciesMode) {
+          const posts = postsInput.value.trim();
+          const requirements = requirementsInput.value.trim();
+          const isSupportStaffVacancy = uploadForm.dataset.vacancyType === 'support-staff';
           const pathway = pathwayInput.value.trim();
           const subjects = subjectsInput.value.trim();
-          const post = postInput.value.trim();
+          const position = positionInput.value.trim();
 
-          if (!pathway || !subjects || !post) {
-            showToast('Please fill in the pathway, subjects, and post fields.', { type: 'error' });
+          if (isSupportStaffVacancy) {
+            if (!position || !posts || !requirements) {
+              showToast('Please fill in the position, posts, and requirements fields.', { type: 'error' });
+              return;
+            }
+          } else if (!pathway || !subjects || !posts || !requirements) {
+            showToast('Please fill in the pathway, subjects, posts, and requirements fields.', { type: 'error' });
             return;
           }
 
           saveVacancy({
-            pathway,
-            subjects,
-            post: Number(post),
+            position: isSupportStaffVacancy ? position : pathway,
+            posts: Number(posts),
+            requirements,
+            pathway: isSupportStaffVacancy ? position : pathway,
+            subjects: isSupportStaffVacancy ? '' : subjects,
+            post: Number(posts),
+            vacancyType: uploadForm.dataset.vacancyType || 'teachers',
             createdAt: new Date().toISOString()
           });
 
-          showToast(`Vacancy saved for ${pathway} with ${subjects}.`, { type: 'success' });
+          showToast(`Vacancy saved for ${isSupportStaffVacancy ? position : pathway}.`, { type: 'success' });
           uploadForm.reset();
           titleInput.value = documentTitle;
           pathwayInput.value = '';
           subjectsInput.value = '';
-          postInput.value = '';
+          positionInput.value = '';
+          postsInput.value = '';
+          requirementsInput.value = '';
           renderManagementPanel();
           return;
         }

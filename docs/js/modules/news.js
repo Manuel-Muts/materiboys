@@ -156,6 +156,27 @@ function readStoredNewsPosts() {
   }
 }
 
+function createNewsLoadingMarkup() {
+  return `
+    <div class="page-loading-shell" aria-live="polite">
+      <div class="page-loading-spinner">Fetching the latest school updates…</div>
+      <div class="page-loading-card">
+        <div class="page-loading-row">
+          <span class="page-loading-pill"></span>
+          <span class="page-loading-bar page-loading-bar--full"></span>
+        </div>
+        <span class="page-loading-bar page-loading-bar--full"></span>
+        <span class="page-loading-bar page-loading-bar--medium"></span>
+      </div>
+      <div class="page-loading-card">
+        <span class="page-loading-bar page-loading-bar--short"></span>
+        <span class="page-loading-bar page-loading-bar--full"></span>
+        <span class="page-loading-bar page-loading-bar--medium"></span>
+      </div>
+    </div>
+  `;
+}
+
 async function fetchNewsPostsFromFirestore() {
   if (!navigator.onLine) {
     return { posts: readStoredNewsPosts(), offline: true };
@@ -182,6 +203,21 @@ export async function renderNewsPage() {
   const section = document.createElement('section');
   section.className = 'legal-page-shell';
   section.id = 'news-page';
+  section.innerHTML = `
+    <section class="legal-page">
+      <div class="container legal-card">
+        <div class="standalone-topbar">
+          <button type="button" class="button button--secondary standalone-back">Back</button>
+        </div>
+        <p class="eyebrow">School updates</p>
+        <h1>Latest News and Updates</h1>
+        <p class="legal-intro">Stay informed with school achievements, community stories, events, and announcements.</p>
+        <div class="legal-list">
+          ${createNewsLoadingMarkup()}
+        </div>
+      </div>
+    </section>
+  `;
 
   const { posts, offline } = await fetchNewsPostsFromFirestore();
   const postsMarkup = posts.length

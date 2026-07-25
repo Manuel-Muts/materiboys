@@ -292,6 +292,163 @@ body.has-login-modal {
   overflow: hidden;
 }
 
+.vacancy-apply-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(2, 8, 23, 0.82);
+  backdrop-filter: blur(10px);
+}
+
+.vacancy-apply-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  isolation: isolate;
+}
+
+.vacancy-apply-modal[hidden],
+.vacancy-apply-modal__backdrop[hidden] {
+  display: none !important;
+}
+
+.vacancy-apply-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.vacancy-apply-modal__panel {
+  width: min(100%, 620px);
+  max-height: min(90vh, 780px);
+  overflow: auto;
+  padding: 1.6rem;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  box-shadow: 0 28px 90px rgba(2, 8, 23, 0.42);
+  position: relative;
+  z-index: 1;
+}
+
+.vacancy-apply-modal__close {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  border: 0;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 1.25rem;
+  cursor: pointer;
+  border-radius: 999px;
+  width: 2.3rem;
+  height: 2.3rem;
+  display: grid;
+  place-items: center;
+}
+
+.vacancy-apply-modal h2 {
+  margin: 0 0 0.35rem;
+  color: #0f172a;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.vacancy-apply-modal__intro {
+  margin: 0 0 1rem;
+  color: #334155;
+  line-height: 1.6;
+  font-weight: 600;
+}
+
+.vacancy-apply-modal__form {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.vacancy-apply-modal__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.vacancy-apply-modal__field {
+  display: grid;
+  gap: 0.4rem;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.vacancy-apply-modal__field input,
+.vacancy-apply-modal__field textarea,
+.vacancy-apply-modal__field select {
+  width: 100%;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+  font: inherit;
+  background: #ffffff;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.vacancy-apply-modal__field textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.vacancy-apply-modal__field input:focus,
+.vacancy-apply-modal__field textarea:focus,
+.vacancy-apply-modal__field select:focus {
+  outline: 2px solid rgba(37, 99, 235, 0.2);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.vacancy-apply-modal__actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
+}
+
+.vacancy-apply-modal__submit,
+.vacancy-apply-modal__cancel {
+  justify-content: center;
+  font-weight: 700;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
+}
+
+.vacancy-apply-modal__submit {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.vacancy-apply-modal__cancel {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.vacancy-apply-modal__status {
+  min-height: 1.35rem;
+  margin: 0;
+  font-size: 0.95rem;
+  color: #15803d;
+}
+
+body.has-vacancy-apply-modal {
+  overflow: hidden;
+}
+
+@media (max-width: 720px) {
+  .vacancy-apply-modal__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @keyframes admissionsCursor {
   0%, 49% {
     opacity: 1;
@@ -465,6 +622,7 @@ body.has-login-modal {
   background: linear-gradient(90deg, rgba(125, 240, 190, 0.18), rgba(59, 140, 255, 0.8), rgba(125, 240, 190, 0.3));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
   opacity: 0.75;
   z-index: -1;
@@ -794,6 +952,92 @@ button.is-loading::before {
   animation: spin 0.8s linear infinite;
   position: relative;
   inset: auto;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.page-loading-shell {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.page-loading-spinner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: #2563eb;
+  font-weight: 700;
+  font-size: 0.97rem;
+}
+
+.page-loading-spinner::before {
+  content: '';
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(37, 99, 235, 0.2);
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.page-loading-card {
+  padding: 1rem 1.1rem;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #f8fbff 0%, #f1f5f9 100%);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+.page-loading-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.85rem;
+}
+
+.page-loading-pill,
+.page-loading-bar {
+  display: block;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #e2e8f0 0%, #f8fafc 50%, #e2e8f0 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+.page-loading-pill {
+  width: 4.25rem;
+  height: 1.65rem;
+}
+
+.page-loading-bar {
+  height: 0.7rem;
+}
+
+.page-loading-bar--short {
+  width: 42%;
+  margin-bottom: 0.7rem;
+}
+
+.page-loading-bar--medium {
+  width: 72%;
+  margin-bottom: 0.7rem;
+}
+
+.page-loading-bar--full {
+  width: 100%;
+  margin-bottom: 0.7rem;
+}
+
+.page-loading-bar:last-child,
+.page-loading-bar--full:last-child {
+  margin-bottom: 0;
 }
 
 .hero::before,

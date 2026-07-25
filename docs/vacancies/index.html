@@ -63,6 +63,12 @@
         }
       }
 
+      function getSelectedVacancyType() {
+        const params = new URLSearchParams(window.location.search);
+        const requestedType = params.get('type');
+        return requestedType === 'support-staff' ? 'support-staff' : 'teachers';
+      }
+
       async function fetchVacanciesFromFirestore() {
         if (!isBrowserOnline() || !firebaseDb) {
           return { vacancies: readStoredVacancies(), offline: true };
@@ -98,6 +104,159 @@
         return `<span class="vacancies-badge vacancies-badge--date">${createdAt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>`;
       }
 
+      function buildApplicationMailto(vacancyType, vacancyTitle, formData) {
+        const recipient = 'janekarithi3@gmail.com';
+        const isSupportStaff = vacancyType === 'support-staff';
+        const subject = `Application for ${vacancyTitle}`;
+        const attachmentLabel = formData.attachments?.trim() ? `Attachments: ${formData.attachments}` : 'Attachments: None provided';
+        const lines = [
+          `Vacancy type: ${isSupportStaff ? 'Support staff' : 'Teacher'}`,
+          `Vacancy: ${vacancyTitle}`,
+          `Full name: ${formData.fullName}`,
+          `Phone number: ${formData.phone}`,
+          isSupportStaff ? `ID number: ${formData.idNumber}` : `Email: ${formData.email}`,
+          isSupportStaff ? attachmentLabel : `Gender: ${formData.gender}`,
+          isSupportStaff ? '' : `ID number: ${formData.idNumber}`,
+          `Application letter: ${formData.applicationLetter}`,
+          `CV: ${formData.cv}`,
+          '',
+          'Please attach the application letter and CV files manually in your email client if needed.'
+        ];
+        const body = lines.join('\n');
+        return `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      }
+
+      function createVacanciesLoadingMarkup() {
+        return `
+          <div class="page-loading-shell" aria-live="polite">
+            <div class="page-loading-spinner">Loading opportunities…</div>
+            <div class="page-loading-card">
+              <div class="page-loading-row">
+                <span class="page-loading-pill"></span>
+                <span class="page-loading-bar page-loading-bar--full"></span>
+              </div>
+              <span class="page-loading-bar page-loading-bar--medium"></span>
+              <span class="page-loading-bar page-loading-bar--full"></span>
+            </div>
+            <div class="page-loading-card">
+              <span class="page-loading-bar page-loading-bar--short"></span>
+              <span class="page-loading-bar page-loading-bar--full"></span>
+              <span class="page-loading-bar page-loading-bar--medium"></span>
+            </div>
+          </div>
+        `;
+      }
+
+      function createApplyModal() {
+        const modal = document.createElement('div');
+        modal.className = 'vacancy-apply-modal';
+        modal.hidden = true;
+        modal.innerHTML = `
+          <div class="vacancy-apply-modal__backdrop" data-role="close"></div>
+          <div class="vacancy-apply-modal__panel" role="dialog" aria-modal="true" aria-labelledby="vacancy-apply-modal-title">
+            <button type="button" class="vacancy-apply-modal__close" data-role="close" aria-label="Close application form">×</button>
+            <h2 id="vacancy-apply-modal-title">Apply for this vacancy</h2>
+            <p class="vacancy-apply-modal__intro">Your application will be sent to the school email address.</p>
+            <form class="vacancy-apply-modal__form" id="vacancy-apply-form">
+              <div class="vacancy-apply-modal__grid">
+                <label class="vacancy-apply-modal__field">
+                  <span>Full name</span>
+                  <input type="text" name="fullName" required />
+                </label>
+                <label class="vacancy-apply-modal__field">
+                  <span>Phone number</span>
+                  <input type="tel" name="phone" required />
+                </label>
+                <label class="vacancy-apply-modal__field" id="vacancy-apply-email-field">
+                  <span>Email</span>
+                  <input type="email" name="email" />
+                </label>
+                <label class="vacancy-apply-modal__field" id="vacancy-apply-gender-field">
+                  <span>Gender</span>
+                  <select name="gender">
+                    <option value="">Select gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </label>
+                <label class="vacancy-apply-modal__field">
+                  <span>ID number</span>
+                  <input type="text" name="idNumber" required />
+                </label>
+                <label class="vacancy-apply-modal__field" id="vacancy-apply-attachment-field">
+                  <span>Attach application letter &amp; CV</span>
+                  <input type="file" name="attachments" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" />
+                </label>
+              </div>
+              <label class="vacancy-apply-modal__field">
+                <span>Application summary</span>
+                <textarea name="applicationLetter" rows="4" placeholder="Share a short note about your motivation and suitability."></textarea>
+              </label>
+              <label class="vacancy-apply-modal__field">
+                <span>Additional CV notes</span>
+                <textarea name="cv" rows="4" placeholder="Add any extra experience or qualifications you would like to mention."></textarea>
+              </label>
+              <div class="vacancy-apply-modal__actions">
+                <button type="submit" class="button button--primary vacancy-apply-modal__submit">Send application</button>
+                <button type="button" class="button button--secondary vacancy-apply-modal__cancel" data-role="close">Cancel</button>
+              </div>
+              <p class="vacancy-apply-modal__status" id="vacancy-apply-status" aria-live="polite"></p>
+            </form>
+          </div>
+        `;
+
+        const closeModal = () => {
+          modal.hidden = true;
+          document.body.classList.remove('has-vacancy-apply-modal');
+        };
+
+        modal.querySelectorAll('[data-role="close"]').forEach((element) => {
+          element.addEventListener('click', closeModal);
+        });
+
+        modal.querySelector('#vacancy-apply-form').addEventListener('submit', (event) => {
+          event.preventDefault();
+          const form = event.currentTarget;
+          const formData = Object.fromEntries(new FormData(form).entries());
+          const status = modal.querySelector('#vacancy-apply-status');
+          const vacancyTitle = modal.dataset.vacancyTitle || 'this vacancy';
+          const vacancyType = modal.dataset.vacancyType || 'teachers';
+          const isSupportStaff = vacancyType === 'support-staff';
+          const fileInput = form.querySelector('input[name="attachments"]');
+          const attachmentNames = Array.from(fileInput?.files || []).map((file) => file.name).join(', ');
+          const nextFormData = {
+            ...formData,
+            attachments: attachmentNames || formData.attachments || ''
+          };
+
+          if (!formData.fullName || !formData.phone || !formData.idNumber) {
+            status.textContent = 'Please complete the required fields before sending your application.';
+            status.style.color = '#b91c1c';
+            return;
+          }
+
+          if (!isSupportStaff && (!formData.email || !formData.gender)) {
+            status.textContent = 'Please provide your email address and gender for teacher applications.';
+            status.style.color = '#b91c1c';
+            return;
+          }
+
+          if (isSupportStaff && !attachmentNames) {
+            status.textContent = 'Please select at least one supporting file for support-staff applications.';
+            status.style.color = '#b91c1c';
+            return;
+          }
+
+          const mailtoUrl = buildApplicationMailto(vacancyType, vacancyTitle, nextFormData);
+          status.textContent = 'Opening your email app with your application details...';
+          status.style.color = '#15803d';
+          window.location.href = mailtoUrl;
+        });
+
+        return modal;
+      }
+
       async function renderPage() {
         if (!app) {
           return;
@@ -117,38 +276,58 @@
               <p class="eyebrow">Vacancies</p>
               <h1>Current opportunities</h1>
               <p class="legal-intro">Browse the latest vacancies posted by the school.</p>
-              <div id="vacancies-table-wrap" class="vacancies-table-wrap"></div>
+              <div id="vacancies-table-wrap" class="vacancies-table-wrap">${createVacanciesLoadingMarkup()}</div>
             </div>
           </div>
         `;
 
-        const { vacancies, offline } = await fetchVacanciesFromFirestore();
         const tableWrap = section.querySelector('#vacancies-table-wrap');
-        if (offline && !vacancies.length) {
+        tableWrap.innerHTML = createVacanciesLoadingMarkup();
+
+        const { vacancies, offline } = await fetchVacanciesFromFirestore();
+        const vacancyType = getSelectedVacancyType();
+        const visibleVacancies = vacancies.filter((item) => (item.vacancyType || 'teachers') === vacancyType);
+        const isSupportStaff = vacancyType === 'support-staff';
+        const sectionHeading = section.querySelector('h1');
+        const sectionIntro = section.querySelector('.legal-intro');
+
+        if (sectionHeading) {
+          sectionHeading.textContent = isSupportStaff ? 'Support staff opportunities' : 'Teaching opportunities';
+        }
+
+        if (sectionIntro) {
+          sectionIntro.textContent = isSupportStaff
+            ? 'Browse current support-staff vacancies posted by the school.'
+            : 'Browse current teaching vacancies posted by the school.';
+        }
+
+        if (offline && !visibleVacancies.length) {
           tableWrap.innerHTML = createOfflineNoticeMarkup({
             title: 'Vacancies unavailable right now',
             message: 'We could not load current vacancies because the connection is unavailable or the feed is temporarily unreachable.'
           });
-        } else if (!vacancies.length) {
-          tableWrap.innerHTML = '<div class="vacancies-empty">No vacancies are available at the moment.</div>';
+        } else if (!visibleVacancies.length) {
+          tableWrap.innerHTML = '<div class="vacancies-empty">No vacancies are available for this section at the moment.</div>';
         } else {
           tableWrap.innerHTML = `
             <table class="vacancies-table">
               <thead>
                 <tr>
                   <th>Status</th>
-                  <th>Pathway</th>
-                  <th>Subjects</th>
-                  <th>Posts</th>
+                  ${isSupportStaff ? '<th>Position</th><th>Posts</th><th>Requirements</th>' : '<th>Pathway</th><th>Subjects</th><th>Posts</th><th>Requirements</th>'}
+                  <th>Apply</th>
                 </tr>
               </thead>
               <tbody>
-                ${vacancies.map((item) => `
+                ${visibleVacancies.map((item) => `
                   <tr>
                     <td>${formatBadge(item)}</td>
-                    <td>${escapeHtml(item.pathway || 'To be confirmed')}</td>
-                    <td>${escapeHtml(item.subjects || 'To be confirmed')}</td>
-                    <td>${escapeHtml(String(item.post || 0))}</td>
+                    ${isSupportStaff
+                      ? `<td>${escapeHtml(item.position || item.pathway || 'To be confirmed')}</td><td>${escapeHtml(String(item.posts ?? item.post ?? 0))}</td><td>${escapeHtml(item.requirements || item.subjects || 'To be confirmed')}</td>`
+                      : `<td>${escapeHtml(item.pathway || item.position || 'To be confirmed')}</td><td>${escapeHtml(item.subjects || 'To be confirmed')}</td><td>${escapeHtml(String(item.posts ?? item.post ?? 0))}</td><td>${escapeHtml(item.requirements || 'To be confirmed')}</td>`}
+                    <td>
+                      <button type="button" class="button button--secondary vacancy-apply-button" data-vacancy='${escapeHtml(JSON.stringify(item))}'>Apply</button>
+                    </td>
                   </tr>
                 `).join('')}
               </tbody>
@@ -167,7 +346,38 @@
           });
         }
 
+        const applyModal = createApplyModal();
         app.appendChild(section);
+        document.body.appendChild(applyModal);
+
+        const openApplyModal = (vacancy) => {
+          const isSupportStaff = (vacancy.vacancyType || 'teachers') === 'support-staff';
+          const modalTitle = vacancy.position || vacancy.pathway || 'Vacancy';
+          const modal = document.body.querySelector('.vacancy-apply-modal');
+          if (!modal) {
+            return;
+          }
+
+          modal.dataset.vacancyTitle = modalTitle;
+          modal.dataset.vacancyType = isSupportStaff ? 'support-staff' : 'teachers';
+          modal.querySelector('#vacancy-apply-modal-title').textContent = `Apply for ${modalTitle}`;
+          modal.querySelector('#vacancy-apply-email-field').hidden = isSupportStaff;
+          modal.querySelector('#vacancy-apply-gender-field').hidden = isSupportStaff;
+          modal.querySelector('#vacancy-apply-attachment-field').hidden = !isSupportStaff;
+          modal.querySelector('#vacancy-apply-form').reset();
+          modal.querySelector('#vacancy-apply-status').textContent = '';
+          modal.hidden = false;
+          document.body.classList.add('has-vacancy-apply-modal');
+          modal.querySelector('input[name="fullName"]').focus();
+        };
+
+        const applyButtons = section.querySelectorAll('.vacancy-apply-button');
+        applyButtons.forEach((button) => {
+          button.addEventListener('click', () => {
+            const vacancy = JSON.parse(button.dataset.vacancy || '{}');
+            openApplyModal(vacancy);
+          });
+        });
       }
 
       renderPage().then(() => {

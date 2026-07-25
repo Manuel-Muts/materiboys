@@ -105,6 +105,19 @@
         }
       };
 
+      const showAdmissionsLoadingState = () => {
+        if (!typingBadge) {
+          return;
+        }
+
+        stopTypingLoop();
+        typingBadge.hidden = false;
+        typingBadge.textContent = 'Checking admissions status…';
+        typingBadge.dataset.text = '';
+        typingBadge.classList.remove('is-open', 'is-closed', 'is-hidden');
+        typingBadge.classList.add('page-loading-spinner');
+      };
+
       const clearAdmissionsBadge = () => {
         if (!typingBadge) {
           return;
@@ -113,8 +126,9 @@
         stopTypingLoop();
         typingBadge.textContent = '';
         typingBadge.dataset.text = '';
-        typingBadge.classList.remove('is-open', 'is-closed');
+        typingBadge.classList.remove('is-open', 'is-closed', 'page-loading-spinner');
         typingBadge.classList.add('is-hidden');
+        typingBadge.hidden = true;
       };
 
       const startTypingLoop = (label) => {
@@ -182,9 +196,10 @@
         const nextLabel = isAdmissionsOpen ? 'Admissions Open' : 'Admissions Closed';
 
         typingBadge.dataset.text = nextLabel;
-        typingBadge.classList.remove('is-hidden');
+        typingBadge.classList.remove('is-hidden', 'page-loading-spinner');
         typingBadge.classList.toggle('is-open', isAdmissionsOpen);
         typingBadge.classList.toggle('is-closed', !isAdmissionsOpen);
+        typingBadge.hidden = false;
         startTypingLoop(nextLabel);
       };
 
@@ -202,9 +217,10 @@
       }
 
       function syncAdmissionsStatusFromFirestore() {
-        clearAdmissionsBadge();
+        showAdmissionsLoadingState();
 
         if (!window.firebase?.firestore || !window.firebase?.apps?.length) {
+          clearAdmissionsBadge();
           return;
         }
 

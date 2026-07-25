@@ -57,6 +57,38 @@ body {
   font-weight: 600;
 }
 
+.admin-sidebar__group {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.admin-sidebar__children {
+  display: grid;
+  gap: 0.35rem;
+  margin-left: 0.85rem;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.2s ease, opacity 0.2s ease;
+}
+
+.admin-sidebar__group.is-open .admin-sidebar__children {
+  max-height: 120px;
+  opacity: 1;
+  margin-top: 0.2rem;
+}
+
+.admin-sidebar__link--parent {
+  color: #f8fafc;
+}
+
+.admin-sidebar__link--child {
+  padding: 0.7rem 0.8rem;
+  background: rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
 .admin-sidebar__toggle {
   display: flex;
   align-items: center;
@@ -84,6 +116,11 @@ body {
 .admin-sidebar__link.is-active {
   background: rgba(255, 255, 255, 0.14);
   color: #ffffff;
+}
+
+.admin-sidebar__link--child.is-active {
+  background: rgba(52, 211, 153, 0.16);
+  color: #ecfdf5;
 }
 
 .admin-main {
