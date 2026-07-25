@@ -81,17 +81,7 @@ export function renderHeader() {
     }
 
     const isTouchDevice = window.matchMedia('(hover: none), (pointer: coarse)').matches;
-    let closeTimer = null;
-
-    const clearCloseTimer = () => {
-      if (closeTimer) {
-        window.clearTimeout(closeTimer);
-        closeTimer = null;
-      }
-    };
-
     const openDropdown = () => {
-      clearCloseTimer();
       dropdowns.forEach((other) => {
         if (other !== dropdown) {
           other.removeAttribute('open');
@@ -101,17 +91,7 @@ export function renderHeader() {
     };
 
     const closeDropdown = () => {
-      clearCloseTimer();
-      if (isTouchDevice) {
-        closeTimer = window.setTimeout(() => {
-          dropdown.removeAttribute('open');
-        }, 1200);
-        return;
-      }
-
-      closeTimer = window.setTimeout(() => {
-        dropdown.removeAttribute('open');
-      }, 220);
+      dropdown.removeAttribute('open');
     };
 
     summary.addEventListener('click', (event) => {
@@ -127,11 +107,9 @@ export function renderHeader() {
         });
 
         if (isOpen) {
-          clearCloseTimer();
           dropdown.removeAttribute('open');
         } else {
           openDropdown();
-          closeDropdown();
         }
         return;
       }
@@ -158,11 +136,9 @@ export function renderHeader() {
           }
         });
         if (isOpen) {
-          clearCloseTimer();
           dropdown.removeAttribute('open');
         } else {
           openDropdown();
-          closeDropdown();
         }
       }, { passive: false });
     }
