@@ -55,7 +55,7 @@
               </iframe>
             </div>
           </div>
-          <form class="enrollment-form" method="POST" action="https://forms.office.com/your-form-id" target="_blank">
+          <form class="enrollment-form" id="admissions-form" novalidate>
           <h2 class="form-section-heading">Applicant details</h2>
           <fieldset class="enrollment-fieldset">
             <legend>Applicant details</legend>
@@ -94,6 +94,7 @@
           </fieldset>
 
           <button type="submit" class="button button--primary">Submit Application</button>
+          <p class="form-status" id="admissions-form-status" aria-live="polite"></p>
         </form>
         </div>
 
@@ -130,6 +131,20 @@
         }
       }
 
+      function buildAdmissionsMailto(formData) {
+        const recipient = 'matirischool@gmail.com';
+        const subject = `Student admission application - ${formData.fullName || 'New applicant'}`;
+        const lines = [
+          `Full name: ${formData.fullName || ''}`,
+          `Pathway: ${formData.pathway || ''}`,
+          `Date of birth: ${formData.dateOfBirth || ''}`,
+          `Parent / guardian phone: ${formData.guardianPhone || ''}`,
+          `Enrollment grade: ${formData.enrollmentGrade || ''}`
+        ];
+        const body = lines.join('\n');
+        return `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      }
+
       function renderVacancies() {
         const container = document.getElementById('vacancies-list');
         if (!container) {
@@ -152,6 +167,28 @@
             <p><strong>Subjects:</strong> ${escapeHtml(item.subjects || 'To be confirmed')}</p>
           </article>
         `).join('');
+      }
+
+      const admissionsForm = document.getElementById('admissions-form');
+      const admissionsStatus = document.getElementById('admissions-form-status');
+
+      if (admissionsForm && admissionsStatus) {
+        admissionsForm.addEventListener('submit', (event) => {
+          event.preventDefault();
+
+          if (!admissionsForm.checkValidity()) {
+            admissionsForm.reportValidity();
+            admissionsStatus.textContent = 'Please complete all required fields before submitting.';
+            admissionsStatus.style.color = '#b91c1c';
+            return;
+          }
+
+          const formData = Object.fromEntries(new FormData(admissionsForm).entries());
+          const mailtoUrl = buildAdmissionsMailto(formData);
+          admissionsStatus.textContent = 'Opening your email app with your admission details...';
+          admissionsStatus.style.color = '#15803d';
+          window.location.href = mailtoUrl;
+        });
       }
 
       renderVacancies();

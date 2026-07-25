@@ -81,17 +81,38 @@ export function renderHeader() {
     }
 
     const isTouchDevice = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+    let hoverTimer = null;
+
+    const clearHoverTimer = () => {
+      if (hoverTimer) {
+        window.clearTimeout(hoverTimer);
+        hoverTimer = null;
+      }
+    };
+
     const openDropdown = () => {
       dropdowns.forEach((other) => {
         if (other !== dropdown) {
           other.removeAttribute('open');
+          other.classList.remove('is-hovered');
         }
       });
+      clearHoverTimer();
       dropdown.setAttribute('open', '');
+      dropdown.classList.add('is-hovered');
     };
 
     const closeDropdown = () => {
+      clearHoverTimer();
+      dropdown.classList.remove('is-hovered');
       dropdown.removeAttribute('open');
+    };
+
+    const queueCloseDropdown = () => {
+      clearHoverTimer();
+      hoverTimer = window.setTimeout(() => {
+        closeDropdown();
+      }, 140);
     };
 
     summary.addEventListener('click', (event) => {
@@ -145,9 +166,15 @@ export function renderHeader() {
 
     if (!isTouchDevice) {
       dropdown.addEventListener('mouseenter', openDropdown);
-      dropdown.addEventListener('mouseleave', closeDropdown);
+      dropdown.addEventListener('mouseleave', queueCloseDropdown);
       menu.addEventListener('mouseenter', openDropdown);
-      menu.addEventListener('mouseleave', closeDropdown);
+      menu.addEventListener('mouseleave', queueCloseDropdown);
+      dropdown.addEventListener('focusin', openDropdown);
+      dropdown.addEventListener('focusout', (event) => {
+        if (!dropdown.contains(event.relatedTarget)) {
+          queueCloseDropdown();
+        }
+      });
     }
   });
 

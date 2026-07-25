@@ -104,25 +104,55 @@
         return `<span class="vacancies-badge vacancies-badge--date">${createdAt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>`;
       }
 
-      function buildApplicationMailto(vacancyType, vacancyTitle, formData) {
+      function getVacancyPathway(vacancy) {
+        if (!vacancy || typeof vacancy !== 'object') {
+          return 'this vacancy';
+        }
+
+        return vacancy.pathway || vacancy.position || vacancy.title || 'this vacancy';
+      }
+
+      function getVacancySubjects(vacancy) {
+        if (!vacancy || typeof vacancy !== 'object') {
+          return '';
+        }
+
+        const rawSubjects = vacancy.subjects ?? vacancy.subject ?? vacancy.subjectsOffered ?? vacancy.subjectList ?? vacancy.subjectsList ?? '';
+
+        if (Array.isArray(rawSubjects)) {
+          return rawSubjects.filter(Boolean).join(', ');
+        }
+
+        if (typeof rawSubjects === 'string') {
+          return rawSubjects.trim();
+        }
+
+        return '';
+      }
+
+      function buildApplicationMailto(vacancyType, vacancyDetails, formData) {
         const recipient = 'janekarithi3@gmail.com';
         const isSupportStaff = vacancyType === 'support-staff';
-        const subject = `Application for ${vacancyTitle}`;
-        const attachmentLabel = formData.attachments?.trim() ? `Attachments: ${formData.attachments}` : 'Attachments: None provided';
+        const pathway = vacancyDetails?.pathway || 'this vacancy';
+        const title = vacancyDetails?.title || pathway;
+        const subjects = vacancyDetails?.subjects?.trim() || '';
+        const subject = subjects ? `Application for ${pathway} (${subjects})` : `Application for ${pathway}`;
         const lines = [
           `Vacancy type: ${isSupportStaff ? 'Support staff' : 'Teacher'}`,
-          `Vacancy: ${vacancyTitle}`,
+          `Pathway: ${pathway}`,
+          subjects ? `Subjects: ${subjects}` : '',
+          `Vacancy: ${title}`,
           `Full name: ${formData.fullName}`,
           `Phone number: ${formData.phone}`,
           isSupportStaff ? `ID number: ${formData.idNumber}` : `Email: ${formData.email}`,
-          isSupportStaff ? attachmentLabel : `Gender: ${formData.gender}`,
+          isSupportStaff ? '' : `Gender: ${formData.gender}`,
           isSupportStaff ? '' : `ID number: ${formData.idNumber}`,
           `Application letter: ${formData.applicationLetter}`,
           `CV: ${formData.cv}`,
           '',
-          'Please attach the application letter and CV files manually in your email client if needed.'
+          'Please attach the application letter and CV files manually now before sending this application.'
         ];
-        const body = lines.join('\n');
+        const body = lines.filter(Boolean).join('\n');
         return `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       }
 
@@ -184,10 +214,6 @@
                   <span>ID number</span>
                   <input type="text" name="idNumber" required />
                 </label>
-                <label class="vacancy-apply-modal__field" id="vacancy-apply-attachment-field">
-                  <span>Attach application letter &amp; CV</span>
-                  <input type="file" name="attachments" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" />
-                </label>
               </div>
               <label class="vacancy-apply-modal__field">
                 <span>Application summary</span>
@@ -223,11 +249,8 @@
           const vacancyTitle = modal.dataset.vacancyTitle || 'this vacancy';
           const vacancyType = modal.dataset.vacancyType || 'teachers';
           const isSupportStaff = vacancyType === 'support-staff';
-          const fileInput = form.querySelector('input[name="attachments"]');
-          const attachmentNames = Array.from(fileInput?.files || []).map((file) => file.name).join(', ');
           const nextFormData = {
-            ...formData,
-            attachments: attachmentNames || formData.attachments || ''
+            ...formData
           };
 
           if (!formData.fullName || !formData.phone || !formData.idNumber) {
@@ -242,13 +265,13 @@
             return;
           }
 
-          if (isSupportStaff && !attachmentNames) {
-            status.textContent = 'Please select at least one supporting file for support-staff applications.';
-            status.style.color = '#b91c1c';
-            return;
-          }
+          const vacancyDetails = {
+            title: vacancyTitle,
+            pathway: modal.dataset.vacancyPathway || vacancyTitle,
+            subjects: modal.dataset.vacancySubjects || ''
+          };
 
-          const mailtoUrl = buildApplicationMailto(vacancyType, vacancyTitle, nextFormData);
+          const mailtoUrl = buildApplicationMailto(vacancyType, vacancyDetails, nextFormData);
           status.textContent = 'Opening your email app with your application details...';
           status.style.color = '#15803d';
           window.location.href = mailtoUrl;
@@ -360,11 +383,12 @@
           }
 
           modal.dataset.vacancyTitle = modalTitle;
+          modal.dataset.vacancyPathway = vacancy.pathway || vacancy.position || modalTitle;
+          modal.dataset.vacancySubjects = getVacancySubjects(vacancy);
           modal.dataset.vacancyType = isSupportStaff ? 'support-staff' : 'teachers';
           modal.querySelector('#vacancy-apply-modal-title').textContent = `Apply for ${modalTitle}`;
           modal.querySelector('#vacancy-apply-email-field').hidden = isSupportStaff;
           modal.querySelector('#vacancy-apply-gender-field').hidden = isSupportStaff;
-          modal.querySelector('#vacancy-apply-attachment-field').hidden = !isSupportStaff;
           modal.querySelector('#vacancy-apply-form').reset();
           modal.querySelector('#vacancy-apply-status').textContent = '';
           modal.hidden = false;
