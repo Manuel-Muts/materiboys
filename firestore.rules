@@ -23,7 +23,7 @@ service cloud.firestore {
     }
 
     match /alumni-registrations/{registrationId} {
-      allow read: if true;
+      allow read: if isAdmin() || resource == null;
       allow create: if true;
       allow update, delete: if isAdmin();
     }

@@ -104,7 +104,7 @@
                   </label>
                 </div>
 
-                <button type="submit" class="button button--primary">Submit</button>
+                <button id="alumni-submit" type="submit" class="button button--primary">Submit</button>
                 <p id="alumni-form-status" class="alumni-form__status" aria-live="polite"></p>
               </form>
             </section>
@@ -118,7 +118,9 @@
       </div>
     </section>
 
-    <script>
+    <script type="module">
+      import { stateManager } from '../js/modules/state-manager.js';
+
       const FIREBASE_CONFIG = {
         apiKey: 'AIzaSyBIGqZLYcDg3CR5VamDwBhtOOfl2Y0NYeI',
         authDomain: 'timotech-films.firebaseapp.com',
@@ -142,6 +144,7 @@
 
       const alumniForm = document.querySelector('.alumni-form');
       const alumniStatus = document.getElementById('alumni-form-status');
+      const submitButton = alumniForm?.querySelector('button[type="submit"]');
 
       alumniForm?.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -161,6 +164,10 @@
           return;
         }
 
+        stateManager.setButtonLoading(submitButton?.id || 'alumni-submit', true, {
+          loadingText: 'Submitting...'
+        });
+
         try {
           if (alumniDb) {
             await alumniDb.collection('alumni-registrations').add(payload);
@@ -177,6 +184,8 @@
           console.warn('Alumni submission failed:', error);
           alumniStatus.textContent = 'Your registration could not be saved right now. Please try again later.';
           alumniStatus.style.color = '#b42318';
+        } finally {
+          stateManager.setButtonLoading(submitButton?.id || 'alumni-submit', false);
         }
       });
     </script>
