@@ -64,7 +64,6 @@ export function renderHero() {
           <img src="../images/IMG_3567.JPG" alt="Students enjoying School life together" class="image-slider__image" data-caption="Students enjoying School life together" />
           <img src="../images/IMG_3569.JPG" alt="Fun moments during school activities" class="image-slider__image" data-caption="Fun moments during school activities" />
           <img src="../images/IMG_3636.JPG" alt="Focused learning and positive teamwork" class="image-slider__image" data-caption="Outdoor Activities" />
-          <img src="../images/IMG_4271.JPG" alt="A proud school community in action" class="image-slider__image" data-caption="A proud school community" />
           <img src="../images/IMG_4275.JPG" alt="Warm friendships and joyful school spirit" class="image-slider__image" data-caption="Warm friendships and joyful school spirit" />
           <img src="../images/IMG_4278.JPG" alt="Confident learners sharing memorable moments" class="image-slider__image" data-caption="Confident learners sharing memorable moments" />
           <img src="../images/IMG_4304.JPG" alt="A vibrant campus full of life and growth" class="image-slider__image" data-caption="A vibrant School full of life" />

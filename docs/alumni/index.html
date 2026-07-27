@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="../styles/chat-assistant.css" />
     <link rel="icon" href="../logo/favicon.ico" type="image/x-icon" />
     <link rel="shortcut icon" href="../logo/favicon.ico" type="image/x-icon" />
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   </head>
   <body>
     <section class="legal-page-shell">
@@ -103,6 +105,7 @@
                 </div>
 
                 <button type="submit" class="button button--primary">Submit</button>
+                <p id="alumni-form-status" class="alumni-form__status" aria-live="polite"></p>
               </form>
             </section>
 
@@ -115,6 +118,68 @@
       </div>
     </section>
 
+    <script>
+      const FIREBASE_CONFIG = {
+        apiKey: 'AIzaSyBIGqZLYcDg3CR5VamDwBhtOOfl2Y0NYeI',
+        authDomain: 'timotech-films.firebaseapp.com',
+        projectId: 'timotech-films',
+        storageBucket: 'timotech-films.firebasestorage.app',
+        messagingSenderId: '563809562931',
+        appId: '1:563809562931:web:750ff7e819f2d57e9dce46'
+      };
+
+      let alumniDb = null;
+      if (window.firebase?.app && typeof window.firebase.initializeApp === 'function') {
+        try {
+          if (!window.firebase.apps?.length) {
+            window.firebase.initializeApp(FIREBASE_CONFIG);
+          }
+          alumniDb = window.firebase.firestore();
+        } catch (error) {
+          console.warn('Alumni Firebase init failed:', error);
+        }
+      }
+
+      const alumniForm = document.querySelector('.alumni-form');
+      const alumniStatus = document.getElementById('alumni-form-status');
+
+      alumniForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(alumniForm);
+        const payload = {
+          fullName: String(formData.get('full-name') || '').trim(),
+          completionYear: String(formData.get('completion-year') || '').trim(),
+          email: String(formData.get('email') || '').trim(),
+          phone: String(formData.get('phone') || '').trim(),
+          createdAt: new Date().toISOString()
+        };
+
+        if (!payload.fullName || !payload.completionYear || !payload.email || !payload.phone) {
+          alumniStatus.textContent = 'Please fill in all fields before submitting.';
+          alumniStatus.style.color = '#b42318';
+          return;
+        }
+
+        try {
+          if (alumniDb) {
+            await alumniDb.collection('alumni-registrations').add(payload);
+          } else {
+            const existing = JSON.parse(localStorage.getItem('school-alumni-registrations') || '[]');
+            existing.unshift({ ...payload, id: `local-${Date.now()}` });
+            localStorage.setItem('school-alumni-registrations', JSON.stringify(existing));
+          }
+
+          alumniForm.reset();
+          alumniStatus.textContent = 'Thank you! Your alumni registration has been received.';
+          alumniStatus.style.color = '#067647';
+        } catch (error) {
+          console.warn('Alumni submission failed:', error);
+          alumniStatus.textContent = 'Your registration could not be saved right now. Please try again later.';
+          alumniStatus.style.color = '#b42318';
+        }
+      });
+    </script>
     <script type="module">
       import { initChatAssistant } from '../js/chat-assistant.js';
       initChatAssistant();

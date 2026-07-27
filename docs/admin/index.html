@@ -38,6 +38,7 @@
               <button class="admin-sidebar__link admin-sidebar__link--child" type="button" data-section="Vacancies - Support staff" data-title="Support staff" data-heading="Post a support staff vacancy" data-description="Add a support staff vacancy with position, post count, and requirements." data-storage-key="vacancies" data-mode="vacancies" data-vacancy-type="support-staff">Support staff</button>
             </div>
           </div>
+          <button class="admin-sidebar__link" type="button" data-section="Alumni registrations" data-title="Alumni registrations" data-heading="Alumni registrations" data-description="View and manage alumni registrations submitted through the public form." data-storage-key="alumni" data-mode="alumni">Alumni registrations</button>
           <button class="admin-sidebar__link" type="button" data-section="News &amp; blogs" data-title="School news" data-heading="Create school news post" data-description="Write a story for the school news section and optionally add an attachment or a YouTube link." data-storage-key="news" data-mode="news">News &amp; blogs</button>
         </nav>
         <button id="admin-logout-button" class="admin-sidebar__logout" type="button">Logout</button>
@@ -56,7 +57,7 @@
           <h3 id="admin-card-heading">Upload admissions document</h3>
           <p id="admin-card-description">Choose a document to make it available on the admissions page.</p>
           <form class="admin-form" id="admin-upload-form">
-            <label class="admin-form__field" id="title-field">
+            <label class="admin-form__field" id="title-field" hidden>
               <span>Title</span>
               <input type="text" id="admin-title-input" name="title" value="Admission form" placeholder="Application form" />
             </label>
@@ -180,6 +181,7 @@
       const DOCS_STORAGE_KEY = 'school-download-docs';
       const NEWS_STORAGE_KEY = 'school-news-posts';
       const VACANCIES_STORAGE_KEY = 'school-vacancies';
+      const ALUMNI_STORAGE_KEY = 'school-alumni-registrations';
       const SETTINGS_STORAGE_KEY = 'school-site-settings';
       const ADMISSIONS_SETTINGS_ID = 'admissions';
       let activeEditState = null;
@@ -499,6 +501,84 @@
         }
       }
 
+      function readStoredAlumniRegistrations() {
+        try {
+          const registrations = JSON.parse(localStorage.getItem(ALUMNI_STORAGE_KEY) || '[]');
+          return Array.isArray(registrations)
+            ? registrations.map((registration) => ({ ...registration, id: registration.id || createItemId('alumni') }))
+            : [];
+        } catch (error) {
+          return [];
+        }
+      }
+
+      function deleteAlumniRegistration(registrationId) {
+        const registrations = readStoredAlumniRegistrations().filter((registration) => registration.id !== registrationId);
+        localStorage.setItem(ALUMNI_STORAGE_KEY, JSON.stringify(registrations));
+
+        if (db) {
+          try {
+            db.collection('alumni-registrations').doc(registrationId).delete().catch((error) => console.warn('Firestore alumni delete failed:', error));
+          } catch (error) {
+            console.warn('Firestore alumni delete error:', error);
+          }
+        }
+
+        window.dispatchEvent(new Event('school-alumni-updated'));
+      }
+
+      function saveAlumniRegistration(registration) {
+        const registrations = readStoredAlumniRegistrations();
+        const newRegistration = { ...registration, id: registration.id || createItemId('alumni') };
+        registrations.unshift(newRegistration);
+        localStorage.setItem(ALUMNI_STORAGE_KEY, JSON.stringify(registrations));
+
+        if (db) {
+          try {
+            db.collection('alumni-registrations').doc(newRegistration.id).set({
+              fullName: newRegistration.fullName || '',
+              completionYear: newRegistration.completionYear || '',
+              email: newRegistration.email || '',
+              phone: newRegistration.phone || '',
+              createdAt: newRegistration.createdAt || new Date().toISOString(),
+              updatedAt: newRegistration.updatedAt || new Date().toISOString()
+            }, { merge: true }).catch((error) => console.warn('Firestore alumni write failed:', error));
+          } catch (error) {
+            console.warn('Firestore alumni write error:', error);
+          }
+        }
+
+        window.dispatchEvent(new Event('school-alumni-updated'));
+      }
+
+      async function syncAlumniRegistrationsFromFirestore() {
+        if (!db) {
+          return;
+        }
+
+        try {
+          const snapshot = await db.collection('alumni-registrations').orderBy('createdAt', 'desc').get();
+          const remoteRegistrations = [];
+          snapshot.forEach((doc) => {
+            const data = doc.data() || {};
+            remoteRegistrations.push({
+              id: doc.id,
+              fullName: data.fullName || '',
+              completionYear: data.completionYear || '',
+              email: data.email || '',
+              phone: data.phone || '',
+              createdAt: data.createdAt || new Date().toISOString(),
+              updatedAt: data.updatedAt || data.createdAt || new Date().toISOString()
+            });
+          });
+
+          localStorage.setItem(ALUMNI_STORAGE_KEY, JSON.stringify(remoteRegistrations));
+          window.dispatchEvent(new Event('school-alumni-updated'));
+        } catch (error) {
+          console.warn('Firestore alumni sync failed:', error);
+        }
+      }
+
       function saveVacancy(vacancy) {
         const vacancies = readStoredVacancies();
         const newVacancy = { ...vacancy, id: vacancy.id || createItemId('vacancy') };
@@ -538,6 +618,31 @@
       function renderManagementPanel() {
         const mode = uploadForm.dataset.mode || 'document';
         const storageKey = uploadForm.dataset.storageKey || 'admissions';
+
+        if (mode === 'alumni') {
+          managementHeader.innerHTML = '<th>Name</th><th>Contact</th><th>Year</th><th>Submitted</th>';
+          const registrations = readStoredAlumniRegistrations();
+          managementCaption.textContent = 'View and manage alumni registrations submitted through the public form.';
+          if (!registrations.length) {
+            managementBody.innerHTML = '<tr><td colspan="4">No alumni registrations yet.</td></tr>';
+            return;
+          }
+
+          managementBody.innerHTML = registrations.map((registration) => `
+            <tr>
+              <td>${escapeHtml(registration.fullName || 'Unnamed alumnus')}</td>
+              <td>${escapeHtml(registration.email || 'No email')}<br>${escapeHtml(registration.phone || 'No phone')}</td>
+              <td>${escapeHtml(registration.completionYear || 'Unknown')}</td>
+              <td>
+                ${escapeHtml(registration.createdAt ? new Date(registration.createdAt).toLocaleString() : 'Pending')}
+                <div class="admin-management__actions">
+                  <button type="button" class="admin-action--delete" data-action="delete-alumni" data-id="${escapeHtml(registration.id)}">Delete</button>
+                </div>
+              </td>
+            </tr>
+          `).join('');
+          return;
+        }
 
         if (mode === 'news') {
           managementHeader.innerHTML = '<th>Title</th><th>Details</th><th>Actions</th>';
@@ -656,7 +761,8 @@
         resetFormState();
         const isNewsMode = button.dataset.mode === 'news';
         const isVacanciesMode = button.dataset.mode === 'vacancies';
-        const isDocumentMode = !isNewsMode && !isVacanciesMode;
+        const isAlumniMode = button.dataset.mode === 'alumni';
+        const isDocumentMode = !isNewsMode && !isVacanciesMode && !isAlumniMode;
         const sectionName = button.dataset.section || button.textContent.trim();
         const titleValue = button.dataset.title || sectionName;
         const headingText = button.dataset.heading || sectionName;
@@ -668,11 +774,11 @@
         cardHeading.textContent = headingText;
         cardDescription.textContent = descriptionText;
         titleInput.value = storedDoc?.title || titleValue;
-        titleField.hidden = isVacanciesMode;
+        titleField.hidden = isVacanciesMode || isAlumniMode;
         fileInput.required = isDocumentMode;
         fileInput.accept = '.jpg,.jpeg,.png,.pdf,.doc,.docx';
-        fileField.hidden = isVacanciesMode;
-        fileField.style.display = isVacanciesMode ? 'none' : '';
+        fileField.hidden = isVacanciesMode || isAlumniMode;
+        fileField.style.display = isVacanciesMode || isAlumniMode ? 'none' : '';
         fileField.querySelector('span').textContent = 'Upload file';
         newsOnlyFields.hidden = !isNewsMode;
         vacanciesFields.hidden = !isVacanciesMode;
@@ -687,7 +793,8 @@
           supportVacancyFields.hidden = !isSupportStaffVacancy;
           supportVacancyFields.style.display = isSupportStaffVacancy ? '' : 'none';
         }
-        submitButton.textContent = isNewsMode ? 'Save news post' : isVacanciesMode ? 'Post vacancy' : 'Save upload';
+        submitButton.hidden = isAlumniMode;
+        submitButton.textContent = isNewsMode ? 'Save news post' : isVacanciesMode ? 'Post vacancy' : isAlumniMode ? 'View alumni' : 'Save upload';
 
         if (!isNewsMode) {
           storyEditor.innerHTML = '';
@@ -750,6 +857,7 @@
 
       const initializeAdminView = async () => {
         await syncPostsAndVacanciesFromFirestore();
+        await syncAlumniRegistrationsFromFirestore();
         const activeButton = buttons.find((button) => button.classList.contains('is-active')) || buttons[0];
         if (activeButton) {
           activeButton.click();
@@ -766,6 +874,13 @@
 
         const action = actionButton.dataset.action;
         const itemId = actionButton.dataset.id;
+
+        if (action === 'delete-alumni') {
+          deleteAlumniRegistration(itemId);
+          renderManagementPanel();
+          showToast('Alumni registration removed.', { type: 'info' });
+          return;
+        }
 
         if (action === 'delete') {
           if (uploadForm.dataset.mode === 'news') {
@@ -866,6 +981,11 @@
 
       uploadForm.addEventListener('submit', async (event) => {
         event.preventDefault();
+
+        if (uploadForm.dataset.mode === 'alumni') {
+          renderManagementPanel();
+          return;
+        }
 
         const isNewsMode = uploadForm.dataset.mode === 'news';
         const isVacanciesMode = uploadForm.dataset.mode === 'vacancies';
