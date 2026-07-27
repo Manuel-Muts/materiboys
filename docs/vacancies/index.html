@@ -80,6 +80,7 @@
           snapshot.forEach((doc) => {
             vacancies.push({ ...doc.data(), id: doc.id });
           });
+          window.localStorage.setItem(VACANCIES_STORAGE_KEY, JSON.stringify(vacancies));
           return { vacancies: vacancies.length > 0 ? vacancies : readStoredVacancies(), offline: false };
         } catch (error) {
           console.warn('Firestore fetch failed, using localStorage:', error);
@@ -146,10 +147,8 @@
           isSupportStaff ? `ID number: ${formData.idNumber}` : `Email: ${formData.email}`,
           isSupportStaff ? '' : `Gender: ${formData.gender}`,
           isSupportStaff ? '' : `ID number: ${formData.idNumber}`,
-          `Application letter: ${formData.applicationLetter}`,
-          `CV: ${formData.cv}`,
-          '',
-          'Please attach the application letter and CV files manually now before sending this application.'
+          `Application summary: ${formData.applicationLetter || 'Not provided'}`,
+          `Additional experience / CV notes: ${formData.cv || 'Not provided'}`
         ];
         const body = lines.filter(Boolean).join('\n');
         return `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
@@ -215,12 +214,12 @@
                 </label>
               </div>
               <label class="vacancy-apply-modal__field">
-                <span>Application summary</span>
-                <textarea name="applicationLetter" rows="4" placeholder="Share a short note about your motivation and suitability."></textarea>
+                <span>Motivation / Application summary</span>
+                <textarea name="applicationLetter" rows="4" placeholder="Briefly explain your interest in this role and why you are a strong candidate."></textarea>
               </label>
               <label class="vacancy-apply-modal__field">
-                <span>Additional CV notes</span>
-                <textarea name="cv" rows="4" placeholder="Add any extra experience or qualifications you would like to mention."></textarea>
+                <span>Additional experience or CV notes</span>
+                <textarea name="cv" rows="4" placeholder="Mention any relevant experience, qualifications, achievements, or supporting details."></textarea>
               </label>
               <div class="vacancy-apply-modal__actions">
                 <button type="submit" class="button button--primary vacancy-apply-modal__submit">Send application</button>
@@ -231,13 +230,53 @@
           </div>
         `;
 
+        const reminderModal = document.createElement('div');
+        reminderModal.className = 'vacancy-apply-confirm-modal';
+        reminderModal.hidden = true;
+        reminderModal.innerHTML = `
+          <div class="vacancy-apply-confirm-modal__backdrop" data-role="confirm-close"></div>
+          <div class="vacancy-apply-confirm-modal__panel" role="dialog" aria-modal="true" aria-labelledby="vacancy-apply-confirm-title">
+            <h2 id="vacancy-apply-confirm-title">One more step</h2>
+            <p class="vacancy-apply-confirm-modal__message"><strong>Please attach your application letter and CV in the next step when your email app opens.</strong></p>
+            <div class="vacancy-apply-modal__actions">
+              <button type="button" class="button button--primary vacancy-apply-confirm-modal__continue">Continue to email</button>
+              <button type="button" class="button button--secondary" data-role="confirm-close">Go back</button>
+            </div>
+          </div>
+        `;
+
+        document.body.appendChild(reminderModal);
+
         const closeModal = () => {
           modal.hidden = true;
+          reminderModal.hidden = true;
           document.body.classList.remove('has-vacancy-apply-modal');
+        };
+
+        const openReminderModal = (mailtoUrl) => {
+          reminderModal.dataset.mailtoUrl = mailtoUrl;
+          reminderModal.hidden = false;
+          modal.hidden = true;
+          document.body.classList.add('has-vacancy-apply-modal');
         };
 
         modal.querySelectorAll('[data-role="close"]').forEach((element) => {
           element.addEventListener('click', closeModal);
+        });
+
+        reminderModal.querySelectorAll('[data-role="confirm-close"]').forEach((element) => {
+          element.addEventListener('click', () => {
+            reminderModal.hidden = true;
+            modal.hidden = false;
+            document.body.classList.add('has-vacancy-apply-modal');
+          });
+        });
+
+        reminderModal.querySelector('.vacancy-apply-confirm-modal__continue').addEventListener('click', () => {
+          const mailtoUrl = reminderModal.dataset.mailtoUrl;
+          if (mailtoUrl) {
+            window.location.href = mailtoUrl;
+          }
         });
 
         modal.querySelector('#vacancy-apply-form').addEventListener('submit', (event) => {
@@ -271,9 +310,9 @@
           };
 
           const mailtoUrl = buildApplicationMailto(vacancyType, vacancyDetails, nextFormData);
-          status.textContent = 'Opening your email app with your application details...';
+          status.textContent = 'Please review the reminder before continuing.';
           status.style.color = '#15803d';
-          window.location.href = mailtoUrl;
+          openReminderModal(mailtoUrl);
         });
 
         return modal;

@@ -443,9 +443,117 @@ body.has-vacancy-apply-modal {
   overflow: hidden;
 }
 
+.vacancy-apply-confirm-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.vacancy-apply-confirm-modal[hidden],
+.vacancy-apply-confirm-modal__backdrop[hidden] {
+  display: none !important;
+}
+
+.vacancy-apply-confirm-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 8, 23, 0.82);
+  backdrop-filter: blur(10px);
+}
+
+.vacancy-apply-confirm-modal__panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 480px);
+  padding: 1.5rem;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(2, 8, 23, 0.35);
+  border: 1px solid rgba(37, 99, 235, 0.14);
+}
+
+.vacancy-apply-confirm-modal h2 {
+  margin: 0 0 0.7rem;
+  font-size: 1.2rem;
+  color: #0f172a;
+}
+
+.vacancy-apply-confirm-modal__message {
+  margin: 0 0 1rem;
+  color: #334155;
+  line-height: 1.7;
+}
+
 @media (max-width: 720px) {
+  .vacancy-apply-modal {
+    padding: 0.7rem;
+  }
+
+  .vacancy-apply-modal__panel {
+    width: min(100%, 560px);
+    padding: 1rem;
+    border-radius: 20px;
+  }
+
+  .vacancy-apply-modal h2 {
+    font-size: 1.15rem;
+  }
+
+  .vacancy-apply-modal__intro {
+    font-size: 0.95rem;
+    margin-bottom: 0.8rem;
+  }
+
   .vacancy-apply-modal__grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+  }
+
+  .vacancy-apply-modal__field {
+    font-size: 0.95rem;
+  }
+
+  .vacancy-apply-modal__field input,
+  .vacancy-apply-modal__field textarea,
+  .vacancy-apply-modal__field select {
+    padding: 0.7rem 0.8rem;
+    font-size: 0.95rem;
+    border-radius: 12px;
+  }
+
+  .vacancy-apply-modal__field textarea {
+    min-height: 88px;
+  }
+
+  .vacancy-apply-modal__actions {
+    gap: 0.6rem;
+  }
+
+  .vacancy-apply-modal__submit,
+  .vacancy-apply-modal__cancel {
+    padding: 0.7rem 0.95rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .vacancy-apply-modal__panel {
+    padding: 0.9rem;
+  }
+
+  .vacancy-apply-modal__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
+  }
+
+  .vacancy-apply-modal__field input,
+  .vacancy-apply-modal__field textarea,
+  .vacancy-apply-modal__field select {
+    padding: 0.65rem 0.7rem;
+    font-size: 0.9rem;
   }
 }
 
@@ -1538,6 +1646,7 @@ button.is-loading::before {
   }
 
   .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.7rem;
   }
 
@@ -1549,6 +1658,20 @@ button.is-loading::before {
   .form-field select {
     padding: 0.65rem 0.75rem;
     font-size: 0.92rem;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
+  }
+
+  .form-field input,
+  .form-field select {
+    padding: 0.6rem 0.7rem;
+    font-size: 0.9rem;
   }
 }
 

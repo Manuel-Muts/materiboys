@@ -196,6 +196,7 @@
       let db = null;
       let auth = null;
       let currentAdminUser = null;
+      let isContentSyncing = false;
 
       if (window.firebase?.app && typeof window.firebase.initializeApp === 'function') {
         const hasConfig = FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.authDomain && FIREBASE_CONFIG.projectId && FIREBASE_CONFIG.appId;
@@ -207,6 +208,39 @@
           } catch (error) {
             console.warn('Firebase initialization failed:', error);
           }
+        }
+      }
+
+      async function syncPostsAndVacanciesFromFirestore() {
+        if (!db || isContentSyncing) {
+          return;
+        }
+
+        isContentSyncing = true;
+        try {
+          const [newsSnapshot, vacancySnapshot] = await Promise.all([
+            db.collection('news-posts').orderBy('createdAt', 'desc').get(),
+            db.collection('vacancies').orderBy('createdAt', 'desc').get()
+          ]);
+
+          const remoteNewsPosts = [];
+          newsSnapshot.forEach((doc) => {
+            remoteNewsPosts.push({ ...doc.data(), id: doc.id });
+          });
+
+          const remoteVacancies = [];
+          vacancySnapshot.forEach((doc) => {
+            remoteVacancies.push({ ...doc.data(), id: doc.id });
+          });
+
+          localStorage.setItem(NEWS_STORAGE_KEY, JSON.stringify(remoteNewsPosts));
+          localStorage.setItem(VACANCIES_STORAGE_KEY, JSON.stringify(remoteVacancies));
+          window.dispatchEvent(new Event('school-news-updated'));
+          window.dispatchEvent(new Event('school-vacancies-updated'));
+        } catch (error) {
+          console.warn('Firestore content sync failed:', error);
+        } finally {
+          isContentSyncing = false;
         }
       }
 
@@ -714,10 +748,15 @@
 
       setVacanciesDropdownState(false);
 
-      const activeButton = buttons.find((button) => button.classList.contains('is-active')) || buttons[0];
-      if (activeButton) {
-        activeButton.click();
-      }
+      const initializeAdminView = async () => {
+        await syncPostsAndVacanciesFromFirestore();
+        const activeButton = buttons.find((button) => button.classList.contains('is-active')) || buttons[0];
+        if (activeButton) {
+          activeButton.click();
+        }
+      };
+
+      initializeAdminView();
 
       managementBody.addEventListener('click', (event) => {
         const actionButton = event.target.closest('button[data-action]');

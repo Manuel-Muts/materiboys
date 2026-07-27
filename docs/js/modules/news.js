@@ -192,6 +192,7 @@ async function fetchNewsPostsFromFirestore() {
     snapshot.forEach((doc) => {
       posts.push({ ...doc.data(), id: doc.id });
     });
+    window.localStorage.setItem('school-news-posts', JSON.stringify(posts));
     return { posts: posts.length > 0 ? posts : readStoredNewsPosts(), offline: false };
   } catch (error) {
     console.warn('Firestore fetch failed, using localStorage:', error);
