@@ -56,7 +56,7 @@
         <section class="admin-card">
           <h3 id="admin-card-heading">Upload admissions document</h3>
           <p id="admin-card-description">Choose a document to make it available on the admissions page.</p>
-          <form class="admin-form" id="admin-upload-form">
+          <form class="admin-form" id="admin-upload-form" hidden>
             <label class="admin-form__field" id="title-field" hidden>
               <span>Title</span>
               <input type="text" id="admin-title-input" name="title" value="Admission form" placeholder="Application form" />
@@ -116,7 +116,7 @@
               <span>Upload file</span>
               <input type="file" name="file" id="admin-file-input" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" />
             </label>
-            <button type="submit" class="button button--primary" id="admin-submit-button">Save upload</button>
+            <button type="submit" class="button button--primary" id="admin-submit-button" hidden>Save upload</button>
             <p class="admin-form__status" id="admin-form-status" aria-live="polite"></p>
           </form>
 
@@ -151,6 +151,7 @@
       const sectionTitle = document.getElementById('admin-section-title');
       const cardHeading = document.getElementById('admin-card-heading');
       const cardDescription = document.getElementById('admin-card-description');
+      const adminCard = document.querySelector('.admin-card');
       const uploadForm = document.getElementById('admin-upload-form');
       const fileInput = document.getElementById('admin-file-input');
       const statusText = document.getElementById('admin-form-status');
@@ -620,27 +621,24 @@
         const storageKey = uploadForm.dataset.storageKey || 'admissions';
 
         if (mode === 'alumni') {
-          managementHeader.innerHTML = '<th>Name</th><th>Contact</th><th>Year</th><th>Submitted</th>';
           const registrations = readStoredAlumniRegistrations();
+          managementHeader.innerHTML = '<th>Name</th><th>Contact</th><th>Year</th><th>Submitted</th>';
           managementCaption.textContent = 'View and manage alumni registrations submitted through the public form.';
-          if (!registrations.length) {
-            managementBody.innerHTML = '<tr><td colspan="4">No alumni registrations yet.</td></tr>';
-            return;
-          }
-
-          managementBody.innerHTML = registrations.map((registration) => `
-            <tr>
-              <td>${escapeHtml(registration.fullName || 'Unnamed alumnus')}</td>
-              <td>${escapeHtml(registration.email || 'No email')}<br>${escapeHtml(registration.phone || 'No phone')}</td>
-              <td>${escapeHtml(registration.completionYear || 'Unknown')}</td>
-              <td>
-                ${escapeHtml(registration.createdAt ? new Date(registration.createdAt).toLocaleString() : 'Pending')}
-                <div class="admin-management__actions">
-                  <button type="button" class="admin-action--delete" data-action="delete-alumni" data-id="${escapeHtml(registration.id)}">Delete</button>
-                </div>
-              </td>
-            </tr>
-          `).join('');
+          managementBody.innerHTML = registrations.length
+            ? registrations.map((registration) => `
+                <tr>
+                  <td>${escapeHtml(registration.fullName || 'Unnamed alumnus')}</td>
+                  <td>${escapeHtml(registration.email || 'No email')}<br>${escapeHtml(registration.phone || 'No phone')}</td>
+                  <td>${escapeHtml(registration.completionYear || 'Unknown')}</td>
+                  <td>
+                    ${escapeHtml(registration.createdAt ? new Date(registration.createdAt).toLocaleString() : 'Pending')}
+                    <div class="admin-management__actions">
+                      <button type="button" class="admin-action--delete" data-action="delete-alumni" data-id="${escapeHtml(registration.id)}">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              `).join('')
+            : '<tr><td colspan="4">No alumni registrations yet.</td></tr>';
           return;
         }
 
@@ -729,7 +727,9 @@
 
       function resetFormState() {
         activeEditState = null;
-        submitButton.textContent = 'Save upload';
+        if (submitButton) {
+          submitButton.textContent = 'Save upload';
+        }
       }
 
       function beginEdit(mode, item) {
@@ -739,7 +739,9 @@
           titleInput.value = item.title || '';
           storyEditor.innerHTML = item.story || '';
           videoUrlInput.value = item.youtubeUrl || '';
-          submitButton.textContent = 'Update post';
+          if (submitButton) {
+            submitButton.textContent = 'Update post';
+          }
           return;
         }
 
@@ -749,12 +751,16 @@
           positionInput.value = item.position || item.pathway || '';
           postsInput.value = item.posts ?? item.post ?? '';
           requirementsInput.value = item.requirements || item.subjects || '';
-          submitButton.textContent = 'Update';
+          if (submitButton) {
+            submitButton.textContent = 'Update';
+          }
           return;
         }
 
         titleInput.value = item.title || '';
-        submitButton.textContent = 'Update upload';
+        if (submitButton) {
+          submitButton.textContent = 'Update upload';
+        }
       }
 
       function updateFormMode(button) {
@@ -773,17 +779,24 @@
         sectionTitle.textContent = sectionName;
         cardHeading.textContent = headingText;
         cardDescription.textContent = descriptionText;
+        cardHeading.hidden = isAlumniMode;
+        cardDescription.hidden = isAlumniMode;
+        adminCard?.classList.toggle('is-alumni-view', isAlumniMode);
         titleInput.value = storedDoc?.title || titleValue;
+
         titleField.hidden = isVacanciesMode || isAlumniMode;
+        titleField.style.display = isVacanciesMode || isAlumniMode ? 'none' : '';
         fileInput.required = isDocumentMode;
         fileInput.accept = '.jpg,.jpeg,.png,.pdf,.doc,.docx';
         fileField.hidden = isVacanciesMode || isAlumniMode;
         fileField.style.display = isVacanciesMode || isAlumniMode ? 'none' : '';
         fileField.querySelector('span').textContent = 'Upload file';
+
         newsOnlyFields.hidden = !isNewsMode;
         vacanciesFields.hidden = !isVacanciesMode;
         newsOnlyFields.style.display = isNewsMode ? '' : 'none';
         vacanciesFields.style.display = isVacanciesMode ? '' : 'none';
+
         const isSupportStaffVacancy = isVacanciesMode && button.dataset.vacancyType === 'support-staff';
         if (teacherVacancyFields) {
           teacherVacancyFields.hidden = isSupportStaffVacancy;
@@ -793,8 +806,12 @@
           supportVacancyFields.hidden = !isSupportStaffVacancy;
           supportVacancyFields.style.display = isSupportStaffVacancy ? '' : 'none';
         }
-        submitButton.hidden = isAlumniMode;
-        submitButton.textContent = isNewsMode ? 'Save news post' : isVacanciesMode ? 'Post vacancy' : isAlumniMode ? 'View alumni' : 'Save upload';
+
+        if (submitButton) {
+          submitButton.hidden = isAlumniMode;
+          submitButton.style.display = isAlumniMode ? 'none' : '';
+          submitButton.textContent = isNewsMode ? 'Save news post' : isVacanciesMode ? 'Post vacancy' : 'Save upload';
+        }
 
         if (!isNewsMode) {
           storyEditor.innerHTML = '';
@@ -804,10 +821,20 @@
         if (isNewsMode) {
           storyEditor.innerHTML = '';
         }
+
         uploadForm.dataset.storageKey = button.dataset.storageKey || '';
         uploadForm.dataset.page = button.dataset.page || '';
         uploadForm.dataset.mode = button.dataset.mode || 'document';
         uploadForm.dataset.vacancyType = button.dataset.vacancyType || 'teachers';
+
+        if (isAlumniMode) {
+          uploadForm.hidden = true;
+          managementBody.innerHTML = '';
+          renderManagementPanel();
+          return;
+        }
+
+        uploadForm.hidden = false;
         renderManagementPanel();
       }
 
@@ -1175,7 +1202,9 @@
           return;
         }
 
-        submitButton.disabled = true;
+        if (submitButton) {
+          submitButton.disabled = true;
+        }
 
         let progressContainer = document.getElementById('admin-upload-progress');
         if (!progressContainer) {
@@ -1216,7 +1245,9 @@
 
         xhr.addEventListener('load', () => {
           progressContainer.remove();
-          submitButton.disabled = false;
+          if (submitButton) {
+            submitButton.disabled = false;
+          }
 
           if (xhr.status >= 200 && xhr.status < 300) {
             try {
@@ -1247,13 +1278,17 @@
 
         xhr.addEventListener('error', () => {
           progressContainer.remove();
-          submitButton.disabled = false;
+          if (submitButton) {
+            submitButton.disabled = false;
+          }
           showToast('Upload failed: network error.', { type: 'error' });
         });
 
         xhr.addEventListener('abort', () => {
           progressContainer.remove();
-          submitButton.disabled = false;
+          if (submitButton) {
+            submitButton.disabled = false;
+          }
           showToast('Upload cancelled.', { type: 'info' });
         });
 
@@ -1262,7 +1297,9 @@
           xhr.send(formData);
         } catch (error) {
           progressContainer.remove();
-          submitButton.disabled = false;
+          if (submitButton) {
+            submitButton.disabled = false;
+          }
           showToast(`Upload failed: ${error.message}`, { type: 'error' });
         }
       });

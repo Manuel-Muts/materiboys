@@ -194,6 +194,18 @@ body {
   box-shadow: 0 16px 34px rgba(15, 23, 42, 0.06);
 }
 
+.admin-card.is-alumni-view {
+  padding: 1.25rem;
+}
+
+.admin-card.is-alumni-view .admin-management {
+  margin-top: 0;
+}
+
+.admin-card.is-alumni-view #admin-submit-button {
+  display: none !important;
+}
+
 .admin-card h3 {
   margin-top: 0;
   margin-bottom: 0.35rem;
