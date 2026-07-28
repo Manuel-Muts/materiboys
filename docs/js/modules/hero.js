@@ -57,17 +57,12 @@ export function renderHero() {
       </div>
       <div class="hero-card">
         <h3>Why families choose us</h3>
-        <p>Safe learning spaces, dedicated teachers, and a culture of excellence that inspires success.</p>
-        <div class="image-slider" aria-label="School gallery">
-          <img src="../images/IMG_3728.JPG" alt="Bright school moments and warm smiles" class="image-slider__image active" data-caption="Bright school moments and warm smiles" />
-          <img src="../images/IMG_3565.JPG" alt="Energetic learning in a lively classroom" class="image-slider__image" data-caption="Lively Moments" />
-          <img src="../images/IMG_3567.JPG" alt="Students enjoying School life together" class="image-slider__image" data-caption="Students enjoying School life together" />
-          <img src="../images/IMG_3569.JPG" alt="Fun moments during school activities" class="image-slider__image" data-caption="Fun moments during school activities" />
-          <img src="../images/IMG_3636.JPG" alt="Focused learning and positive teamwork" class="image-slider__image" data-caption="Outdoor Activities" />
-          <img src="../images/IMG_4275.JPG" alt="Warm friendships and joyful school spirit" class="image-slider__image" data-caption="Warm friendships and joyful school spirit" />
-          <img src="../images/IMG_4278.JPG" alt="Confident learners sharing memorable moments" class="image-slider__image" data-caption="Confident learners sharing memorable moments" />
-          <img src="../images/IMG_4304.JPG" alt="A vibrant campus full of life and growth" class="image-slider__image" data-caption="A vibrant School full of life" />
-          <div class="image-slider__caption" aria-live="polite">Bright school moments and warm smiles</div>
+        <p>A school where strong academics are matched by rich extracurricular opportunities, supportive mentors, and a winning spirit on and off the court.</p>
+        <div class="image-slider" aria-label="Why families choose us gallery">
+          <img src="../images/why family choose us/98.jpeg" alt="Students playing basketball" class="image-slider__image active" data-caption="Teamwork and skill on the basketball court" />
+          <img src="../images/why family choose us/99.jpeg" alt="Basketball training session" class="image-slider__image" data-caption="Energetic training and positive sportsmanship" />
+          <img src="../images/why family choose us/100.jpeg" alt="Basketball team celebrating" class="image-slider__image" data-caption="Proud athletes building confidence and character" />
+          <div class="image-slider__caption" aria-live="polite">Teamwork and skill on the basketball court</div>
         </div>
       </div>
     </div>

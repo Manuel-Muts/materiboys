@@ -48,6 +48,13 @@
   max-height: 280px;
 }
 
+@media (min-width: 720px) {
+  .school-intro {
+    min-height: 360px;
+    max-height: 520px;
+  }
+}
+
 .school-intro::before,
 .school-intro::after {
   content: "";
