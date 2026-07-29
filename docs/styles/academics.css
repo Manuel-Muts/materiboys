@@ -235,6 +235,108 @@
   margin-top: 2rem;
 }
 
+/* Teachers gallery: grid of teacher cards (4 across desktop, responsive) */
+.teachers-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 2rem;
+}
+
+.teachers-grid .staff-card {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  padding: 1.3rem;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 18px 32px rgba(0, 0, 0, 0.14);
+  min-height: 340px;
+  grid-template-columns: none !important;
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease, background-color 220ms ease;
+}
+
+.teachers-grid .staff-card:hover,
+.teachers-grid .staff-card:focus-within {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 44px rgba(0, 0, 0, 0.18);
+  border-color: rgba(125, 240, 190, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.teachers-grid .staff-photo {
+  width: 150px;
+  height: 150px;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.teachers-grid .staff-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 999px;
+}
+
+.teachers-grid .staff-copy h2 {
+  font-size: 1.05rem;
+  margin: 0.35rem 0 0.2rem;
+  font-weight: 700;
+}
+
+.teachers-grid .staff-position {
+  margin: 0;
+  font-size: 0.92rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.teachers-grid .staff-card:nth-child(5n+1) .staff-copy h2 {
+  color: #72ceff;
+}
+.teachers-grid .staff-card:nth-child(5n+1) .staff-position {
+  background: rgba(114, 206, 255, 0.18);
+}
+
+.teachers-grid .staff-card:nth-child(5n+2) .staff-copy h2 {
+  color: #ffd67a;
+}
+.teachers-grid .staff-card:nth-child(5n+2) .staff-position {
+  background: rgba(255, 214, 122, 0.18);
+}
+
+.teachers-grid .staff-card:nth-child(5n+3) .staff-copy h2 {
+  color: #a8f6c1;
+}
+.teachers-grid .staff-card:nth-child(5n+3) .staff-position {
+  background: rgba(168, 246, 193, 0.16);
+}
+
+.teachers-grid .staff-card:nth-child(5n+4) .staff-copy h2 {
+  color: #ff94da;
+}
+.teachers-grid .staff-card:nth-child(5n+4) .staff-position {
+  background: rgba(255, 148, 218, 0.18);
+}
+
+.teachers-grid .staff-card:nth-child(5n) .staff-copy h2 {
+  color: #9cd6ff;
+}
+.teachers-grid .staff-card:nth-child(5n) .staff-position {
+  background: rgba(156, 214, 255, 0.16);
+}
+
 .staff-card {
   display: grid;
   grid-template-columns: 96px 1fr;
@@ -395,6 +497,42 @@
   transition: transform 400ms ease;
 }
 
+/* Image slider used in facility cards (chemistry lab) */
+.image-slider {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.image-slider__image {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 420ms ease, transform 420ms ease;
+  transform: scale(1.02);
+}
+
+.image-slider__image.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.image-slider__caption {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+
 .facility-card:hover .facility-card__image img {
   transform: scale(1.05);
 }
@@ -418,8 +556,9 @@
 @media (max-width: 1080px) {
   .pathway-grid,
   .teacher-slider,
-  .staff-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .staff-grid,
+  .teachers-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   
   .facilities-grid {
@@ -431,12 +570,37 @@
 @media (max-width: 760px) {
   .pathway-grid,
   .teacher-slider,
-  .staff-grid {
-    grid-template-columns: 1fr;
+  .staff-grid,
+  .teachers-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .teachers-grid .staff-photo {
+    width: 130px;
+    height: 130px;
+  }
+
+  .teachers-grid .staff-card {
+    padding: 1rem;
   }
 
   .academics-card {
     padding: 1.5rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .teachers-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .teachers-grid .staff-photo {
+    width: 110px;
+    height: 110px;
+  }
+
+  .teachers-grid .staff-card {
+    padding: 0.85rem 0.9rem;
   }
 }
  

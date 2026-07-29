@@ -46,14 +46,18 @@
             </div>
           </article>
 
-          <!-- Science Laboratory -->
+          <!-- Science Laboratory (merged chemistry images slider) -->
           <article class="facility-card">
             <div class="facility-card__header">
               <h2 class="facility-card__title">Science Laboratory</h2>
-              <p class="facility-card__subtitle">Biology, Chemistry & Physics</p>
+              <p class="facility-card__subtitle">Biology, Chemistry &amp; Physics</p>
             </div>
             <div class="facility-card__image">
-              <img src="https://via.placeholder.com/600x400?text=Science+Lab" alt="Science Laboratory" />
+              <div class="image-slider">
+                <img class="image-slider__image active" src="../images/facilities/chemistry%201.jpeg" alt="Chemistry Lab" data-caption="Chemistry Hands_on practicals" />
+                <img class="image-slider__image" src="../images/facilities/chemistry%202.jpeg" alt="Chemistry Lab" data-caption="Chemistry Lab" />
+                <div class="image-slider__caption" aria-hidden="true"></div>
+              </div>
             </div>
             <div class="facility-card__footer">
               <p class="facility-card__description">Well-equipped science labs provide students with practical experience in conducting experiments, observations, and scientific investigations. Fully stocked with modern laboratory equipment and safety features.</p>
@@ -121,6 +125,11 @@
     <script type="module">
       import { initChatAssistant } from '../js/chat-assistant.js';
       initChatAssistant();
+    </script>
+    <script type="module">
+      import { initImageSlider } from '../js/slider.js';
+      // Start facility image slider
+      initImageSlider();
     </script>
   </body>
 </html>
