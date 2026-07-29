@@ -7,6 +7,62 @@
   background: rgba(6, 18, 34, 0.85);
 }
 
+.site-header__contact-strip {
+  width: min(100%, 1180px);
+  margin: 0 auto 0.55rem;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(90deg, rgba(255, 114, 0, 0.95), rgba(26, 115, 232, 0.96) 50%, rgba(15, 179, 119, 0.95));
+  box-shadow: 0 8px 22px rgba(8, 26, 55, 0.18);
+}
+
+.site-header__contact-track {
+  display: flex;
+  align-items: center;
+  gap: 0.95rem;
+  padding: 0.45rem 0.85rem;
+  width: max-content;
+  min-width: 100%;
+  animation: header-contact-scroll 18s linear infinite;
+  white-space: nowrap;
+}
+
+.site-header__contact-strip:hover .site-header__contact-track {
+  animation-play-state: paused;
+}
+
+.site-header__contact-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #fffdf7;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.site-header__contact-label {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.16rem 0.5rem;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fffdf7;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.site-header__contact-item a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.site-header__contact-item a:hover,
+.site-header__contact-item a:focus-visible {
+  text-decoration: underline;
+}
+
 .header-inner {
   position: relative;
   display: flex;
@@ -184,6 +240,15 @@
 .dropdown-menu a {
   padding: 0.35rem 0;
   color: var(--color-text);
+}
+
+@keyframes header-contact-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 @keyframes headerGlow {

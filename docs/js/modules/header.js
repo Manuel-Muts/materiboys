@@ -13,6 +13,16 @@ function readStoredDocuments() {
   }
 }
 
+const SETTINGS_STORAGE_KEY = 'school-site-settings';
+
+const CONTACT_HIGHLIGHTS = [
+  { label: 'Email', value: 'matirischool@gmail.com', href: 'mailto:matirischool@gmail.com' },
+  { label: 'Call', value: '+254 726 677 666', href: 'tel:+254726677666' },
+  { label: 'Admissions', value: 'Admissions status pending' },
+  { label: 'Motto', value: 'READ & LEAD' },
+  { label: 'Visit', value: 'Near St. Orsola Hospital, Chiakariga' }
+];
+
 function buildDownloadsMarkup() {
   const documents = readStoredDocuments();
 
@@ -27,10 +37,55 @@ function buildDownloadsMarkup() {
   }).join('');
 }
 
+function readStoredSiteSettings() {
+  try {
+    return JSON.parse(window.localStorage.getItem(SETTINGS_STORAGE_KEY) || '{}');
+  } catch (error) {
+    return {};
+  }
+}
+
+function getAdmissionsStatusLabel() {
+  const settings = readStoredSiteSettings();
+  const hasStatus = Object.prototype.hasOwnProperty.call(settings, 'admissionsOpen');
+
+  if (!hasStatus) {
+    return 'Admissions status pending';
+  }
+
+  return settings.admissionsOpen !== false ? 'Admissions open' : 'Admissions closed';
+}
+
+function renderContactStrip() {
+  const items = [...CONTACT_HIGHLIGHTS, ...CONTACT_HIGHLIGHTS];
+  const admissionsLabel = getAdmissionsStatusLabel();
+
+  const normalizedItems = items.map((item) => (item.label === 'Admissions' ? { ...item, value: admissionsLabel } : item));
+
+  return normalizedItems.map((item, index) => {
+    const isLoopCopy = index >= normalizedItems.length / 2;
+    const hiddenAttribute = isLoopCopy ? ' aria-hidden="true"' : '';
+    const content = item.href
+      ? `<a href="${item.href}">${item.value}</a>`
+      : `<span>${item.value}</span>`;
+
+    return `
+      <div class="site-header__contact-item"${hiddenAttribute}>
+        <span class="site-header__contact-label">${item.label}</span>
+        ${content}
+      </div>`;
+  }).join('');
+}
+
 export function renderHeader() {
   const header = document.createElement('header');
   header.className = 'site-header';
   header.innerHTML = `
+    <div class="site-header__contact-strip" aria-label="School contact information">
+      <div class="site-header__contact-track">
+        ${renderContactStrip()}
+      </div>
+    </div>
     <div class="container header-inner">
       <nav class="nav-links" aria-label="Primary navigation">
         <details class="dropdown">
@@ -70,6 +125,20 @@ export function renderHeader() {
       </button>
     </div>
   `;
+
+  const contactTrack = header.querySelector('.site-header__contact-track');
+  if (contactTrack) {
+    const updateContactStrip = () => {
+      contactTrack.innerHTML = renderContactStrip();
+    };
+
+    updateContactStrip();
+    window.addEventListener('storage', (event) => {
+      if (event.key === SETTINGS_STORAGE_KEY) {
+        updateContactStrip();
+      }
+    });
+  }
 
   const dropdowns = header.querySelectorAll('.dropdown');
 
