@@ -589,18 +589,42 @@
   }
 }
 
+@media (max-width: 560px) {
+  .pathway-grid,
+  .teacher-slider,
+  .staff-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .staff-card,
+  .teacher-card,
+  .pathway-card {
+    min-height: auto;
+  }
+}
+
 @media (max-width: 420px) {
+  .pathway-grid,
+  .teacher-slider,
+  .staff-grid,
   .teachers-grid {
     grid-template-columns: 1fr;
   }
 
-  .teachers-grid .staff-photo {
+  .teachers-grid .staff-photo,
+  .teacher-photo {
     width: 110px;
     height: 110px;
   }
 
-  .teachers-grid .staff-card {
+  .teachers-grid .staff-card,
+  .teacher-card,
+  .staff-card {
     padding: 0.85rem 0.9rem;
+  }
+
+  .academics-card {
+    padding: 1rem;
   }
 }
  

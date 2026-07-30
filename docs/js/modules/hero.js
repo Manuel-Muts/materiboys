@@ -61,7 +61,7 @@ export function renderHero() {
         <div class="image-slider" aria-label="Why families choose us gallery">
           <img src="../images/why family choose us/basketball.jpeg" alt="Students playing basketball" class="image-slider__image active" data-caption="Teamwork and skill on the basketball court" />
           <img src="../images/why family choose us/basketball 2.jpeg" alt="Basketball training session" class="image-slider__image" data-caption="Energetic training and positive sportsmanship" />
-          <img src="../images/why family choose us/basketball team.jpeg" alt="Basketball team celebrating" class="image-slider__image" data-caption="Proud athletes building confidence and character" />
+          <img src="../images/why family choose us/basketball team.jpeg" alt="Basketball team celebrating" class="image-slider__image" data-caption="Proud BasketBall team building confidence and character" />
           <div class="image-slider__caption" aria-live="polite">Teamwork and skill on the basketball court</div>
         </div>
       </div>
