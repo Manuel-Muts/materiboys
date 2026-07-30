@@ -220,11 +220,28 @@
         }
       }
 
-      function syncAdmissionsStatusFromFirestore() {
-        showAdmissionsLoadingState();
+      const hydrateAdmissionsBadgeFromCache = () => {
+        const settings = readStoredSiteSettings();
+        const hasStatus = Object.prototype.hasOwnProperty.call(settings, 'admissionsOpen');
+
+        if (hasStatus) {
+          updateAdmissionsBadge(settings);
+          return true;
+        }
+
+        return false;
+      };
+
+      async function syncAdmissionsStatusFromFirestore() {
+        const hasCachedStatus = hydrateAdmissionsBadgeFromCache();
+        if (!hasCachedStatus) {
+          showAdmissionsLoadingState();
+        }
 
         if (!window.firebase?.firestore || !window.firebase?.apps?.length) {
-          clearAdmissionsBadge();
+          if (!hasCachedStatus) {
+            clearAdmissionsBadge();
+          }
           return;
         }
 
@@ -233,6 +250,16 @@
 
           if (admissionsSettingsUnsubscribe) {
             admissionsSettingsUnsubscribe();
+          }
+
+          const snapshot = await firebaseDb
+            .collection('site-settings')
+            .doc(ADMISSIONS_SETTINGS_ID)
+            .get();
+
+          if (snapshot.exists) {
+            const settings = snapshot.data() || {};
+            applyStoredAdmissionsSettings(settings);
           }
 
           admissionsSettingsUnsubscribe = firebaseDb
@@ -246,16 +273,22 @@
                   return;
                 }
 
-                clearAdmissionsBadge();
+                if (!hasCachedStatus) {
+                  clearAdmissionsBadge();
+                }
               },
               (error) => {
                 console.warn('Firestore site settings read failed:', error);
-                clearAdmissionsBadge();
+                if (!hasCachedStatus) {
+                  clearAdmissionsBadge();
+                }
               }
             );
         } catch (error) {
           console.warn('Firestore site settings listener failed:', error);
-          clearAdmissionsBadge();
+          if (!hasCachedStatus) {
+            clearAdmissionsBadge();
+          }
         }
       }
 

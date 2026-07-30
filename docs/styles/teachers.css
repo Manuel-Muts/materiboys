@@ -126,7 +126,8 @@
 
 @media (max-width: 420px) {
   .teachers-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
   }
 
   .teachers-grid .teacher-photo {
@@ -136,5 +137,6 @@
 
   .teachers-grid .teacher-card {
     padding: 0.85rem 0.9rem;
+    min-height: auto;
   }
 }
