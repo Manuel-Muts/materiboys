@@ -606,8 +606,7 @@
 @media (max-width: 420px) {
   .pathway-grid,
   .teacher-slider,
-  .staff-grid,
-  .teachers-grid {
+  .staff-grid {
     grid-template-columns: 1fr;
   }
 
