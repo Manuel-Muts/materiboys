@@ -20,7 +20,7 @@ const CONTACT_HIGHLIGHTS = [
   { label: 'Call', value: '+254 726 677 666', href: 'tel:+254726677666' },
   { label: 'Admissions', value: 'Admissions status pending' },
   { label: 'Motto', value: 'READ & LEAD' },
-  { label: 'Visit', value: 'Near St. Orsola Hospital, Chiakariga' }
+  { label: '📍', value: 'Near St. Orsola Hospital, Chiakariga' }
 ];
 
 function buildDownloadsMarkup() {
@@ -65,13 +65,16 @@ function renderContactStrip() {
   return normalizedItems.map((item, index) => {
     const isLoopCopy = index >= normalizedItems.length / 2;
     const hiddenAttribute = isLoopCopy ? ' aria-hidden="true"' : '';
+    const labelMarkup = item.label === '📍'
+      ? '<span class="site-header__contact-label" aria-label="Location"><span aria-hidden="true">📍</span></span>'
+      : `<span class="site-header__contact-label">${item.label}</span>`;
     const content = item.href
       ? `<a href="${item.href}">${item.value}</a>`
       : `<span>${item.value}</span>`;
 
     return `
       <div class="site-header__contact-item"${hiddenAttribute}>
-        <span class="site-header__contact-label">${item.label}</span>
+        ${labelMarkup}
         ${content}
       </div>`;
   }).join('');

@@ -13,12 +13,12 @@ const quickActions = [
 ];
 
 const responses = {
-  admissions: 'Matiri Boys offers Grade 10, Grade 11, and Grade 12 enrollment through the STEM, Social Sciences, and Arts & Sport Science pathways. You can begin on the admissions page and submit the application form to the school admissions team.',
+  admissions: 'Materi Boys offers Grade 10, Grade 11, and Grade 12 enrollment through the STEM, Social Sciences, and Arts & Sport Science pathways. You can begin on the admissions page and submit the application form to the school admissions team.',
   academics: 'The available pathways are STEM, Social Sciences, and Arts & Sport Science. STEM includes pure and applied science options; Social Sciences covers humanities and languages; Arts & Sport Science includes creative arts, performance, and sport activities.',
   alumni: 'The alumni page highlights former students, community events, and opportunities to stay involved or give back. It includes alumni stories, a gallery, and a way to join the alumni community.',
   fees: 'The latest fee schedule should be confirmed with the admissions office. Fees and payment details are shared with applicants on request so that families receive current information.',
   downloads: 'You can find the application form, fee schedule, interview requirements, and prospectus in the Downloads section. Some documents may be updated as they are prepared for publication.',
-  location: 'Matiri Boys\' Senior School is near St. Orsola Hospital in Chiakariga Subcounty, Tharaka Nithi County, approximately 6 km from Kathwana County Headquarters. Open directions in Google Maps: https://www.google.com/maps/search/?api=1&query=St.%20Orsola%20Hospital%20Chiakariga',
+  location: 'Materi Boys\' Senior School is near St. Orsola Hospital in Chiakariga Subcounty, Tharaka Nithi County, approximately 6 km from Kathwana County Headquarters. Open directions in Google Maps: https://www.google.com/maps/search/?api=1&query=St.%20Orsola%20Hospital%20Chiakariga',
   contact: 'For enquiries, call 072 667 7666 or WhatsApp 254721272094. You can also email matirischool@gmail.com or matiriboys@gmail.com. Regular visiting hours are Monday to Friday, 8:00 AM to 5:00 PM.',
   fallback: 'I can help with admissions, academic pathways, fees, downloads, and school contacts. For anything else, please send your question to the school on WhatsApp.'
 };
@@ -30,7 +30,7 @@ const pageContextMap = {
   },
   about: {
     title: 'About us',
-    summary: 'This page introduces the school, its values, and the community behind Matiri Boys.'
+    summary: 'This page introduces the school, its values, and the community behind Materi Boys.'
   },
   academics: {
     title: 'Academics',
@@ -129,7 +129,7 @@ function pageContextReply(text, explicitPageContext = null) {
     return `You are currently on the ${pageName} page.`;
   }
 
-  return `The ${pageName} page covers ${pageContext?.summary || 'important information about Matiri Boys.'}`;
+  return `The ${pageName} page covers ${pageContext?.summary || 'important information about Materi Boys.'}`;
 }
 
 function responseFor(message) {
@@ -168,38 +168,38 @@ function isFarewell(text) {
 
 function farewellResponse(text) {
   if (text.includes('good night')) {
-    return 'Good night! 🌙 Thank you for visiting Matiri Boys\' Senior School. Have a peaceful evening, and we\'ll be here whenever you need us. 😊';
+    return 'Good night! 🌙 Thank you for visiting Materi Boys\' Senior School. Have a peaceful evening, and we\'ll be here whenever you need us. 😊';
   }
 
   if (text.includes('see you')) {
-    return 'See you soon! 👋 Thank you for visiting Matiri Boys\' Senior School. Have a wonderful day! 😊';
+    return 'See you soon! 👋 Thank you for visiting Materi Boys\' Senior School. Have a wonderful day! 😊';
   }
 
-  return 'Goodbye! 👋 Thank you for visiting Matiri Boys\' Senior School. Have a wonderful day, and feel free to come back anytime. 😊';
+  return 'Goodbye! 👋 Thank you for visiting Materi Boys\' Senior School. Have a wonderful day, and feel free to come back anytime. 😊';
 }
 
 function greetingResponse(text) {
   if (text.includes('good morning')) {
-    return 'Good morning! 🌞 Welcome to Matiri Boys\' Senior School. How can I help you today? 😊';
+    return 'Good morning! 🌞 Welcome to Materi Boys\' Senior School. How can I help you today? 😊';
   }
 
   if (text.includes('good afternoon')) {
-    return 'Good afternoon! ☀️ Welcome to Matiri Boys\' Senior School. How can I help you today? 😊';
+    return 'Good afternoon! ☀️ Welcome to Materi Boys\' Senior School. How can I help you today? 😊';
   }
 
   if (text.includes('good evening')) {
-    return 'Good evening! 🌇 Welcome to Matiri Boys\' Senior School. How can I help you today? 😊';
+    return 'Good evening! 🌇 Welcome to Materi Boys\' Senior School. How can I help you today? 😊';
   }
 
   if (text.includes('good night')) {
-    return 'Good night! 🌙 Thank you for visiting Matiri Boys\' Senior School. I\'m here whenever you need information. 😊';
+    return 'Good night! 🌙 Thank you for visiting Materi Boys\' Senior School. I\'m here whenever you need information. 😊';
   }
 
   if (text.includes('jambo') || text.includes('habari') || text.includes('salaam')) {
-    return 'Jambo! 👋 Welcome to Matiri Boys\' Senior School. How may I help you today? 😊';
+    return 'Jambo! 👋 Welcome to Materi Boys\' Senior School. How may I help you today? 😊';
   }
 
-  return 'Hello! 👋 Welcome to Matiri Boys\' Senior School. I\'m happy to help you today. 😊';
+  return 'Hello! 👋 Welcome to Materi Boys\' Senior School. I\'m happy to help you today. 😊';
 }
 
 function isGreeting(text) {
@@ -216,8 +216,8 @@ function isGreeting(text) {
 
   const greetingPatterns = [
     /^(hi|hiya|hello|hey|heya|howdy|greetings|jambo|habari|salaam|shalom)$/,
-    /^(hi|hiya|hello|hey|heya|howdy|greetings) (there|everyone|folks|Matiri boys)$/,
-    /^good (morning|afternoon|evening|day|night)( (there|everyone|folks|Matiri boys))?$/,
+    /^(hi|hiya|hello|hey|heya|howdy|greetings) (there|everyone|folks|Materi boys)$/,
+    /^good (morning|afternoon|evening|day|night)( (there|everyone|folks|Materi boys))?$/,
     /^(how are you|how is it going|how is your day|what's up|whats up|nice to meet you)$/
   ];
 
@@ -285,7 +285,7 @@ function addMessage(messages, text, type) {
     const phone = document.createElement('a');
     phone.href = 'tel:+254726677666';
     phone.textContent = '072 667 7666';
-    phone.setAttribute('aria-label', 'Call Matiri Boys on 072 667 7666');
+    phone.setAttribute('aria-label', 'Call Materi Boys on 072 667 7666');
     message.append(phone);
 
     const schoolEmail = document.createElement('a');
@@ -342,7 +342,7 @@ export function initChatAssistant() {
   const root = document.createElement('aside');
   root.className = 'chat-assistant';
   root.innerHTML = `
-    <button class="chat-assistant__toggle" type="button" aria-expanded="false" aria-controls="Matiri-chat-panel" aria-label="Open Matiri Boys assistant">
+    <button class="chat-assistant__toggle" type="button" aria-expanded="false" aria-controls="Materi-chat-panel" aria-label="Open Materi Boys assistant">
       <span class="chat-assistant__toggle-icon" aria-hidden="true">
         <svg class="chat-assistant__toggle-chat-icon" viewBox="0 0 24 24" focusable="false">
           <path d="M6 4h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-4 3v-3H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" />
@@ -350,10 +350,10 @@ export function initChatAssistant() {
       </span>
       <span class="chat-assistant__toggle-label">Chat with us</span>
     </button>
-    <div class="chat-assistant__panel" id="Matiri-chat-panel" hidden>
+    <div class="chat-assistant__panel" id="Materi-chat-panel" hidden>
       <div class="chat-assistant__header">
         <div>
-          <strong>Matiri Boys Assistant</strong>
+          <strong>Materi Boys Assistant</strong>
           <span><i aria-hidden="true"></i> Online</span>
         </div>
       </div>
@@ -364,15 +364,15 @@ export function initChatAssistant() {
         ${quickActions.map((action) => `<button type="button" data-chat-key="${action.key}">${action.label}</button>`).join('')}
       </div>
       <form class="chat-assistant__form">
-        <label class="sr-only" for="Matiri-chat-input">Ask the Matiri Boys Assistant</label>
-        <input id="Matiri-chat-input" name="message" maxlength="240" autocomplete="off" placeholder="Ask about the school..." />
+        <label class="sr-only" for="Materi-chat-input">Ask the Materi Boys Assistant</label>
+        <input id="Materi-chat-input" name="message" maxlength="240" autocomplete="off" placeholder="Ask about the school..." />
         <button type="submit" aria-label="Send message" title="Send message">
           <svg class="chat-assistant__send-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d="M21.7 2.3a1 1 0 0 0-1.05-.22l-18 7a1 1 0 0 0 .08 1.9l7.4 2.47 2.47 7.4a1 1 0 0 0 .91.68h.06a1 1 0 0 0 .93-.63l7.4-18a1 1 0 0 0-.2-.6ZM5.96 10.08 18.42 5.23l-7.23 6.03-5.23-1.18Zm7.2 8.03-1.18-3.54 6.03-7.23-4.85 10.77Z" />
           </svg>
         </button>
       </form>
-      <a class="chat-assistant__whatsapp" href="https://wa.me/${WHATSAPP_NUMBER}?text=Hello%20Matiri%20Boys%2C%20I%20have%20a%20question." target="_blank" rel="noopener noreferrer">
+      <a class="chat-assistant__whatsapp" href="https://wa.me/${WHATSAPP_NUMBER}?text=Hello%20Materi%20Boys%2C%20I%20have%20a%20question." target="_blank" rel="noopener noreferrer">
         <span class="chat-assistant__whatsapp-text">Talk to the school on whatsapp</span>
         <span class="chat-assistant__whatsapp-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" focusable="false">
@@ -393,14 +393,14 @@ export function initChatAssistant() {
   const panel = root.querySelector('.chat-assistant__panel');
   const messages = root.querySelector('.chat-assistant__messages');
   const form = root.querySelector('.chat-assistant__form');
-  const input = root.querySelector('#Matiri-chat-input');
+  const input = root.querySelector('#Materi-chat-input');
 
   if (!toggle || !toggleIcon || !toggleLabel || !panel || !messages || !form || !input) return;
 
   const setOpen = (isOpen) => {
     panel.hidden = !isOpen;
     toggle.setAttribute('aria-expanded', String(isOpen));
-    toggle.setAttribute('aria-label', isOpen ? 'Close Matiri Boys assistant' : 'Open Matiri Boys assistant');
+    toggle.setAttribute('aria-label', isOpen ? 'Close Materi Boys assistant' : 'Open Materi Boys assistant');
     toggle.classList.toggle('is-open', isOpen);
     toggleLabel.textContent = isOpen ? 'Close chat' : 'Chat with us';
     toggleIcon.innerHTML = isOpen

@@ -35,7 +35,7 @@ export function renderHero() {
       <p class="eyebrow">The people behind the journey</p>
       <h2>Our Lovely Teachers</h2>
     </div>
-    <div class="hero-gallery" aria-label="Matiri Boys teachers gallery">
+    <div class="hero-gallery" aria-label="Materi Boys teachers gallery">
       <div class="hero-gallery__track">
         ${renderTeacherGallery()}
       </div>
@@ -48,7 +48,7 @@ export function renderHero() {
           <p>Where academic excellence, strong values, and bright futures are nurtured every day.</p>
         </div>
         <p class="hero-copy__lead">
-          At Matiri Boys' Senior School, we combine strong academics, moral values, and a supportive environment to prepare every learner for a brighter future.
+          At Materi Boys' Senior School, we combine strong academics, moral values, and a supportive environment to prepare every learner for a brighter future.
         </p>
         <div class="hero-actions">
           <a class="button button--primary" href="../academics/" target="_self">Explore Programs</a>

@@ -13,7 +13,7 @@ const app = document.getElementById('app');
 let deferredPrompt = null;
 let installBanner = null;
 let installBannerTimer = null;
-let installBannerDismissedUntil = Number(window.localStorage.getItem('Matiri-install-dismiss-until') || 0);
+let installBannerDismissedUntil = Number(window.localStorage.getItem('Materi-install-dismiss-until') || 0);
 let cookieBanner = null;
 
 function isStandaloneMode() {
@@ -31,7 +31,7 @@ function dismissInstallBanner() {
 
   installBanner.remove();
   installBanner = null;
-  window.localStorage.setItem('Matiri-install-dismiss-until', String(Date.now() + 1000 * 60 * 60 * 24 * 3));
+  window.localStorage.setItem('Materi-install-dismiss-until', String(Date.now() + 1000 * 60 * 60 * 24 * 3));
 }
 
 function showInstallBanner() {
@@ -43,7 +43,7 @@ function showInstallBanner() {
   installBanner.className = 'pwa-install-banner';
   installBanner.innerHTML = `
     <div class="pwa-install-banner__content">
-      <strong>Install Matiri Boys</strong>
+      <strong>Install Materi Boys</strong>
       <p>Get a quick app-style shortcut for admissions, contact details, and school updates.</p>
     </div>
     <div class="pwa-install-banner__actions">
@@ -89,7 +89,7 @@ function showCookieBanner() {
     return;
   }
 
-  const consent = window.localStorage.getItem('Matiri-cookie-consent');
+  const consent = window.localStorage.getItem('Materi-cookie-consent');
   if (consent) {
     return;
   }
@@ -110,7 +110,7 @@ function showCookieBanner() {
   const declineButton = cookieBanner.querySelector('.cookie-banner__dismiss');
 
   const dismissBanner = (choice) => {
-    window.localStorage.setItem('Matiri-cookie-consent', choice);
+    window.localStorage.setItem('Materi-cookie-consent', choice);
     cookieBanner.remove();
     cookieBanner = null;
   };

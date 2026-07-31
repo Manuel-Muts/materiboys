@@ -34,13 +34,13 @@
 }
 
 .school-intro {
-  padding: 1.2rem 1rem 1.1rem;
+  padding: 4.2rem 1rem 1.1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 0.9rem;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
@@ -85,6 +85,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  padding-top: 0;
 }
 
 .school-intro__logo-wrap {
@@ -92,7 +93,9 @@
   flex-direction: column;
   align-items: center;
   gap: 0.55rem;
-  position: relative;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
   z-index: 2;
 }
 
@@ -121,11 +124,11 @@
   box-shadow: 0 14px 28px rgba(22, 163, 74, 0.28);
 }
 
-.school-intro .eyebrow {
+.school-intro > .eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  margin: 0 0 0.8rem;
+  margin: 0;
   padding: 0.72rem 0.95rem;
   border: 0;
   border-radius: 999px;
@@ -142,7 +145,11 @@
   min-width: 9.5rem;
   justify-content: center;
   overflow: hidden;
-  position: relative;
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 4;
+  transform: none;
   transition: background 180ms ease, color 180ms ease, box-shadow 180ms ease;
 }
 
@@ -585,15 +592,17 @@ body.has-vacancy-apply-modal {
 .school-intro h1 {
   margin: 0 0 0.3rem;
   font-size: clamp(1.9rem, 3.2vw, 2.7rem);
-  line-height: 1.05;
+  line-height: 1.08;
   letter-spacing: 0.02em;
   font-family: "Playfair Display", Georgia, serif;
   font-weight: 700;
-  text-shadow: 0 0 24px rgba(59, 140, 255, 0.2);
-  background: linear-gradient(90deg, #ffffff 0%, var(--color-accent) 45%, #ffffff 90%);
+  background: linear-gradient(90deg, #ffffff 0%, #ffd166 18%, #7df0be 42%, #5bc0ff 70%, #ffffff 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  background-size: 220% 100%;
+  animation: nameFloat 3.6s ease-in-out infinite, colorShift 5s linear infinite;
+  text-shadow: 0 0 18px rgba(255, 255, 255, 0.16);
 }
 
 .school-motto {

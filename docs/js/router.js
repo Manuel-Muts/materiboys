@@ -17,17 +17,17 @@ function renderHomeRoute() {
 }
 
 const routes = {
-  '/': { title: 'Matiri Boys\' Senior School', targetId: 'top' },
-  '/about': { title: 'About | Matiri Boys\' Senior School', targetId: 'about-us' },
-  '/mission': { title: 'Mission & Vision | Matiri Boys\' Senior School', targetId: 'about-us' },
-  '/facilities': { title: 'Facilities | Matiri Boys\' Senior School', targetId: 'about-us' },
-  '/academics': { title: 'Academics | Matiri Boys\' Senior School', targetId: 'features' },
-  '/admissions': { title: 'Admissions | Matiri Boys\' Senior School', targetId: 'top' },
-  '/news': { title: 'Latest News and Updates | Matiri Boys\' Senior School', targetId: 'news-page' },
-  '/contact': { title: 'Contact | Matiri Boys\' Senior School', targetId: 'contact' },
-  '/history': { title: 'History | Matiri Boys\' Senior School', targetId: 'legal-page' },
-  '/terms': { title: 'Terms of Service | Matiri Boys\' Senior School', targetId: 'legal-page' },
-  '/privacy': { title: 'Privacy Policy | Matiri Boys\' Senior School', targetId: 'legal-page' }
+  '/': { title: 'Materi Boys\' Senior School', targetId: 'top' },
+  '/about': { title: 'About | Materi Boys\' Senior School', targetId: 'about-us' },
+  '/mission': { title: 'Mission & Vision | Materi Boys\' Senior School', targetId: 'about-us' },
+  '/facilities': { title: 'Facilities | Materi Boys\' Senior School', targetId: 'about-us' },
+  '/academics': { title: 'Academics | Materi Boys\' Senior School', targetId: 'features' },
+  '/admissions': { title: 'Admissions | Materi Boys\' Senior School', targetId: 'top' },
+  '/news': { title: 'Latest News and Updates | Materi Boys\' Senior School', targetId: 'news-page' },
+  '/contact': { title: 'Contact | Materi Boys\' Senior School', targetId: 'contact' },
+  '/history': { title: 'History | Materi Boys\' Senior School', targetId: 'legal-page' },
+  '/terms': { title: 'Terms of Service | Materi Boys\' Senior School', targetId: 'legal-page' },
+  '/privacy': { title: 'Privacy Policy | Materi Boys\' Senior School', targetId: 'legal-page' }
 };
 
 function normalizePath(path = window.location.hash) {

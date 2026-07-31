@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = 'Matiri-boys-cache-v2';
+﻿const CACHE_NAME = 'Materi-boys-cache-v2';
 const APP_SHELL = [
   './',
   './index.html',
