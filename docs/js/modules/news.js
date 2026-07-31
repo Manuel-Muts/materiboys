@@ -132,15 +132,12 @@ function getAttachmentPreview(post) {
   const isImage = attachmentMimeType.startsWith('image/');
   const isPdf = attachmentMimeType === 'application/pdf';
   const previewMarkup = isImage
-    ? `<div style="margin-top: 1rem;"><img src="${escapeHtml(attachmentUrl)}" alt="${safeName}" style="max-width: 100%; border-radius: 12px;" /></div>`
+    ? `<div class="news-card__media"><img src="${escapeHtml(attachmentUrl)}" alt="${safeName}" loading="lazy" /></div>`
     : isPdf
-      ? `<div style="margin-top: 1rem;"><iframe src="${escapeHtml(attachmentUrl)}" title="${safeName}" loading="lazy" style="width: 100%; min-height: 420px; border: 0; border-radius: 12px;"></iframe></div>`
+      ? `<div class="news-card__media news-card__media--pdf"><iframe src="${escapeHtml(attachmentUrl)}" title="${safeName}" loading="lazy"></iframe></div>`
       : '';
 
-  return `
-    <p><a href="${escapeHtml(attachmentUrl)}" target="_blank" rel="noopener noreferrer" download="${safeName}">Open / download ${safeName}</a></p>
-    ${previewMarkup}
-  `;
+  return previewMarkup;
 }
 
 function getYoutubeEmbedUrl(url = '') {
@@ -236,11 +233,15 @@ export async function renderNewsPage(section = null) {
           : '';
 
         return `
-          <article class="legal-section">
-            <h2>${escapeHtml(post.title || 'School news story')}</h2>
-            ${story}
-            ${attachment}
-            ${videoMarkup}
+          <article class="legal-section news-card ${attachment ? 'news-card--has-media' : ''}">
+            <div class="news-card__main">
+              ${attachment ? `<div class="news-card__media-wrap">${attachment}</div>` : ''}
+              <div class="news-card__content">
+                <h2>${escapeHtml(post.title || 'School news story')}</h2>
+                ${story}
+                ${videoMarkup}
+              </div>
+            </div>
           </article>
         `;
       }).join('')

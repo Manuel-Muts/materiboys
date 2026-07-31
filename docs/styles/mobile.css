@@ -101,6 +101,47 @@
     font-size: clamp(1.8rem, 5vw, 2.6rem);
   }
 
+  .school-intro {
+    min-height: 290px;
+    max-height: none;
+    padding: 4.2rem 1rem 1rem;
+  }
+
+  .school-intro__content {
+    max-width: calc(100% - 8.6rem);
+    padding-right: 0.35rem;
+  }
+
+  .school-intro__logo-wrap {
+    top: 0.85rem;
+    right: 0.9rem;
+    gap: 0.45rem;
+  }
+
+  .school-intro__logo {
+    width: 96px;
+    height: 96px;
+  }
+
+  .school-intro__login {
+    padding: 0.34rem 0.58rem;
+    font-size: 0.68rem;
+  }
+
+  .school-intro h1 {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .school-intro__title-line {
+    display: inline;
+  }
+
+  .school-intro__title-line--break {
+    display: block;
+  }
+
   .hero-copy__statement p,
   .hero-copy__lead,
   .about-copy p,
