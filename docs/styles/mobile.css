@@ -132,6 +132,7 @@
     max-width: 100%;
     overflow-wrap: anywhere;
     word-break: break-word;
+    line-height: 1.04;
   }
 
   .school-intro__title-line {
@@ -140,6 +141,7 @@
 
   .school-intro__title-line--break {
     display: block;
+    margin-top: 0.03em;
   }
 
   .hero-copy__statement p,
