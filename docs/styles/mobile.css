@@ -144,6 +144,12 @@
     margin-top: 0.03em;
   }
 
+  .banner-visual__image {
+    object-fit: contain;
+    object-position: center center;
+    transform: translateX(0) scale(1);
+  }
+
   .hero-copy__statement p,
   .hero-copy__lead,
   .about-copy p,
