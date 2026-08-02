@@ -149,8 +149,8 @@
   }
 
   .school-intro__highlight {
-    font-size: 0.82rem;
-    padding: 0.6rem 0.9rem;
+    font-size: 0.78rem;
+    padding: 0.5rem 0.75rem;
     width: 100%;
     min-width: 0;
     max-width: 100%;
@@ -169,14 +169,14 @@
   /* Two-column fallback for narrow phones, single column for very small devices */
   @media (max-width: 420px) {
     .school-intro__highlights {
-      grid-template-columns: repeat(2, minmax(140px, 1fr));
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
     }
 
     .school-intro__highlight {
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       width: 100%;
       max-width: 100%;
-      padding: 0.5rem 0.75rem;
+      padding: 0.42rem 0.6rem;
     }
   }
 
@@ -186,8 +186,8 @@
     }
 
     .school-intro__highlight {
-      font-size: 0.74rem;
-      padding: 0.42rem 0.7rem;
+      font-size: 0.68rem;
+      padding: 0.36rem 0.5rem;
       width: 100%;
     }
   }
