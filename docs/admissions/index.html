@@ -29,8 +29,21 @@
         </div>
         <div class="admissions-split">
           <div class="admissions-copy">
-            <p class="eyebrow">Admissions</p>
-            <h1>Apply to Materi Boys' Senior School</h1>
+            <div class="admissions-header-row">
+              <div class="admissions-heading-block">
+                <p class="eyebrow">Admissions</p>
+                <h1>Apply to Materi Boys' Senior School</h1>
+              </div>
+              <details class="dropdown admissions-downloads-dropdown">
+                <summary class="dropdown-summary">Download resources</summary>
+                <div class="dropdown-menu admissions-downloads-menu">
+                  <a href="../downloads/application-form.html" target="_self">Admission form</a>
+                  <a href="../downloads/interview-requirements.html" target="_self">Interview requirements</a>
+                  <a href="../downloads/fee-schedule.html" target="_self">Fee schedule</a>
+                  <a href="../downloads/prospectus.html" target="_self">Prospectus</a>
+                </div>
+              </details>
+            </div>
             <p class="legal-intro">Complete the application form below and submit it to the school admissions team. All fields are required to start the registration process.</p>
 
             <div class="location-card" aria-label="School location card">
@@ -103,6 +116,68 @@
     <script type="module">
       import { initChatAssistant } from '../js/chat-assistant.js';
       initChatAssistant();
+
+      // Simple dropdown logic for the standalone downloads dropdown
+      (function attachStandaloneDropdown() {
+        const dropdowns = Array.from(document.querySelectorAll('.standalone-topbar__extras .dropdown'));
+        if (!dropdowns.length) return;
+
+        const openDropdown = (dd) => {
+          dropdowns.forEach(d => { if (d !== dd) d.removeAttribute('open'); });
+          dd.setAttribute('open', '');
+        };
+
+        const closeAll = () => dropdowns.forEach(d => d.removeAttribute('open'));
+
+        dropdowns.forEach((dropdown) => {
+          const summary = dropdown.querySelector('summary');
+          if (!summary) return;
+
+          summary.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            const isOpen = dropdown.hasAttribute('open');
+            if (isOpen) {
+              dropdown.removeAttribute('open');
+            } else {
+              openDropdown(dropdown);
+            }
+          });
+        });
+
+        document.addEventListener('click', (ev) => {
+          // close when clicking outside
+          const clickedInside = dropdowns.some(d => d.contains(ev.target));
+          if (!clickedInside) closeAll();
+        });
+      })();
+
+      // Admissions dropdown handler
+      (function attachAdmissionsDropdown() {
+        const dropdown = document.querySelector('.admissions-downloads-dropdown');
+        if (!dropdown) return;
+
+        const summary = dropdown.querySelector('summary');
+        if (!summary) return;
+
+        summary.addEventListener('click', (ev) => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          const isOpen = dropdown.hasAttribute('open');
+          if (isOpen) {
+            dropdown.removeAttribute('open');
+          } else {
+            dropdown.setAttribute('open', '');
+          }
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', (ev) => {
+          if (!dropdown.contains(ev.target)) {
+            dropdown.removeAttribute('open');
+          }
+        });
+      })();
 
       function buildAdmissionsMailto(formData) {
         const recipient = 'matirischool@gmail.com';

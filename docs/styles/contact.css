@@ -22,6 +22,17 @@
   backdrop-filter: blur(18px);
 }
 
+@media (max-width: 680px) {
+  .contact-page-shell {
+    padding: 1.2rem 0 2rem;
+  }
+
+  .contact-card {
+    padding: 1rem;
+    border-radius: 16px;
+  }
+}
+
 .contact-card .eyebrow {
   color: var(--color-accent-2);
   letter-spacing: 0.2em;
@@ -42,6 +53,22 @@
   margin: 0 0 2.35rem;
   color: var(--color-muted);
   line-height: 1.8;
+}
+
+@media (max-width: 680px) {
+  .contact-card .eyebrow {
+    margin-bottom: 0.2rem;
+  }
+
+  .contact-card h1 {
+    margin: 0 0 0.35rem;
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+  }
+
+  .contact-intro {
+    margin-bottom: 0.7rem;
+    font-size: 0.9rem;
+  }
 }
 
 .contact-details {
@@ -140,6 +167,7 @@
 
   .contact-card h1 {
     font-size: clamp(1.8rem, 5.2vw, 2.4rem);
+    margin-bottom: 0.4rem;
   }
 
   .contact-intro {
@@ -165,5 +193,19 @@
   .visit-hours__time,
   .visit-hours__note {
     font-size: 0.92rem;
+  }
+
+  .admissions-copy {
+    gap: 0.5rem;
+  }
+
+  .admissions-header-row {
+    gap: 0.6rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .admissions-downloads-dropdown summary {
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
   }
 }
