@@ -34,8 +34,7 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Great+Vibes&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="../styles/shared.css" />
     <link rel="stylesheet" href="../styles/components.css" />
     <link rel="stylesheet" href="../styles/header.css" />
@@ -57,6 +56,16 @@
             <span class="school-intro__title-line school-intro__title-line--break">School</span>
           </h1>
           <p class="school-motto">School Motto: <span>READ &amp; LEAD</span></p>
+          <p class="school-intro__lead">Strong academics, character formation, and a caring campus community for senior school boys.</p>
+          <div class="school-intro__actions">
+            <a class="button button--primary" href="../admissions/" target="_self">Apply now</a>
+            <a class="button button--secondary" href="../contact/" target="_self">Book a visit</a>
+          </div>
+          <div class="school-intro__highlights">
+            <span class="school-intro__highlight school-intro__highlight--emerald" tabindex="0">Small classes for personal attention</span>
+            <span class="school-intro__highlight school-intro__highlight--sky" tabindex="0">Science, IT, and sports facilities</span>
+            <span class="school-intro__highlight school-intro__highlight--amber" tabindex="0">Strong values and leadership focus</span>
+          </div>
         </div>
         <div class="school-intro__logo-wrap">
           <div class="school-intro__logo" aria-label="School logo">
@@ -590,6 +599,95 @@
       });
 
       initChatAssistant();
+    </script>
+    <script>
+      (function triggerHighlightLoop() {
+        try {
+          const highlights = document.querySelector('.school-intro__highlights');
+          if (!highlights) return;
+
+          const chips = Array.from(highlights.querySelectorAll('.school-intro__highlight'));
+          if (!chips.length) return;
+
+          const ANIM_DURATION = 520; // ms (matches CSS)
+          const GAP = 140; // ms gap between chips during reveal
+          const CYCLE_PAUSE = 1400; // ms pause when all chips are visible
+
+          const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          if (prefersReduced) {
+            // show all instantly and do not animate
+            chips.forEach(c => c.classList.add('chip-visible'));
+            return;
+          }
+
+          let running = false;
+          let stopRequested = false;
+
+          const sleep = (ms) => new Promise(res => setTimeout(res, ms));
+
+          async function runLoop() {
+            while (!stopRequested) {
+              // reveal each chip one-by-one
+              for (let i = 0; i < chips.length; i++) {
+                if (stopRequested) return;
+                chips[i].classList.add('chip-visible');
+                await sleep(ANIM_DURATION + GAP);
+              }
+
+              // keep visible for a short pause
+              await sleep(CYCLE_PAUSE);
+
+              // hide chips sequentially to create a continuous loop
+              for (let i = 0; i < chips.length; i++) {
+                if (stopRequested) return;
+                chips[i].classList.remove('chip-visible');
+                // small stagger on hide so they don't all disappear at once
+                await sleep(90);
+              }
+
+              // short pause before next cycle
+              await sleep(300);
+            }
+          }
+
+          const start = () => {
+            if (running) return;
+            running = true;
+            stopRequested = false;
+            runLoop().catch(() => {});
+          };
+
+          const stop = () => {
+            stopRequested = true;
+            running = false;
+          };
+
+          if ('IntersectionObserver' in window) {
+            const io = new IntersectionObserver((entries) => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                  start();
+                } else {
+                  stop();
+                }
+              });
+            }, { threshold: 0.2 });
+
+            io.observe(highlights);
+
+            // If already visible on load, start immediately
+            const rect = highlights.getBoundingClientRect();
+            if (rect.top < window.innerHeight && rect.bottom > 0) {
+              start();
+            }
+          } else {
+            // Fallback: always run loop
+            start();
+          }
+        } catch (e) {
+          // fail silently on older browsers
+        }
+      })();
     </script>
   </body>
 </html>

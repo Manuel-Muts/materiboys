@@ -45,14 +45,14 @@ export function renderHero() {
         <p class="eyebrow">Excellence in character and learning</p>
         <h1>A proud school where boys grow into disciplined, confident leaders.</h1>
         <div class="hero-copy__statement">
-          <p>Where academic excellence, strong values, and bright futures are nurtured every day.</p>
+          <p>Academic strength, strong values, and leadership development that prepares learners for success on and off campus.</p>
         </div>
         <p class="hero-copy__lead">
-          At Materi Boys' Senior School, we combine strong academics, moral values, and a supportive environment to prepare every learner for a brighter future.
+          At Materi Boys' Senior School, students receive personal guidance, modern learning facilities, and a vibrant environment for growth.
         </p>
         <div class="hero-actions">
-          <a class="button button--primary" href="../academics/" target="_self">Explore Programs</a>
-          <a class="button button--secondary" href="../contact/" target="_self">Book a Visit</a>
+          <a class="button button--primary" href="../academics/" target="_self">View programs</a>
+          <a class="button button--secondary" href="../contact/" target="_self">Visit the campus</a>
         </div>
       </div>
       <div class="hero-card">

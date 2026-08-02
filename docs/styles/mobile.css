@@ -2,7 +2,7 @@
   .hero-grid,
   .feature-grid,
   .about-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   }
 
   .header-inner,
@@ -108,8 +108,11 @@
   }
 
   .school-intro__content {
-    max-width: calc(100% - 8.6rem);
-    padding-right: 0.35rem;
+    flex: 1 1 0;
+    min-width: 0;
+    width: 100%;
+    max-width: none;
+    padding-right: 0;
   }
 
   .school-intro__logo-wrap {
@@ -126,6 +129,97 @@
   .school-intro__login {
     padding: 0.34rem 0.58rem;
     font-size: 0.68rem;
+  }
+
+  .school-intro__actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    width: auto;
+    align-items: stretch;
+  }
+
+  .school-intro__highlights {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.6rem;
+    align-items: stretch;
+    justify-items: stretch;
+    width: 100%;
+  }
+
+  .school-intro__highlight {
+    font-size: 0.82rem;
+    padding: 0.6rem 0.9rem;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    justify-self: stretch;
+    text-align: center;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    opacity: 0;
+    transform: translateY(-14px) rotate(-1deg) scale(0.99);
+    transform-origin: center top;
+  }
+
+  /* Slightly smaller chips on narrow phones */
+  /* Two-column fallback for narrow phones, single column for very small devices */
+  @media (max-width: 420px) {
+    .school-intro__highlights {
+      grid-template-columns: repeat(2, minmax(140px, 1fr));
+    }
+
+    .school-intro__highlight {
+      font-size: 0.78rem;
+      width: 100%;
+      max-width: 100%;
+      padding: 0.5rem 0.75rem;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .school-intro__highlights {
+      grid-template-columns: 1fr;
+    }
+
+    .school-intro__highlight {
+      font-size: 0.74rem;
+      padding: 0.42rem 0.7rem;
+      width: 100%;
+    }
+  }
+
+  /* Drop-in animation for highlight chips */
+  .school-intro__highlights.is-visible .school-intro__highlight {
+    animation: dropIn 520ms cubic-bezier(.2,.8,.2,1) both;
+  }
+
+  /* reveal via per-chip class so we can control sequential timing in JS */
+  .school-intro__highlight.chip-visible {
+    animation: dropIn 520ms cubic-bezier(.2,.8,.2,1) both;
+  }
+
+  @keyframes dropIn {
+    0% { opacity: 0; transform: translateY(-18px) rotate(-2deg) scale(0.98); }
+    60% { opacity: 1; transform: translateY(6px) rotate(1deg) scale(1.01); }
+    100% { opacity: 1; transform: translateY(0) rotate(0) scale(1); }
+  }
+
+  /* Respect reduced motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .school-intro__highlight {
+      animation: none !important;
+      transition: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .school-intro__highlights.is-visible .school-intro__highlight {
+      opacity: 1 !important;
+      transform: none !important;
+    }
   }
 
   .school-intro h1 {
