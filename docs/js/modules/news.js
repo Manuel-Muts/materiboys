@@ -108,6 +108,26 @@ const FIREBASE_CONFIG = {
 
 let firebaseDb = null;
 
+function getCurrentSchoolId() {
+  const fromStorage = window.localStorage.getItem('active-school-id');
+  const fromQuery = new URLSearchParams(window.location.search).get('schoolId');
+  const fromWindow = window.__SCHOOL_ID__ || '';
+  const schoolId = (fromQuery || fromWindow || fromStorage || 'materi-boys').toString().trim();
+  return schoolId || 'materi-boys';
+}
+
+function getScopedStorageKey(baseKey) {
+  return `${baseKey}:${getCurrentSchoolId()}`;
+}
+
+function getSchoolCollectionRef(collectionName) {
+  if (!firebaseDb) {
+    return null;
+  }
+
+  return firebaseDb.collection('schools').doc(getCurrentSchoolId()).collection(collectionName);
+}
+
 if (window.firebase?.app && typeof window.firebase.initializeApp === 'function') {
   const hasConfig = FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.authDomain && FIREBASE_CONFIG.projectId && FIREBASE_CONFIG.appId;
   if (hasConfig) {
@@ -145,9 +165,25 @@ function getYoutubeEmbedUrl(url = '') {
   return match ? `https://www.youtube.com/embed/${match[1]}` : '';
 }
 
+function formatNewsDate(value = '') {
+  if (!value) {
+    return '';
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = String(date.getFullYear()).slice(-2);
+  return `${day}/${month}/${year}`;
+}
+
 function readStoredNewsPosts() {
   try {
-    return JSON.parse(window.localStorage.getItem('school-news-posts') || '[]');
+    return JSON.parse(window.localStorage.getItem(getScopedStorageKey('school-news-posts')) || '[]');
   } catch (error) {
     return [];
   }
@@ -184,12 +220,12 @@ async function fetchNewsPostsFromFirestore() {
   }
 
   try {
-    const snapshot = await firebaseDb.collection('news-posts').orderBy('createdAt', 'desc').get();
+    const snapshot = await getSchoolCollectionRef('news-posts')?.orderBy('createdAt', 'desc').get();
     const posts = [];
     snapshot.forEach((doc) => {
       posts.push({ ...doc.data(), id: doc.id });
     });
-    window.localStorage.setItem('school-news-posts', JSON.stringify(posts));
+    window.localStorage.setItem(getScopedStorageKey('school-news-posts'), JSON.stringify(posts));
     return { posts: posts.length > 0 ? posts : readStoredNewsPosts(), offline: false };
   } catch (error) {
     console.warn('Firestore fetch failed, using localStorage:', error);
@@ -231,6 +267,10 @@ export async function renderNewsPage(section = null) {
         const videoMarkup = youtubeEmbed
           ? `<div class="news-video" style="margin-top: 1rem;"><iframe src="${escapeHtml(youtubeEmbed)}" title="${escapeHtml(post.title)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`
           : '';
+        const formattedDate = formatNewsDate(post.createdAt || post.updatedAt || '');
+        const dateMarkup = formattedDate
+          ? `<p class="news-card__timestamp">Posted on ${escapeHtml(formattedDate)}</p>`
+          : '';
 
         return `
           <article class="legal-section news-card ${attachment ? 'news-card--has-media' : ''}">
@@ -238,6 +278,7 @@ export async function renderNewsPage(section = null) {
               ${attachment ? `<div class="news-card__media-wrap">${attachment}</div>` : ''}
               <div class="news-card__content">
                 <h2>${escapeHtml(post.title || 'School news story')}</h2>
+                ${dateMarkup}
                 ${story}
                 ${videoMarkup}
               </div>

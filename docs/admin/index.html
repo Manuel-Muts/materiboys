@@ -179,13 +179,27 @@
 
       const CLOUDINARY_CLOUD_NAME = 'djbkqazzt';
       const CLOUDINARY_UPLOAD_PRESET = 'matiriboys';
-      const DOCS_STORAGE_KEY = 'school-download-docs';
-      const NEWS_STORAGE_KEY = 'school-news-posts';
-      const VACANCIES_STORAGE_KEY = 'school-vacancies';
-      const ALUMNI_STORAGE_KEY = 'school-alumni-registrations';
-      const SETTINGS_STORAGE_KEY = 'school-site-settings';
+      const DEFAULT_SCHOOL_ID = 'materi-boys';
       const ADMISSIONS_SETTINGS_ID = 'admissions';
       let activeEditState = null;
+
+      function getCurrentSchoolId() {
+        const fromStorage = window.localStorage.getItem('active-school-id');
+        const fromQuery = new URLSearchParams(window.location.search).get('schoolId');
+        const fromWindow = window.__SCHOOL_ID__ || '';
+        const schoolId = (fromQuery || fromWindow || fromStorage || DEFAULT_SCHOOL_ID).toString().trim();
+        return schoolId || DEFAULT_SCHOOL_ID;
+      }
+
+      function getScopedStorageKey(baseKey) {
+        return `${baseKey}:${getCurrentSchoolId()}`;
+      }
+
+      const DOCS_STORAGE_KEY = getScopedStorageKey('school-download-docs');
+      const NEWS_STORAGE_KEY = getScopedStorageKey('school-news-posts');
+      const VACANCIES_STORAGE_KEY = getScopedStorageKey('school-vacancies');
+      const ALUMNI_STORAGE_KEY = getScopedStorageKey('school-alumni-registrations');
+      const SETTINGS_STORAGE_KEY = getScopedStorageKey('school-site-settings');
 
       const FIREBASE_CONFIG = {
         apiKey: 'AIzaSyBIGqZLYcDg3CR5VamDwBhtOOfl2Y0NYeI',
@@ -214,6 +228,19 @@
         }
       }
 
+      function getSchoolCollectionRef(collectionName) {
+        if (!db) {
+          return null;
+        }
+
+        return db.collection('schools').doc(getCurrentSchoolId()).collection(collectionName);
+      }
+
+      function getSchoolDocumentRef(collectionName, documentId) {
+        const collectionRef = getSchoolCollectionRef(collectionName);
+        return collectionRef ? collectionRef.doc(documentId) : null;
+      }
+
       async function syncPostsAndVacanciesFromFirestore() {
         if (!db || isContentSyncing) {
           return;
@@ -222,17 +249,17 @@
         isContentSyncing = true;
         try {
           const [newsSnapshot, vacancySnapshot] = await Promise.all([
-            db.collection('news-posts').orderBy('createdAt', 'desc').get(),
-            db.collection('vacancies').orderBy('createdAt', 'desc').get()
+            getSchoolCollectionRef('news-posts')?.orderBy('createdAt', 'desc').get(),
+            getSchoolCollectionRef('vacancies')?.orderBy('createdAt', 'desc').get()
           ]);
 
           const remoteNewsPosts = [];
-          newsSnapshot.forEach((doc) => {
+          newsSnapshot?.forEach((doc) => {
             remoteNewsPosts.push({ ...doc.data(), id: doc.id });
           });
 
           const remoteVacancies = [];
-          vacancySnapshot.forEach((doc) => {
+          vacancySnapshot?.forEach((doc) => {
             remoteVacancies.push({ ...doc.data(), id: doc.id });
           });
 
@@ -266,13 +293,15 @@
       function writeNewsToFirestore(post) {
         if (!db) return;
         try {
-          db.collection('news-posts').doc(post.id).set({
+          const schoolId = getCurrentSchoolId();
+          getSchoolDocumentRef('news-posts', post.id)?.set({
             title: post.title,
             story: post.story,
             attachmentUrl: post.attachmentUrl || '',
             attachmentFileName: post.attachmentFileName || '',
             attachmentMimeType: post.attachmentMimeType || '',
             youtubeUrl: post.youtubeUrl || '',
+            schoolId,
             createdAt: post.createdAt,
             updatedAt: post.updatedAt || new Date().toISOString()
           }, { merge: true }).catch((error) => console.warn('Firestore write failed:', error));
@@ -284,7 +313,7 @@
       function deleteNewsFromFirestore(postId) {
         if (!db) return;
         try {
-          db.collection('news-posts').doc(postId).delete().catch((error) => console.warn('Firestore delete failed:', error));
+          getSchoolDocumentRef('news-posts', postId)?.delete().catch((error) => console.warn('Firestore delete failed:', error));
         } catch (error) {
           console.warn('Firestore error:', error);
         }
@@ -293,7 +322,8 @@
       function writeVacancyToFirestore(vacancy) {
         if (!db) return;
         try {
-          db.collection('vacancies').doc(vacancy.id).set({
+          const schoolId = getCurrentSchoolId();
+          getSchoolDocumentRef('vacancies', vacancy.id)?.set({
             vacancyType: vacancy.vacancyType || 'teachers',
             position: vacancy.position || vacancy.pathway || '',
             posts: vacancy.posts ?? vacancy.post ?? 0,
@@ -301,6 +331,7 @@
             pathway: vacancy.pathway || vacancy.position || '',
             subjects: vacancy.subjects || vacancy.requirements || '',
             post: vacancy.post ?? vacancy.posts ?? 0,
+            schoolId,
             createdAt: vacancy.createdAt,
             updatedAt: vacancy.updatedAt || new Date().toISOString()
           }, { merge: true }).catch((error) => console.warn('Firestore write failed:', error));
@@ -312,7 +343,7 @@
       function deleteVacancyFromFirestore(vacancyId) {
         if (!db) return;
         try {
-          db.collection('vacancies').doc(vacancyId).delete().catch((error) => console.warn('Firestore delete failed:', error));
+          getSchoolDocumentRef('vacancies', vacancyId)?.delete().catch((error) => console.warn('Firestore delete failed:', error));
         } catch (error) {
           console.warn('Firestore error:', error);
         }
@@ -321,13 +352,15 @@
       function writeDocumentToFirestore(documentRecord) {
         if (!db) return;
         try {
-          db.collection('documents').doc(documentRecord.id).set({
+          const schoolId = getCurrentSchoolId();
+          getSchoolDocumentRef('documents', documentRecord.id)?.set({
             title: documentRecord.title,
             url: documentRecord.url,
             storageKey: documentRecord.storageKey,
             fileName: documentRecord.fileName || '',
             mimeType: documentRecord.mimeType || '',
             storageType: documentRecord.storageType || 'cloudinary',
+            schoolId,
             updatedAt: new Date().toISOString()
           }, { merge: true }).catch((error) => console.warn('Firestore document write failed:', error));
         } catch (error) {
@@ -338,7 +371,7 @@
       function deleteDocumentFromFirestore(documentId) {
         if (!db) return;
         try {
-          db.collection('documents').doc(documentId).delete().catch((error) => console.warn('Firestore document delete failed:', error));
+          getSchoolDocumentRef('documents', documentId)?.delete().catch((error) => console.warn('Firestore document delete failed:', error));
         } catch (error) {
           console.warn('Firestore document error:', error);
         }
@@ -387,8 +420,10 @@
         }
 
         try {
-          await db.collection('site-settings').doc(settingsId).set({
+          const schoolId = getCurrentSchoolId();
+          await getSchoolDocumentRef('site-settings', settingsId)?.set({
             admissionsOpen: settings.admissionsOpen,
+            schoolId,
             updatedAt: new Date().toISOString()
           }, { merge: true });
           return true;
@@ -404,8 +439,8 @@
         }
 
         try {
-          const snapshot = await db.collection('site-settings').doc(ADMISSIONS_SETTINGS_ID).get();
-          if (!snapshot.exists) {
+          const snapshot = await getSchoolDocumentRef('site-settings', ADMISSIONS_SETTINGS_ID)?.get();
+          if (!snapshot?.exists) {
             return;
           }
 
@@ -519,7 +554,7 @@
 
         if (db) {
           try {
-            db.collection('alumni-registrations').doc(registrationId).delete().catch((error) => console.warn('Firestore alumni delete failed:', error));
+            getSchoolDocumentRef('alumni-registrations', registrationId)?.delete().catch((error) => console.warn('Firestore alumni delete failed:', error));
           } catch (error) {
             console.warn('Firestore alumni delete error:', error);
           }
@@ -536,11 +571,13 @@
 
         if (db) {
           try {
-            db.collection('alumni-registrations').doc(newRegistration.id).set({
+            const schoolId = getCurrentSchoolId();
+            getSchoolDocumentRef('alumni-registrations', newRegistration.id)?.set({
               fullName: newRegistration.fullName || '',
               completionYear: newRegistration.completionYear || '',
               email: newRegistration.email || '',
               phone: newRegistration.phone || '',
+              schoolId,
               createdAt: newRegistration.createdAt || new Date().toISOString(),
               updatedAt: newRegistration.updatedAt || new Date().toISOString()
             }, { merge: true }).catch((error) => console.warn('Firestore alumni write failed:', error));
@@ -558,9 +595,9 @@
         }
 
         try {
-          const snapshot = await db.collection('alumni-registrations').orderBy('createdAt', 'desc').get();
+          const snapshot = await getSchoolCollectionRef('alumni-registrations')?.orderBy('createdAt', 'desc').get();
           const remoteRegistrations = [];
-          snapshot.forEach((doc) => {
+          snapshot?.forEach((doc) => {
             const data = doc.data() || {};
             remoteRegistrations.push({
               id: doc.id,

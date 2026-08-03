@@ -131,6 +131,15 @@
       };
 
       let alumniDb = null;
+
+      function getCurrentSchoolId() {
+        const fromStorage = window.localStorage.getItem('active-school-id');
+        const fromQuery = new URLSearchParams(window.location.search).get('schoolId');
+        const fromWindow = window.__SCHOOL_ID__ || '';
+        const schoolId = (fromQuery || fromWindow || fromStorage || 'materi-boys').toString().trim();
+        return schoolId || 'materi-boys';
+      }
+
       if (window.firebase?.app && typeof window.firebase.initializeApp === 'function') {
         try {
           if (!window.firebase.apps?.length) {
@@ -170,11 +179,12 @@
 
         try {
           if (alumniDb) {
-            await alumniDb.collection('alumni-registrations').add(payload);
+            await alumniDb.collection('schools').doc(getCurrentSchoolId()).collection('alumni-registrations').add({ ...payload, schoolId: getCurrentSchoolId() });
           } else {
-            const existing = JSON.parse(localStorage.getItem('school-alumni-registrations') || '[]');
+            const storageKey = `${'school-alumni-registrations'}:${getCurrentSchoolId()}`;
+            const existing = JSON.parse(localStorage.getItem(storageKey) || '[]');
             existing.unshift({ ...payload, id: `local-${Date.now()}` });
-            localStorage.setItem('school-alumni-registrations', JSON.stringify(existing));
+            localStorage.setItem(storageKey, JSON.stringify(existing));
           }
 
           alumniForm.reset();

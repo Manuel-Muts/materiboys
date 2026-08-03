@@ -28,7 +28,20 @@
       import { createOfflineNoticeMarkup, isBrowserOnline } from '../js/modules/network-status.js';
 
       const app = document.getElementById('app');
-      const VACANCIES_STORAGE_KEY = 'school-vacancies';
+
+      function getCurrentSchoolId() {
+        const fromStorage = window.localStorage.getItem('active-school-id');
+        const fromQuery = new URLSearchParams(window.location.search).get('schoolId');
+        const fromWindow = window.__SCHOOL_ID__ || '';
+        const schoolId = (fromQuery || fromWindow || fromStorage || 'materi-boys').toString().trim();
+        return schoolId || 'materi-boys';
+      }
+
+      function getScopedStorageKey(baseKey) {
+        return `${baseKey}:${getCurrentSchoolId()}`;
+      }
+
+      const VACANCIES_STORAGE_KEY = getScopedStorageKey('school-vacancies');
 
       // Firebase configuration
       const FIREBASE_CONFIG = {
@@ -44,6 +57,14 @@
       if (FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId) {
         firebase.initializeApp(FIREBASE_CONFIG);
         firebaseDb = firebase.firestore();
+      }
+
+      function getSchoolCollectionRef(collectionName) {
+        if (!firebaseDb) {
+          return null;
+        }
+
+        return firebaseDb.collection('schools').doc(getCurrentSchoolId()).collection(collectionName);
       }
 
       function escapeHtml(value = '') {
@@ -75,7 +96,7 @@
         }
 
         try {
-          const snapshot = await firebaseDb.collection('vacancies').orderBy('createdAt', 'desc').get();
+          const snapshot = await getSchoolCollectionRef('vacancies')?.orderBy('createdAt', 'desc').get();
           const vacancies = [];
           snapshot.forEach((doc) => {
             vacancies.push({ ...doc.data(), id: doc.id });

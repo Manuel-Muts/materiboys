@@ -5,15 +5,27 @@ const DOWNLOAD_MENU_ITEMS = [
   { key: 'prospectus', label: 'Prospectus', href: '../downloads/prospectus.html' }
 ];
 
+function getCurrentSchoolId() {
+  const fromStorage = window.localStorage.getItem('active-school-id');
+  const fromQuery = new URLSearchParams(window.location.search).get('schoolId');
+  const fromWindow = window.__SCHOOL_ID__ || '';
+  const schoolId = (fromQuery || fromWindow || fromStorage || 'materi-boys').toString().trim();
+  return schoolId || 'materi-boys';
+}
+
+function getScopedStorageKey(baseKey) {
+  return `${baseKey}:${getCurrentSchoolId()}`;
+}
+
 function readStoredDocuments() {
   try {
-    return JSON.parse(localStorage.getItem('school-download-docs') || '{}');
+    return JSON.parse(localStorage.getItem(getScopedStorageKey('school-download-docs')) || '{}');
   } catch (error) {
     return {};
   }
 }
 
-const SETTINGS_STORAGE_KEY = 'school-site-settings';
+const SETTINGS_STORAGE_KEY = getScopedStorageKey('school-site-settings');
 
 const CONTACT_HIGHLIGHTS = [
   { label: 'Email', value: 'matirischool@gmail.com', href: 'mailto:matirischool@gmail.com' },

@@ -1,4 +1,16 @@
-const DOCUMENTS_STORAGE_KEY = 'school-download-docs';
+function getCurrentSchoolId() {
+  const fromStorage = window.localStorage.getItem('active-school-id');
+  const fromQuery = new URLSearchParams(window.location.search).get('schoolId');
+  const fromWindow = window.__SCHOOL_ID__ || '';
+  const schoolId = (fromQuery || fromWindow || fromStorage || 'materi-boys').toString().trim();
+  return schoolId || 'materi-boys';
+}
+
+function getScopedStorageKey(baseKey) {
+  return `${baseKey}:${getCurrentSchoolId()}`;
+}
+
+const DOCUMENTS_STORAGE_KEY = getScopedStorageKey('school-download-docs');
 const FIREBASE_CONFIG = {
   apiKey: 'AIzaSyBIGqZLYcDg3CR5VamDwBhtOOfl2Y0NYeI',
   authDomain: 'timotech-films.firebaseapp.com',
@@ -48,6 +60,14 @@ function writeStoredDocuments(documents) {
   window.localStorage.setItem(DOCUMENTS_STORAGE_KEY, JSON.stringify(documents));
 }
 
+function getCurrentSchoolId() {
+  const fromStorage = window.localStorage.getItem('active-school-id');
+  const fromQuery = new URLSearchParams(window.location.search).get('schoolId');
+  const fromWindow = window.__SCHOOL_ID__ || '';
+  const schoolId = (fromQuery || fromWindow || fromStorage || 'materi-boys').toString().trim();
+  return schoolId || 'materi-boys';
+}
+
 function getFirebaseDb() {
   if (!window.firebase?.firestore || typeof window.firebase.firestore !== 'function') {
     return null;
@@ -75,7 +95,7 @@ export async function getDocumentRecord(storageKey) {
   const firebaseDb = getFirebaseDb();
   if (firebaseDb && navigator.onLine) {
     try {
-      const snapshot = await firebaseDb.collection('documents').get();
+      const snapshot = await firebaseDb.collection('schools').doc(getCurrentSchoolId()).collection('documents').get();
       const nextDocuments = {};
       snapshot.forEach((doc) => {
         const data = doc.data() || {};
