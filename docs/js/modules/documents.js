@@ -60,14 +60,6 @@ function writeStoredDocuments(documents) {
   window.localStorage.setItem(DOCUMENTS_STORAGE_KEY, JSON.stringify(documents));
 }
 
-function getCurrentSchoolId() {
-  const fromStorage = window.localStorage.getItem('active-school-id');
-  const fromQuery = new URLSearchParams(window.location.search).get('schoolId');
-  const fromWindow = window.__SCHOOL_ID__ || '';
-  const schoolId = (fromQuery || fromWindow || fromStorage || 'materi-boys').toString().trim();
-  return schoolId || 'materi-boys';
-}
-
 function getFirebaseDb() {
   if (!window.firebase?.firestore || typeof window.firebase.firestore !== 'function') {
     return null;
