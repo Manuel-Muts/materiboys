@@ -127,6 +127,7 @@ export function renderHeader() {
           </div>
         </details>
         <a href="../academics/" target="_self">Academics</a>
+        <a href="../location/" target="_self">Location</a>
         <a href="../contact/" target="_self">Contact</a>
         <a href="../staff/" target="_self">Staff</a>
         <a href="../teachers/" target="_self">Teachers Gallery</a>
