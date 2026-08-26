@@ -1,15 +1,15 @@
 const loadingBar = document.createElement('div');
-loadingBar.className = 'page-loading-bar';
+loadingBar.className = 'top-loading-bar';
 loadingBar.setAttribute('role', 'progressbar');
 loadingBar.setAttribute('aria-label', 'Loading page');
 loadingBar.setAttribute('aria-valuemin', '0');
 loadingBar.setAttribute('aria-valuemax', '100');
 loadingBar.setAttribute('aria-valuenow', '0');
-loadingBar.innerHTML = '<span class="page-loading-bar__fill"></span>';
+loadingBar.innerHTML = '<span class="top-loading-bar__fill"></span>';
 
 document.body.prepend(loadingBar);
 
-const fill = loadingBar.querySelector('.page-loading-bar__fill');
+const fill = loadingBar.querySelector('.top-loading-bar__fill');
 const startedAt = performance.now();
 let progressFrame = null;
 

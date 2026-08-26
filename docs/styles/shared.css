@@ -41,7 +41,7 @@ body {
   min-height: 100vh;
 }
 
-.page-loading-bar {
+.top-loading-bar {
   position: fixed;
   top: 0;
   left: 0;
@@ -54,7 +54,7 @@ body {
   transition: opacity 220ms ease;
 }
 
-.page-loading-bar__fill {
+.top-loading-bar__fill {
   display: block;
   width: 25%;
   height: 100%;
@@ -64,7 +64,7 @@ body {
   will-change: width;
 }
 
-.page-loading-bar.is-complete {
+.top-loading-bar.is-complete {
   opacity: 0;
 }
 
